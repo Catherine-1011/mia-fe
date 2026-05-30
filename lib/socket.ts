@@ -4,7 +4,7 @@
 
 import { io, Socket } from "socket.io-client";
 
-const SOCKET_URL = "https://alpa-be.onrender.com";
+const SOCKET_URL = "http://134.199.161.119:5000";
 
 // ServerToClientEvents shape
 interface ServerToClientEvents {

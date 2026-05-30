@@ -8,7 +8,7 @@ import { Eye, EyeOff } from "lucide-react";
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://alpa-be.onrender.com";
+  process.env.NEXT_PUBLIC_API_URL || "http://134.199.161.119:5000";
 
 // Known digit lengths per country (national number, excluding country code)
 const COUNTRY_DIGITS: Record<string, [number, number]> = {

@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function SellerLoginPage() {
-  const url = "https://alpa-be.onrender.com";
+  const url = "http://134.199.161.119:5000";
   const router = useRouter();
 
   const [authStep, setAuthStep] = useState<"login" | "forgot" | "reset">("login");

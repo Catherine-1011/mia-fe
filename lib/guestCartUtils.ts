@@ -42,7 +42,7 @@ export const getCheckoutOptions = async (): Promise<{
     }
 
     // Fetch from backend - GET /api/cart/checkout-options
-    const response = await fetch('https://alpa-be.onrender.com/api/cart/checkout-options', {
+    const response = await fetch('http://134.199.161.119:5000/api/cart/checkout-options', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -202,7 +202,7 @@ export const guestCartUtils = {
     gstPercentage: number;
   } | null> => {
     try {
-      const response = await fetch("https://alpa-be.onrender.com/api/cart/calculate-guest", {
+      const response = await fetch("http://134.199.161.119:5000/api/cart/calculate-guest", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -248,7 +248,7 @@ export const syncGuestCartAfterLogin = async (token: string): Promise<void> => {
   if (items.length === 0) return;
 
   try {
-    await fetch('https://alpa-be.onrender.com/api/cart/sync', {
+    await fetch('http://134.199.161.119:5000/api/cart/sync', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -15,7 +15,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { syncGuestCartAfterLogin } from "@/lib/guestCartUtils";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://alpa-be.onrender.com";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://134.199.161.119:5000";
 
 // Separate component that uses useSearchParams
 function OTPVerificationForm() {

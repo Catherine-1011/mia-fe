@@ -13,7 +13,7 @@
 // import Image from "next/image";
 // import Link from "next/link";
 
-// const API = "https://alpa-be.onrender.com/api";
+// const API = "http://134.199.161.119:5000/api";
 
 // export default function Footer() {
 //   const [email, setEmail] = useState("");
@@ -388,7 +388,7 @@ import { X, Loader2, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-const API = "https://alpa-be.onrender.com/api";
+const API = "http://134.199.161.119:5000/api";
 
 export default function Footer() {
   const [email, setEmail] = useState("");

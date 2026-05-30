@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import Sponsored from "@/components/cards/Sponsored";
 
 const SLIDE_COUNT = 2;
-const API_BASE_URL = "https://alpa-be.onrender.com/api";
+const API_BASE_URL = "http://134.199.161.119:5000/api";
 
 // Blog post type for homepage
 interface ApiBlogPost {
@@ -1112,3 +1112,4 @@ const Page = () => {
 };
 
 export default Page;
+// added url

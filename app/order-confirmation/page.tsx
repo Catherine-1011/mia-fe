@@ -57,7 +57,7 @@ function FeedbackForm({ defaultName, defaultEmail }: { defaultName: string; defa
     setError(null);
     setSubmitting(true);
     try {
-      const res = await fetch("https://alpa-be.onrender.com/api/feedback", {
+      const res = await fetch("http://134.199.161.119:5000/api/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -338,7 +338,7 @@ function OrderConfirmationContent() {
         
         // Get basic order status
         const res = await fetch(
-          `https://alpa-be.onrender.com/api/payments/status/${orderId}`,
+          `http://134.199.161.119:5000/api/payments/status/${orderId}`,
           { headers: { Authorization: `Bearer ${currentToken}` } }
         );
         
@@ -370,7 +370,7 @@ function OrderConfirmationContent() {
         try {
           console.log('🔍 Checking for segregated order data...');
           const segregatedRes = await fetch(
-            `https://alpa-be.onrender.com/api/orders/segregated/${orderId}`,
+            `http://134.199.161.119:5000/api/orders/segregated/${orderId}`,
             { headers: { Authorization: `Bearer ${currentToken}` } }
           );
           

@@ -26,7 +26,7 @@ function OTPVerificationForm() {
   const { fetchCartData } = useSharedEnhancedCart();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const url = "https://alpa-be.onrender.com";
+  const url = "http://134.199.161.119:5000";
 
   // Get email from URL query params (from your router.push)
   const emailFromParams = searchParams.get("email") || "";

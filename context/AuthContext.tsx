@@ -83,7 +83,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       const res = await fetch(
-        "https://alpa-be.onrender.com/api/profile",
+        "http://134.199.161.119:5000/api/profile",
         {
           headers: { 
             Authorization: `Bearer ${currentToken}`,
@@ -156,7 +156,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // 1. Invalidate the token server-side (best-effort)
     if (currentToken) {
       try {
-        await fetch("https://alpa-be.onrender.com/api/auth/logout", {
+        await fetch("http://134.199.161.119:5000/api/auth/logout", {
           method: "POST",
           credentials: "include",
           headers: {

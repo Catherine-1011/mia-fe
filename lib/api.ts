@@ -1,6 +1,6 @@
 // app/lib/api.ts
 
-const API_BASE_URL = "https://alpa-be.onrender.com/api";
+const API_BASE_URL = "http://134.199.161.119:5000/api";
 
 // Generic API client with error handling
 export class ApiClient {

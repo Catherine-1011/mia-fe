@@ -119,7 +119,7 @@ export default function Page() {
     estimatedDays: string; description: string;
   }>(null);
   const [intlRateLoading, setIntlRateLoading] = useState(false);
-  const SHIPPING_API = "https://alpa-be.onrender.com";
+  const SHIPPING_API = "http://134.199.161.119:5000";
 
   // Persist intlRate to localStorage so the checkout page can display it
   useEffect(() => {
