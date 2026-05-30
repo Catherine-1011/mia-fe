@@ -45,5 +45,5 @@ jobs:
             set -e
             cd /root/mia-fe
             npm ci --omit=dev
-            pm2 restart mia-fe || pm2 start npm --name "mia-fe" -- start
+            pm2 restart mia-fe || PORT=3000 pm2 start npm --name "mia-fe" -- start
             echo "--- Deployment complete ---"
