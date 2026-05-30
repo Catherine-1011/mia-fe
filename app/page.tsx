@@ -305,7 +305,7 @@ const Page = () => {
               className="text-sm sm:text-base lg:text-lg max-w-lg mb-10 leading-relaxed text-white/75"
             >
               Authentic Aboriginal products and experiences, each carrying
-              stories passed down through thousands of generations.
+              stories passed down through thousands of generations. Testing
             </motion.p>
 
             {/* CTA Row */}
