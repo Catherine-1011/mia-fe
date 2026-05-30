@@ -25,7 +25,7 @@ jobs:
             set -e
 
             # --- Go to the project directory on the droplet ---
-            cd /var/www/mia-fe   # ← Change this to your actual project path on the droplet
+            cd /root/mia-fe
 
             # --- Pull latest code ---
             git pull origin main
