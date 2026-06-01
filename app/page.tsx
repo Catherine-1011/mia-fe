@@ -647,7 +647,12 @@ const Page = () => {
                       </div>
                     </div>
                   ))
-                : limitedProducts.map((product) => (
+                : limitedProducts.length === 0 ? (
+                  <div className="w-full text-center py-12">
+                    <p className="text-[#3a1208] font-semibold text-lg mb-1">Coming Soon</p>
+                    <p className="text-[#803512]/60 text-sm">Our Products are coming soon. Stay tuned!</p>
+                  </div>
+                ) : limitedProducts.map((product) => (
                     <div
                       key={product.id}
                       className="shrink-0 snap-start snap-always w-[calc(100%-1px)] sm:w-[calc(50%-8px)] lg:w-[calc(25%-18px)]"
@@ -1015,8 +1020,9 @@ const Page = () => {
               </div>
             ) : blogPosts.length === 0 ? (
               // No posts state
-              <div className="col-span-full text-center py-8">
-                <p className="text-[#803512]/60">No blog posts available</p>
+              <div className="col-span-full text-center py-10">
+                <p className="text-[#803512] font-semibold text-lg mb-1">Coming Soon</p>
+                <p className="text-[#803512]/60 text-sm">Stories and insights from Arnhem Land are on their way. Stay tuned!</p>
               </div>
             ) : (
               // Actual blog posts

@@ -203,7 +203,24 @@ const Sponsored = () => {
                     </div>
                   </div>
                 </div>
-              ) : sponsoredSections.length > 0 ? (
+              ) : sponsoredSections.length === 0 ? (
+                // Empty state — no sponsored content available
+                <div className="w-full shrink-0 snap-center mr-4 sm:mr-4 lg:mr-0">
+                  <div
+                    className="flex flex-col items-center justify-center w-full rounded-3xl overflow-hidden bg-[#803512] h-48 md:h-64 text-center px-6"
+                    style={{
+                      transform: "translate3d(0, 0, 0)",
+                      backfaceVisibility: "hidden",
+                      isolation: "isolate",
+                      contain: "layout style paint"
+                    }}
+                  >
+                    <p className="text-white/50 text-xs font-semibold uppercase tracking-widest mb-2">Sponsored</p>
+                    <h2 className="text-white text-2xl font-bold mb-2">Coming Soon</h2>
+                    <p className="text-white/60 text-sm max-w-xs">Exciting sponsored content is on its way. Stay tuned!</p>
+                  </div>
+                </div>
+              ) : (
                 // Dynamic slides from API
                 sponsoredSections.map((section, index) => (
                   <div key={section.id} className="w-full shrink-0 snap-center mr-4 sm:mr-4 lg:mr-0">
@@ -273,15 +290,6 @@ const Sponsored = () => {
                     </div>
                   </div>
                 ))
-              ) : (
-                // Fallback when no data
-                <div className="w-full shrink-0 snap-center mr-4 sm:mr-4 lg:mr-0">
-                  <div className="flex flex-col md:flex-row w-full rounded-3xl overflow-hidden bg-[#803512] h-110 md:h-80">
-                    <div className="w-full p-8 md:p-12 flex flex-col justify-center text-white text-center h-full">
-                      <h2 className="text-2xl font-bold mb-3">No sponsored content available</h2>
-                    </div>
-                  </div>
-                </div>
               )}
             </div>
 

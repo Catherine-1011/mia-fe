@@ -1140,16 +1140,21 @@ function ShopContent() {
             <SkeletonLoader />
           ) : paginatedProducts.length === 0 ? (
             <div className="text-center mt-8 sm:mt-16 py-8 sm:py-12 bg-white/50 rounded-xl">
-              <p className="text-lg sm:text-xl text-gray-600 mb-4">
-                No products found
-              </p>
-              {hasActiveFilters && (
-                <button
-                  onClick={clearAll}
-                  className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
-                >
-                  Clear filters
-                </button>
+              {hasActiveFilters ? (
+                <>
+                  <p className="text-lg sm:text-xl text-gray-600 mb-4">No products found</p>
+                  <button
+                    onClick={clearAll}
+                    className="px-6 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors"
+                  >
+                    Clear filters
+                  </button>
+                </>
+              ) : (
+                <>
+                  <p className="text-lg sm:text-xl font-semibold text-[#3a1208] mb-2">Coming Soon</p>
+                  <p className="text-gray-500 text-sm">Our Products are coming soon. Stay tuned!</p>
+                </>
               )}
             </div>
           ) : (
