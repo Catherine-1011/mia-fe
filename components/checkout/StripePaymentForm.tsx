@@ -57,7 +57,7 @@ export default function StripePaymentForm({
 
       // Step 2 – notify backend to confirm the order
       const res = await fetch(
-        "http://134.199.161.119:5000/api/payments/confirm",
+        "https://backend.madeinarnhemland.com.au/api/payments/confirm",
         {
           method: "POST",
           headers: {

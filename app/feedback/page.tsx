@@ -147,7 +147,7 @@
 //     setError(null);
 //     setSubmitting(true);
 //     try {
-//       const res = await fetch("http://134.199.161.119:5000/api/feedback", {
+//       const res = await fetch("https://backend.madeinarnhemland.com.au/api/feedback", {
 //         method: "POST",
 //         headers: { "Content-Type": "application/json" },
 //         body: JSON.stringify({
@@ -650,7 +650,7 @@ export default function FeedbackPage() {
     setError(null);
     setSubmitting(true);
     try {
-      const res = await fetch("http://134.199.161.119:5000/api/feedback", {
+      const res = await fetch("https://backend.madeinarnhemland.com.au/api/feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

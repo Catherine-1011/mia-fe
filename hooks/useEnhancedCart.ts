@@ -110,7 +110,7 @@ export function useEnhancedCart() {
   // Ref to access latest cartData inside async fetchCartData without stale closure
   const cartDataRef = useRef<EnhancedCartData | null>(null);
 
-  const baseUrl = "http://134.199.161.119:5000";
+  const baseUrl = "https://backend.madeinarnhemland.com.au";
 
   // Keep cartDataRef in sync so fetchCartData can access latest variant attributes
   useEffect(() => {
@@ -167,7 +167,7 @@ export function useEnhancedCart() {
         if (nonCodOptions.length > 0 && cartItems.length > 0) {
           try {
             await Promise.all(nonCodOptions.map(async (shipping) => {
-              const res = await fetch('http://134.199.161.119:5000/api/cart/calculate-guest', {
+              const res = await fetch('https://backend.madeinarnhemland.com.au/api/cart/calculate-guest', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ items: guestItemsPayload, shippingMethodId: shipping.id }),

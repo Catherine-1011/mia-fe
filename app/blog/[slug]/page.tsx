@@ -172,7 +172,7 @@ interface BlogPost {
 // ─────────────────────────────────────────────
 // Utility functions
 // ─────────────────────────────────────────────
-const API_BASE_URL = "http://134.199.161.119:5000/api";
+const API_BASE_URL = "https://backend.madeinarnhemland.com.au/api";
 
 const formatDate = (dateString: string): string => {
   const date = new Date(dateString);

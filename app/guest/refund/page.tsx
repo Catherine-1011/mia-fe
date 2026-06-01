@@ -26,7 +26,7 @@ import VideoHeroSection from "@/components/common-components/VideoHeroSection";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const BASE_URL = "http://134.199.161.119:5000";
+const BASE_URL = "https://backend.madeinarnhemland.com.au";
 
 const STATUS_STEPS = ["OPEN", "APPROVED", "COMPLETED", "REJECTED"] as const;
 

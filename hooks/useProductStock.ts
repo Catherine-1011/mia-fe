@@ -11,7 +11,7 @@ import { useState, useEffect, useCallback } from "react";
 import { toast } from "react-toastify";
 import { getSocket, StockUpdatePayload } from "@/lib/socket";
 
-const API_BASE = "http://134.199.161.119:5000/api";
+const API_BASE = "https://backend.madeinarnhemland.com.au/api";
 
 interface StockState {
   stock: number;

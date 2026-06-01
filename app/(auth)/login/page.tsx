@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function LoginPage() {
-  const url = "http://134.199.161.119:5000";
+  const url = "https://backend.madeinarnhemland.com.au";
   const router = useRouter();
 
   const [authStep, setAuthStep] = useState<"login" | "forgot" | "reset">("login");

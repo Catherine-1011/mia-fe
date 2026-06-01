@@ -58,7 +58,7 @@ function OrderSuccessContent() {
     setStatus("loading");
     try {
       const paymentIntentId = searchParams.get("payment_intent") || "";
-      const res = await fetch("http://134.199.161.119:5000/api/payments/guest/confirm", {
+      const res = await fetch("https://backend.madeinarnhemland.com.au/api/payments/guest/confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ paymentIntentId, customerEmail: oEmail }),
@@ -91,7 +91,7 @@ function OrderSuccessContent() {
     setStatus("loading");
     try {
       const res = await fetch(
-        `http://134.199.161.119:5000/api/payments/guest/status?orderId=${encodeURIComponent(oId)}&customerEmail=${encodeURIComponent(oEmail)}`
+        `https://backend.madeinarnhemland.com.au/api/payments/guest/status?orderId=${encodeURIComponent(oId)}&customerEmail=${encodeURIComponent(oEmail)}`
       );
       const data = await res.json();
       const paymentStatus = data.order?.paymentStatus;

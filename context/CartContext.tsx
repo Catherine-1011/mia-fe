@@ -36,7 +36,7 @@ type CartContextType = {
    CONTEXT
 ======================= */
 const CartContext = createContext<CartContextType | null>(null);
-const baseUrl = "http://134.199.161.119:5000";
+const baseUrl = "https://backend.madeinarnhemland.com.au";
 
 /* =======================
    PROVIDER

@@ -3,7 +3,7 @@
 
 import { useState, useCallback } from "react";
 
-const API_BASE_URL = "http://134.199.161.119:5000/api";
+const API_BASE_URL = "https://backend.madeinarnhemland.com.au/api";
 const DASHBOARD_BASE_URL = "http://dashboard.madeinarnhemland.com.au";
 
 /**

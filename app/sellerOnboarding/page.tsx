@@ -5,7 +5,7 @@
 // import Link from 'next/link';
 // import { Eye, EyeOff } from 'lucide-react';
 
-// const baseURL = 'http://134.199.161.119:5000';
+// const baseURL = 'https://backend.madeinarnhemland.com.au';
 
 // // ─── Country phone data ───────────────────────────────────────────────────────
 // type Country = { code: string; flag: string; name: string; dialCode: string; digits: [number, number] };
@@ -1592,7 +1592,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Eye, EyeOff } from 'lucide-react';
 
-const baseURL = 'http://134.199.161.119:5000';
+const baseURL = 'https://backend.madeinarnhemland.com.au';
 
 // ─── Country phone data ───────────────────────────────────────────────────────
 type Country = { code: string; flag: string; name: string; dialCode: string; digits: [number, number] };

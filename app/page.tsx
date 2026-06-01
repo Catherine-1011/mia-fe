@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import Sponsored from "@/components/cards/Sponsored";
 
 const SLIDE_COUNT = 2;
-const API_BASE_URL = "http://134.199.161.119:5000/api";
+const API_BASE_URL = "https://backend.madeinarnhemland.com.au/api";
 
 // Blog post type for homepage
 interface ApiBlogPost {

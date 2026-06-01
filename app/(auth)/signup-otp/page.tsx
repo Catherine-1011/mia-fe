@@ -15,7 +15,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { syncGuestCartAfterLogin } from "@/lib/guestCartUtils";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://134.199.161.119:5000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://backend.madeinarnhemland.com.au";
 
 // Separate component that uses useSearchParams
 function OTPVerificationForm() {

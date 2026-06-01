@@ -67,7 +67,7 @@ export default function GuestStripePaymentForm({
 
       // Step C2 – confirm with backend
       const res = await fetch(
-        "http://134.199.161.119:5000/api/payments/guest/confirm",
+        "https://backend.madeinarnhemland.com.au/api/payments/guest/confirm",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

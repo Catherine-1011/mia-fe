@@ -83,7 +83,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       const res = await fetch(
-        "http://134.199.161.119:5000/api/profile",
+        "https://backend.madeinarnhemland.com.au/api/profile",
         {
           headers: { 
             Authorization: `Bearer ${currentToken}`,
@@ -156,7 +156,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // 1. Invalidate the token server-side (best-effort)
     if (currentToken) {
       try {
-        await fetch("http://134.199.161.119:5000/api/auth/logout", {
+        await fetch("https://backend.madeinarnhemland.com.au/api/auth/logout", {
           method: "POST",
           credentials: "include",
           headers: {

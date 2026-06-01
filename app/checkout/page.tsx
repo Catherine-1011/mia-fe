@@ -307,7 +307,7 @@ export default function CheckOutPage() {
       } catch {}
 
       const res = await fetch(
-        "http://134.199.161.119:5000/api/payments/create-intent",
+        "https://backend.madeinarnhemland.com.au/api/payments/create-intent",
         {
           method: "POST",
           headers: {
@@ -428,7 +428,7 @@ export default function CheckOutPage() {
         };
 
         response = await fetch(
-          "http://134.199.161.119:5000/api/orders/guest/checkout",
+          "https://backend.madeinarnhemland.com.au/api/orders/guest/checkout",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -444,7 +444,7 @@ export default function CheckOutPage() {
         }
 
         response = await fetch(
-          "http://134.199.161.119:5000/api/orders/create",
+          "https://backend.madeinarnhemland.com.au/api/orders/create",
           {
             method: "POST",
             headers: {
