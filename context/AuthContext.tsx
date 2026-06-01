@@ -186,7 +186,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     //    session and then redirect the user back to Webapp's /login page.
     if (typeof window !== "undefined") {
       window.location.href =
-        "https://alpa-dashboard.vercel.app/logout-callback?redirect=" +
+        "http://dashboard.madeinarnhemland.com.au/logout-callback?redirect=" +
         encodeURIComponent("https://apla-fe.vercel.app");
     }
   };

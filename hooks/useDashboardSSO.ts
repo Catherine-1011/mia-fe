@@ -4,7 +4,7 @@
 import { useState, useCallback } from "react";
 
 const API_BASE_URL = "http://134.199.161.119:5000/api";
-const DASHBOARD_BASE_URL = "https://alpa-dashboard.vercel.app";
+const DASHBOARD_BASE_URL = "http://dashboard.madeinarnhemland.com.au";
 
 /**
  * SSO handshake hook — creates a one-time ticket on the backend and

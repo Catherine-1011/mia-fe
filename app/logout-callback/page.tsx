@@ -41,7 +41,7 @@ function LogoutCallbackContent() {
 
     //   if (window.parent !== window) {
     //     // Legacy iframe path — notify the parent that we're done
-    //     window.parent.postMessage("alpa-logout-done", "https://alpa-dashboard.vercel.app");
+    //     window.parent.postMessage("alpa-logout-done", "http://dashboard.madeinarnhemland.com.au");
     //     return;
     //   }
 
@@ -49,7 +49,7 @@ function LogoutCallbackContent() {
     //   const redirectParam = searchParams.get("redirect");
     //   const allowedOrigins = [
     //     "https://apla-fe.vercel.app",
-    //     "https://alpa-dashboard.vercel.app",
+    //     "http://dashboard.madeinarnhemland.com.au",
     //   ];
     //   const isSafe =
     //     redirectParam && allowedOrigins.some((o) => redirectParam.startsWith(o));
@@ -85,7 +85,7 @@ function LogoutCallbackContent() {
   }
 
   if (window.parent !== window) {
-    window.parent.postMessage("alpa-logout-done", "https://alpa-dashboard.vercel.app");
+    window.parent.postMessage("alpa-logout-done", "http://dashboard.madeinarnhemland.com.au");
     return;
   }
 
@@ -93,7 +93,7 @@ function LogoutCallbackContent() {
   const redirectParam = searchParams.get("redirect");
   const allowedOrigins = [
     "https://apla-fe.vercel.app",
-    "https://alpa-dashboard.vercel.app",
+    "http://dashboard.madeinarnhemland.com.au",
   ];
   const isSafe =
     redirectParam && allowedOrigins.some((o) => redirectParam.startsWith(o));

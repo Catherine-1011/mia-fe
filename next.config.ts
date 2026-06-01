@@ -33,11 +33,11 @@ const nextConfig = {
         headers: [
           {
             key: "Content-Security-Policy",
-            value: "frame-ancestors 'self' https://alpa-dashboard.vercel.app",
+            value: "frame-ancestors 'self' http://dashboard.madeinarnhemland.com.au",
           },
           {
             key: "X-Frame-Options",
-            value: "ALLOW-FROM https://alpa-dashboard.vercel.app",
+            value: "ALLOW-FROM http://dashboard.madeinarnhemland.com.au",
           },
         ],
       },
