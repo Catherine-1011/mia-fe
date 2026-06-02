@@ -183,11 +183,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     window.dispatchEvent(new CustomEvent("alpa-logout"));
 
     // 4. Redirect to Dashboard's /logout-callback, which will clear its own
-    //    session and then redirect the user back to Webapp's /login page.
+    //    session and then redirect the user back to the main site.
     if (typeof window !== "undefined") {
       window.location.href =
         "http://dashboard.madeinarnhemland.com.au/logout-callback?redirect=" +
-        encodeURIComponent("https://apla-fe.vercel.app");
+        encodeURIComponent("https://madeinarnhemland.com.au");
     }
   };
 
