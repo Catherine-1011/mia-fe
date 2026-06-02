@@ -92,12 +92,12 @@ function LogoutCallbackContent() {
   // 4. Redirect
   const redirectParam = searchParams.get("redirect");
   const allowedOrigins = [
-    "https://apla-fe.vercel.app",
-    "http://dashboard.madeinarnhemland.com.au",
+    "https://madeinarnhemland.com.au",
+    "https://dashboard.madeinarnhemland.com.au",
   ];
   const isSafe =
     redirectParam && allowedOrigins.some((o) => redirectParam.startsWith(o));
-  window.location.replace(isSafe ? redirectParam : "/");
+  window.location.replace(isSafe ? redirectParam : "https://madeinarnhemland.com.au");
 };
     
     doLogout();
