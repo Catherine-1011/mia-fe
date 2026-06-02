@@ -450,11 +450,11 @@ export default function Footer() {
   };
 
   return (
-    <footer className="bg-[#440C03] bg-cover text-white px-4 sm:px-8 md:px-12 lg:px-20 pt-6 pb-6 md:pt-8 lg:pb-4 md:pb-6"> 
+    <footer className="bg-[#440C03] bg-cover text-white px-4 sm:px-8 md:px-12 lg:px-20 pt-10 pb-8 md:pt-12 md:pb-10 lg:pb-8"> 
       {/* Top Main Section */}
       <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 mb-4">
         {/* Left Section - Navigation Links */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-8 flex-1 text-xs md:text-sm">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-8 flex-1 text-xs md:text-sm">
           {/* Column 1 - Shop */}
           <div className="flex flex-col">
             <h2 className="mb-4 text-base md:text-lg font-semibold">Shop</h2>
@@ -462,7 +462,7 @@ export default function Footer() {
               All Products
             </Link>
             <Link href="/#featured-products" className="mb-2 text-white/80 hover:text-[#A48068] transition-colors">
-              Featured Makers
+              Shop featured Products
             </Link>
             <Link href="/shop?category=art-crafts" className="mb-2 text-white/80 hover:text-[#A48068] transition-colors">
               Art & Crafts
@@ -496,28 +496,52 @@ export default function Footer() {
             <Link href="/seller-rules" className="mb-2 text-white/80 hover:text-[#A48068] transition-colors">
               Seller Guidelines
             </Link>
+           <Link href="/certification" className="mb-2 text-white/80 hover:text-[#A48068] transition-colors">
+              100% Made in Arnhem Land
+            </Link>
+             <Link href="/fees-and-commission" className="mb-2 text-white/80 hover:text-[#A48068] transition-colors">
+             Fees & Commission
+            </Link>
             <Link href="/contact-us" className="mb-2 text-white/80 hover:text-[#A48068] transition-colors">
               Seller Support
             </Link>
           </div>
 
-          {/* Column 3 - Support */}
+          {/* Column 3 - About */}
+          <div className="flex flex-col">
+            <h2 className="mb-4 text-base md:text-lg font-semibold">About</h2>
+            <Link href="/about-us" className="mb-2 text-white/80 hover:text-[#A48068] transition-colors">
+              About Us
+            </Link>
+            <Link href="/blog" className="mb-2 text-white/80 hover:text-[#A48068] transition-colors">
+              Blog & Stories
+            </Link>
+            <Link href="/certification" className="mb-2 text-white/80 hover:text-[#A48068] transition-colors">
+              Community Impact
+            </Link>
+            <Link href="/contact-us" className="mb-2 text-white/80 hover:text-[#A48068] transition-colors">
+              Media / Press
+            </Link>
+          </div>
+
+          {/* Column 4 - Support */}
           <div className="flex flex-col">
             <h2 className="mb-4 text-base md:text-lg font-semibold">Support</h2>
             <Link href="/contact-us" className="mb-2 text-white/80 hover:text-[#A48068] transition-colors">
               Contact Us
             </Link>
-            <Link href="/feedback" className="mb-2 text-white/80 hover:text-[#A48068] transition-colors">
-              Share Feedback
-            </Link>
+           
             <Link href="/contact-us#faq" className="mb-2 text-white/80 hover:text-[#A48068] transition-colors">
               FAQs
             </Link>
             <Link href="/guest/track-order" className="mb-2 text-white/80 hover:text-[#A48068] transition-colors">
               Track Order / Track Status
             </Link>
-            <Link href="/certification" className="mb-2 text-white/80 hover:text-[#A48068] transition-colors">
-              100% Made in Arnhem Land
+            <Link href="/feedback" className="mb-2 text-white/80 hover:text-[#A48068] transition-colors">
+              Share Feedback
+            </Link>
+             <Link href="/accessibility" className="mb-2 text-white/80 hover:text-[#A48068] transition-colors">
+              Accessibility
             </Link>
           </div>
 
@@ -535,6 +559,9 @@ export default function Footer() {
             </Link>
             <Link href="/term-and-conditions" className="mb-2 text-white/80 hover:text-[#A48068] transition-colors">
               Terms & Conditions
+            </Link>
+            <Link href="/cookie-policy" className="mb-2 text-white/80 hover:text-[#A48068] transition-colors">
+              Cookie Policy
             </Link>
           </div>
         </div>
@@ -636,8 +663,33 @@ export default function Footer() {
           </p>
         </div>
 
-        {/* Social Icons */}
-        <div className="flex-1 flex items-center justify-center md:justify-end gap-4 md:gap-6">
+        {/* Social Icons + Payment Methods */}
+        <div className="flex-1 flex flex-col items-center md:items-end gap-3">
+          {/* Payment icons */}
+          <div className="flex items-center gap-2">
+            {/* Visa */}
+            <span className="bg-white rounded px-2 py-1 flex items-center justify-center h-7 w-12">
+              <svg viewBox="0 0 48 16" className="h-4 w-auto" aria-label="Visa">
+                <text x="0" y="13" fontFamily="Arial" fontWeight="bold" fontSize="14" fill="#1A1F71">VISA</text>
+              </svg>
+            </span>
+            {/* Mastercard */}
+            <span className="bg-white rounded px-1.5 py-1 flex items-center justify-center h-7 w-12" aria-label="Mastercard">
+              <svg viewBox="0 0 38 24" className="h-5 w-auto">
+                <circle cx="13" cy="12" r="10" fill="#EB001B" />
+                <circle cx="25" cy="12" r="10" fill="#F79E1B" />
+                <path d="M19 4.8a10 10 0 0 1 0 14.4A10 10 0 0 1 19 4.8z" fill="#FF5F00" />
+              </svg>
+            </span>
+            {/* Stripe */}
+            <span className="bg-[#635BFF] rounded px-2 py-1 flex items-center justify-center h-7 w-14" aria-label="Stripe">
+              <svg viewBox="0 0 40 16" className="h-3.5 w-auto">
+                <text x="0" y="12" fontFamily="Arial" fontWeight="bold" fontSize="12" fill="white">stripe</text>
+              </svg>
+            </span>
+          </div>
+          {/* Social icons */}
+          <div className="flex items-center gap-4 md:gap-5">
           <Link 
             href="https://www.instagram.com/arnhemland_1972/" 
             target="_blank" 
@@ -687,7 +739,8 @@ export default function Footer() {
           >
             <FaXTwitter className="w-4 h-4 md:w-5 md:h-5 text-white hover:text-[#A48068]" />
           </Link> */}
-        </div>
+          </div>{/* end social icons */}
+        </div>{/* end social + payment wrapper */}
       </div>
 
       {/* ── Unsubscribe Modal ─────────────────────────────────────────────── */}

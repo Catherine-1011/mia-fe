@@ -64,10 +64,10 @@ export default function ScrollToTop() {
   return createPortal(
     <button
       onClick={scrollToTop}
-      className={`fixed ${isNearFooter ? "bottom-24 md:bottom-20 lg:bottom-12" : "bottom-6 md:bottom-6"} right-4 md:right-6 z-50 bg-[#5A1E12] hover:bg-[#4a180f] text-[#EAD7B7] p-3 md:p-4 rounded-full shadow-[0_8px_32px_rgba(90,30,18,0.25)] hover:shadow-[0_12px_40px_rgba(90,30,18,0.35)] transform hover:scale-110 transition-all duration-300 ease-in-out group border-2 border-[#EAD7B7]/20 backdrop-blur-sm`}
+      className={`fixed bottom-6 right-3 z-50 bg-[#5A1E12] hover:bg-[#4a180f] text-[#EAD7B7] p-3 rounded-full shadow-[0_8px_32px_rgba(90,30,18,0.25)] hover:shadow-[0_12px_40px_rgba(90,30,18,0.35)] transform hover:scale-110 transition-all duration-300 ease-in-out group border-2 border-[#EAD7B7]/20 backdrop-blur-sm`}
       aria-label="Scroll to top"
     >
-      <FaArrowUp className="w-5 h-5 group-hover:animate-bounce group-hover:scale-110 transition-transform duration-200" />
+      <FaArrowUp className="w-4 h-4 group-hover:animate-bounce group-hover:scale-110 transition-transform duration-200" />
     </button>,
     document.body
   );
