@@ -15,7 +15,7 @@ function LogoutCallbackContent() {
     //   // 1. Invalidate the token server-side so it can't be reused for SSO tickets
     //   if (token) {
     //     try {
-    //       await fetch("https://alpa-be-1.onrender.com/api/auth/logout", {
+    //       await fetch("https://backend.madeinarnhemland.com.au/api/auth/logout", {
     //         method: "POST",
     //         credentials: "include",
     //         headers: {
@@ -74,7 +74,7 @@ function LogoutCallbackContent() {
 
   // 3. Fire-and-forget backend token invalidation — no await.
   if (token) {
-    fetch("https://alpa-be-1.onrender.com/api/auth/logout", {
+    fetch("https://backend.madeinarnhemland.com.au/api/auth/logout", {
       method: "POST",
       credentials: "include",
       headers: {
