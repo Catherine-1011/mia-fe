@@ -186,6 +186,7 @@ function validatePhone(digits: string, country: Country): string | null {
   const cleaned = digits.replace(/\D/g, '');
   
   if (country.code === 'AU') {
+  
     if (cleaned.length === 9 && !cleaned.startsWith('0')) return null;
     if (cleaned.length === 10 && cleaned.startsWith('0')) return null;
     if (cleaned.length < 9 || (cleaned.length === 9 && cleaned.startsWith('0')))
@@ -566,7 +567,7 @@ export default function Page() {
       </section>
 
       {/* --- FAQ SECTION --- */}
-      <section id="faq" className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
+      {/* <section id="faq" className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-[#3b0f06] mb-4">Frequently Asked Questions</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">Find answers to some of the most common questions below.</p>
@@ -604,7 +605,7 @@ export default function Page() {
             );
           })}
         </div>
-      </section>
+      </section> */}
 
       {/* --- EXPLORE SECTION --- */}
       <section className="pb-12 px-4">

@@ -483,7 +483,7 @@ export default function Footer() {
 
           {/* Column 2 - Sellers */}
           <div className="flex flex-col">
-            <h2 className="mb-4 text-base md:text-lg font-semibold">Sellers</h2>
+            <h2 className="mb-4 text-base md:text-lg font-semibold">Sell with us</h2>
             {/* <Link href="/sellerOnboarding" className="mb-2 text-white/80 hover:text-[#A48068] transition-colors">
               Sell with MIA
             </Link> */}
@@ -660,6 +660,9 @@ export default function Footer() {
         <div className="flex-1 text-center">
           <p className="text-white/80 text-xs md:text-sm">
             © 2026 Made in Arnhem Land. All rights reserved.<br className="hidden md:block"/> Honouring the culture and heritage of Arnhem Land
+          </p>
+          <p className="text-white/50 text-xs mt-1">
+            ABN: 52 755 439 387 &nbsp;|&nbsp; ICN: 7137
           </p>
         </div>
 
