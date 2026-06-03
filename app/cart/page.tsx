@@ -98,6 +98,31 @@ export default function Page() {
   }, []);
 
   // ── International shipping ────────────────────────────────────────────────
+  const [internationalShippingEnabled, setInternationalShippingEnabled] = useState<boolean>(true);
+  const [intlSettingsLoaded, setIntlSettingsLoaded] = useState(false);
+
+  // Fetch whether international shipping is enabled from the backend
+  useEffect(() => {
+    fetch("https://backend.madeinarnhemland.com.au/api/shipping/settings")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.success && typeof data?.data?.internationalShippingEnabled === "boolean") {
+          setInternationalShippingEnabled(data.data.internationalShippingEnabled);
+          // If disabled and a non-AU country was persisted, reset to Australia
+          if (!data.data.internationalShippingEnabled) {
+            setShippingCountry("Australia");
+            localStorage.setItem("alpa_shipping_country", "Australia");
+          }
+        }
+      })
+      .catch(() => {
+        // On error default to showing the dropdown (fail open)
+        setInternationalShippingEnabled(true);
+      })
+      .finally(() => setIntlSettingsLoaded(true));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const [shippingCountry, setShippingCountry] = useState<string>(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("alpa_shipping_country") ?? "";
@@ -928,6 +953,9 @@ export default function Page() {
                 {/* Shipping Country Selection */}
                 <div className="space-y-2 mb-8 relative z-20" ref={countryDropRef}>
                     <p className="text-xs font-semibold uppercase tracking-widest text-[#8B5E3C] mb-2">Shipping Destination</p>
+
+                    {/* Only show the country picker when international shipping is enabled */}
+                    {internationalShippingEnabled ? (
                     <div className="relative">
                       {/* Trigger button */}
                       <button
@@ -1002,15 +1030,23 @@ export default function Page() {
                         </div>
                       )}
                     </div>
+                    ) : (
+                      /* International shipping disabled — show Australia-only label */
+                      <div className="flex items-center gap-2 px-4 py-3 bg-white/80 border border-[#d6b896] rounded-xl text-sm text-gray-700">
+                        <span>🇦🇺</span>
+                        <span className="font-medium">Australia</span>
+                        <span className="text-xs text-[#8B5E3C] ml-auto">Domestic shipping only</span>
+                      </div>
+                    )}
 
-                    {intlRateLoading && (
+                    {internationalShippingEnabled && intlRateLoading && (
                       <div className="flex items-center gap-2 text-sm text-[#8B5E3C] px-1">
                         <Loader2 className="h-3.5 w-3.5 animate-spin shrink-0" />
                         <span>Fetching shipping price&hellip;</span>
                       </div>
                     )}
 
-                    {!intlRateLoading && intlRate && (
+                    {internationalShippingEnabled && !intlRateLoading && intlRate && (
                       <div className="p-3 bg-white/70 rounded-xl border border-[#E6DCC8]">
                         <div className="flex items-start justify-between gap-3">
                           <div>

@@ -81,6 +81,21 @@ export default function CheckOutPage() {
   const [userName, setUserName] = useState("");
 
   // ── International shipping (read from cart's localStorage keys) ──────────
+  const [internationalShippingEnabled, setInternationalShippingEnabled] = useState<boolean>(true);
+
+  useEffect(() => {
+    fetch("https://backend.madeinarnhemland.com.au/api/shipping/settings")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data?.success && typeof data?.data?.internationalShippingEnabled === "boolean") {
+          setInternationalShippingEnabled(data.data.internationalShippingEnabled);
+        }
+      })
+      .catch(() => {
+        setInternationalShippingEnabled(true); // fail open
+      });
+  }, []);
+
   const [cartSelectedCountry, setCartSelectedCountry] = useState<string>(() =>
     typeof window !== "undefined" ? (localStorage.getItem("alpa_shipping_country") ?? "") : ""
   );
@@ -759,7 +774,7 @@ export default function CheckOutPage() {
                           Hi {(userName || user?.name || "").split(" ")[0] || "there"},
                         </h2>
                         <p className="text-[#5A1E12]/70 mb-6 text-sm">Please provide your address details so we can deliver to you.</p>
-                        {isInternationalOrder && (
+                        {isInternationalOrder && internationalShippingEnabled && (
                           <div className="mb-6 p-4 rounded-xl border-2 border-[#5A1E12] bg-[#5A1E12]/5">
                             <p className="text-xs font-semibold text-[#5A1E12] uppercase tracking-wide mb-2">International Shipping</p>
                             {cartIntlRate ? (
@@ -1098,9 +1113,9 @@ export default function CheckOutPage() {
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">
                     Shipping
-                    {isInternationalOrder && <span className="block text-xs text-gray-400 font-normal">{cartSelectedCountry}</span>}
+                    {isInternationalOrder && internationalShippingEnabled && <span className="block text-xs text-gray-400 font-normal">{cartSelectedCountry}</span>}
                   </span>
-                  {isInternationalOrder
+                  {isInternationalOrder && internationalShippingEnabled
                     ? cartIntlRate
                         ? <span>${cartIntlRate.cost.toFixed(2)}</span>
                         : <span className="text-amber-600 text-xs">TBD</span>
@@ -1112,7 +1127,7 @@ export default function CheckOutPage() {
                     GST (incl. {gstPercentage?.toFixed(1)}%)
                   </span>
                   <span>
-                    ${(isInternationalOrder && cartIntlRate ? cartIntlRate.gstAmount : gstAmount).toFixed(2)}
+                    ${(isInternationalOrder && internationalShippingEnabled && cartIntlRate ? cartIntlRate.gstAmount : gstAmount).toFixed(2)}
                   </span>
                 </div>
                 {appliedCoupons.map(c => (
