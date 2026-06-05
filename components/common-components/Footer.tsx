@@ -785,28 +785,26 @@ export default function Footer() {
       <div className="flex flex-col md:flex-row items-center justify-between gap-4 lg:gap-4 mt-3">
         {/* Logo */}
         <div className="flex-1">
-        <div className="flex justify-center md:justify-start">
-          <Link href="/" className="hover:opacity-80 transition-opacity">
-            <Image
-              src="/images/navbarLogo.png"
-              height={60}
-              width={60}
-              alt="Arnhem Land Marketplace Logo"
-              className="w-12 sm:w-14 h-auto"
-            />
-          </Link>
-          
-        </div>
-        <p className="text-white/50 text-xs mt-1">
+          <div className="flex justify-center md:justify-start">
+            <Link href="/" className="hover:opacity-80 transition-opacity">
+              <Image
+                src="/images/navbarLogo.png"
+                height={60}
+                width={60}
+                alt="Arnhem Land Marketplace Logo"
+                className="w-12 sm:w-14 h-auto"
+              />
+            </Link>
+          </div>
+          <p className="text-white/50 text-xs mt-1">
             ABN: 52 755 439 387 &nbsp;|&nbsp; ICN: 7137
           </p>
-</div>
+        </div>
         {/* Copyright */}
         <div className="flex-1 flex flex-col items-center text-center">
           <p className="text-white/80 text-xs md:text-sm text-center">
             © 2026 Made in Arnhem Land. All rights reserved.
-            <br /> Honouring the culture and
-            heritage of Arnhem Land
+            <br /> Honouring the culture and heritage of Arnhem Land
           </p>
           {/* <p className="text-white/50 text-xs mt-1">
             ABN: 52 755 439 387 &nbsp;|&nbsp; ICN: 7137
