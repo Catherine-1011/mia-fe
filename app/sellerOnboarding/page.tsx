@@ -1591,6 +1591,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Eye, EyeOff } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 const baseURL = 'https://backend.madeinarnhemland.com.au';
 
@@ -1917,6 +1918,7 @@ export default function ArtistOnboardingForm() {
     requirements?: string[];
   } | null>(null);
   const [stripeLoading, setStripeLoading] = useState(false);
+  const [registrationComplete, setRegistrationComplete] = useState(false);
 
   // ─── Phone picker — Step 1 ────────────────────────────────────────────────
   const [phoneCountry, setPhoneCountry] = useState<Country>(COUNTRIES[0]);
@@ -2335,7 +2337,11 @@ export default function ArtistOnboardingForm() {
       return;
     }
     ['sellerOnboardingStep', 'sellerOnboardingFormData', 'sellerToken'].forEach(k => localStorage.removeItem(k));
-    window.location.href = '/';
+    toast.success('🎉 You are now registered as a seller! Welcome to the platform.', {
+      position: 'top-center',
+      autoClose: 5000,
+    });
+    setRegistrationComplete(true);
   };
 
   const handleNext = () => {
@@ -2520,6 +2526,50 @@ export default function ArtistOnboardingForm() {
                 </div>
               </>
             )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ─── REGISTRATION COMPLETE SCREEN ─────────────────────────────────────────
+  if (registrationComplete) {
+    return (
+      <div className="relative min-h-screen bg-[#EAD7B7] flex flex-col items-center justify-center px-4 py-12">
+        <Link href="/" className="mb-8 block w-fit md:absolute md:top-8 md:left-8 md:mb-0">
+          {!logoError && (
+            <Image
+              src="/images/navbarLogo.png"
+              alt="Logo"
+              width={90}
+              height={90}
+              className="w-14 h-14 md:w-22.5 md:h-22.5"
+              onError={() => setLogoError(true)}
+            />
+          )}
+        </Link>
+        <div className="w-full max-w-lg">
+          <div className="bg-white rounded-2xl shadow-2xl p-10 border border-[#5A1E12]/15 text-center">
+            <div className="flex items-center justify-center w-20 h-20 bg-green-100 rounded-full mx-auto mb-6">
+              <svg className="w-10 h-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-extrabold text-[#5A1E12] mb-2">You&apos;re officially a Seller!</h2>
+            <p className="text-[#5A1E12]/70 text-sm mb-2">
+              Congratulations, <strong>{formData.contactPerson || 'Seller'}</strong>! Your seller account has been
+              successfully registered on the platform.
+            </p>
+            <p className="text-[#5A1E12]/60 text-xs mb-8">
+              Your store <strong>{formData.storeName}</strong> is now live. You can start listing products and
+              managing orders from your seller dashboard.
+            </p>
+            <Link
+              href="/"
+              className="block w-full py-3 bg-[#5A1E12] hover:bg-[#4a180f] text-white rounded-xl font-semibold transition-all"
+            >
+              Go to Homepage
+            </Link>
           </div>
         </div>
       </div>
