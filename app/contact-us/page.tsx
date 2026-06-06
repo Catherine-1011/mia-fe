@@ -315,12 +315,12 @@ export default function Page() {
       </VideoHeroSection>
 
       {/* We pull this section UP to overlap the hero for a modern look (-mt-20) */}
-      <section className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-20 mb-20">
+      <section className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-14 lg:-mt-20 mb-16 sm:mb-20">
         <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
           
           {/* LEFT: THE FORM (Takes up 2 cols) */}
-          <div className="lg:col-span-2 bg-white rounded-3xl p-8 md:p-12 shadow-2xl shadow-[#3b0f06]/5">
-            <h2 className="text-3xl font-bold text-[#3b0f06] mb-2">Send us a message</h2>
+          <div className="lg:col-span-2 bg-white rounded-3xl p-5 sm:p-8 md:p-12 shadow-2xl shadow-[#3b0f06]/5">
+            <h2 className="text-2xl sm:text-3xl font-bold text-[#3b0f06] mb-2">Send us a message</h2>
             <p className="text-gray-500 mb-2">Fill out the form below and our team will get back to you within 24 hours.</p>
             <p className="text-xs text-gray-400 mb-8"><span className="text-red-500 font-bold">*</span> Required fields</p>
             
@@ -410,7 +410,7 @@ export default function Page() {
                       </div>
                       {/* Country dropdown */}
                       {showPhoneDropdown && (
-                        <div className="absolute top-full left-0 z-50 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style={{ minWidth: '260px' }}>
+                        <div className="absolute top-full left-0 z-50 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style={{ minWidth: 'min(260px, 80vw)' }}>
                           <div className="p-2 border-b border-gray-100">
                             <input
                               type="text"
@@ -609,7 +609,7 @@ export default function Page() {
 
       {/* --- EXPLORE SECTION --- */}
       <section className="pb-12 px-4">
-        <div className="max-w-7xl mx-auto relative bg-[url('/images/contact-us.jpg')] bg-cover bg-center h-125 w-full rounded-[2.5rem] overflow-hidden group">
+        <div className="max-w-7xl mx-auto relative bg-[url('/images/contact-us.jpg')] bg-cover bg-center min-h-80 sm:min-h-105 lg:h-125 w-full rounded-4xl sm:rounded-[2.5rem] overflow-hidden group">
           <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-black/30 transition-opacity duration-500"></div>
 
           <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6">
