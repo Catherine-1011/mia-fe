@@ -186,7 +186,7 @@ const Page = () => {
     <main className="min-h-screen bg-[#EAD7B7]">
       {/* ================= HERO ================= */}
       <section>
-        <div className="relative min-h-[90vh] md:min-h-[110vh] h-screen overflow-hidden bg-black">
+        <div className="relative min-h-[75vh] md:min-h-screen h-[75vh] md:h-screen overflow-hidden bg-black">
           <video
             ref={(el) => {
               heroVideoRefs.current[0] = el;
@@ -253,7 +253,7 @@ const Page = () => {
           </svg> */}
 
           {/* Hero content */}
-          <div className="relative z-10 flex flex-col justify-end md:justify-center min-h-[90vh] md:min-h-screen text-white px-6 sm:px-10 lg:px-24 pt-20 sm:pt-40 lg:pt-56 pb-20 sm:pb-16 lg:pb-24">
+          <div className="relative z-10 flex flex-col justify-end md:justify-center min-h-[75vh] md:min-h-screen text-white px-6 sm:px-10 lg:px-24 pt-16 sm:pt-32 lg:pt-48 pb-10 sm:pb-12 lg:pb-20">
             {/* Animated badge */}
             {/* <motion.div
               initial={{ opacity: 0, y: 24 }}
