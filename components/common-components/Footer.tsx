@@ -593,13 +593,13 @@ export default function Footer() {
               Blog & Stories
             </Link>
             <Link
-              href="/certification"
+              href="/term-and-conditions#reinvestment"
               className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
             >
               Community Impact
             </Link>
             <Link
-              href="/contact-us"
+              href="mailto:media@alpa.asn.au"
               className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
             >
               Media / Press
@@ -765,18 +765,18 @@ export default function Footer() {
       </div>
 
       {/* Respect statement + address */}
-      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mt-6 mb-3">
+      <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-3 mt-10 mb-4">
         <p className="text-white/80 text-xs shrink-0 md:order-1">
           70 O&apos;Sullivan Circuit,
           <br />
           East Arm NT 0822
         </p>
-        <p className="text-white/80 text-xs bg-white/10 backdrop-blur-sm px-4 py-3 rounded-lg flex items-start gap-2 md:max-w-md md:order-2">
+        {/* <p className="text-white/80 text-xs bg-white/10 backdrop-blur-sm px-4 py-3 rounded-lg flex items-start gap-2 md:max-w-md md:order-2">
           <FaHeart className="w-3.5 h-3.5 text-red-400 shrink-0 mt-0.5" />
           We operate with deep respect for the First Nation culture and
           traditions. All products and experiences are shared with community
           consent.
-        </p>
+        </p> */}
       </div>
 
       <hr className="border-[#A5816B] mb-3" />
@@ -796,6 +796,11 @@ export default function Footer() {
               />
             </Link>
           </div>
+
+          {/* <p className="text-white/50 text-xs mt-1">
+            © 2026 Made in Arnhem Land. All rights reserved.
+          </p> */}
+
           <p className="text-white/50 text-xs mt-1">
             ABN: 52 755 439 387 &nbsp;|&nbsp; ICN: 7137
           </p>
@@ -803,8 +808,8 @@ export default function Footer() {
         {/* Copyright */}
         <div className="flex-1 flex flex-col items-center text-center">
           <p className="text-white/80 text-xs md:text-sm text-center">
-            © 2026 Made in Arnhem Land. All rights reserved.
-            <br /> Honouring the culture and heritage of Arnhem Land
+            
+            © 2026 Made in Arnhem Land. All rights reserved. | Honouring 65,000+ years of living culture.
           </p>
           {/* <p className="text-white/50 text-xs mt-1">
             ABN: 52 755 439 387 &nbsp;|&nbsp; ICN: 7137
