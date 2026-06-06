@@ -299,7 +299,7 @@ export default function Page() {
   const inputError  = `${inputBase} bg-red-50 border border-red-400 focus:ring-2 focus:ring-red-200 focus:border-red-500`;
 
   return (
-    <main className="bg-[#ebe2d5] min-h-screen font-sans">
+    <main className="bg-[#ebe2d5] min-h-screen font-sans overflow-x-hidden">
       
       {/* --- HERO SECTION --- */}
       <VideoHeroSection className="h-[80vh]">
@@ -307,21 +307,21 @@ export default function Page() {
           <span className="mb-4 px-4 py-1.5 rounded-full border border-white/20 bg-white/10 text-sm font-medium backdrop-blur-md">
              We'd love to hear from you
           </span>
-          <h1 className="text-4xl md:text-6xl font-bold mb-2 md:mb-6 tracking-tight">Contact Us</h1>
-          <p className="text-base text-gray-200 max-w-2xl leading-relaxed">
+          <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold mb-2 md:mb-6 tracking-tight">Contact Us</h1>
+          <p className="text-sm sm:text-base text-gray-200 max-w-2xl leading-relaxed">
             Have a question or need assistance? Reach out to our team and we'll get back to you shortly.
           </p>
         </div>
       </VideoHeroSection>
 
       {/* We pull this section UP to overlap the hero for a modern look (-mt-20) */}
-      <section className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-14 lg:-mt-20 mb-16 sm:mb-20">
+      <section className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-14 lg:-mt-20 mb-16 sm:mb-20">
         <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
           
           {/* LEFT: THE FORM (Takes up 2 cols) */}
           <div className="lg:col-span-2 bg-white rounded-3xl p-5 sm:p-8 md:p-12 shadow-2xl shadow-[#3b0f06]/5">
-            <h2 className="text-2xl sm:text-3xl font-bold text-[#3b0f06] mb-2">Send us a message</h2>
-            <p className="text-gray-500 mb-2">Fill out the form below and our team will get back to you within 24 hours.</p>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#3b0f06] mb-2">Send us a message</h2>
+            <p className="text-sm sm:text-base text-gray-500 mb-2">Fill out the form below and our team will get back to you within 24 hours.</p>
             <p className="text-xs text-gray-400 mb-8"><span className="text-red-500 font-bold">*</span> Required fields</p>
             
             <form className="space-y-6" noValidate onSubmit={handleSubmit}>
@@ -410,7 +410,7 @@ export default function Page() {
                       </div>
                       {/* Country dropdown */}
                       {showPhoneDropdown && (
-                        <div className="absolute top-full left-0 z-50 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden" style={{ minWidth: 'min(260px, 80vw)' }}>
+                        <div className="absolute top-full left-0 z-50 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden w-max max-w-[min(260px,calc(100vw-2rem))]">
                           <div className="p-2 border-b border-gray-100">
                             <input
                               type="text"
@@ -498,7 +498,7 @@ export default function Page() {
             
             {/* Contact Details Card */}
             <div className="bg-[#3b0f06] text-[#ebe2d5] rounded-3xl p-8 shadow-xl">
-                <h3 className="text-2xl font-bold text-white mb-6">Contact Information</h3>
+                <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-4 sm:mb-6">Contact Information</h3>
                 
                 <div className="space-y-6">
                     <div className="flex items-start gap-4">
@@ -608,30 +608,30 @@ export default function Page() {
       </section> */}
 
       {/* --- EXPLORE SECTION --- */}
-      <section className="pb-12 px-4">
-        <div className="max-w-7xl mx-auto relative bg-[url('/images/contact-us.jpg')] bg-cover bg-center min-h-80 sm:min-h-105 lg:h-125 w-full rounded-4xl sm:rounded-[2.5rem] overflow-hidden group">
+      <section className="pb-12 px-4 w-full overflow-hidden">
+        <div className="max-w-7xl mx-auto relative bg-[url('/images/contact-us.jpg')] bg-cover bg-center min-h-80 sm:min-h-105 lg:h-125 w-full rounded-3xl sm:rounded-[2.5rem] overflow-hidden group">
           <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-black/30 transition-opacity duration-500"></div>
 
-          <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-6">
+          <div className="relative z-10 flex flex-col items-center justify-center min-h-80 sm:min-h-105 lg:h-125 text-center px-4 sm:px-6 py-10 sm:py-0">
             <Image
               src="/images/navbarLogo.png"
               alt="Logo"
               height={120}
               width={120}
-              className="w-24 mb-6 drop-shadow-lg"
+              className="w-14 sm:w-20 md:w-24 mb-4 sm:mb-6 drop-shadow-lg"
             />
 
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 transform transition-transform duration-500 group-hover:-translate-y-2">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-6 transform transition-transform duration-500 group-hover:-translate-y-2">
               Ready to get started?
             </h1>
-            <p className="text-gray-200 max-w-xl mb-8 leading-relaxed">
+            <p className="text-sm sm:text-base text-gray-200 max-w-xs sm:max-w-xl mb-6 sm:mb-8 leading-relaxed">
                Discover our marketplace and find exactly what you need with our curated collection of premium items.
             </p>
 
             <Link href="/shop">
-              <button className="flex items-center gap-2 px-8 py-3.5 rounded-full bg-[#d3b994] text-[#3b0f06] font-bold hover:bg-white transition-all duration-300 shadow-lg hover:shadow-orange-500/20 cursor-pointer">
+              <button className="flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 text-sm sm:text-base rounded-full bg-[#d3b994] text-[#3b0f06] font-bold hover:bg-white transition-all duration-300 shadow-lg hover:shadow-orange-500/20 cursor-pointer">
                 Explore Marketplace
-                <ArrowRight className="w-5 h-5" />
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
             </Link>
           </div>
