@@ -387,11 +387,18 @@ import { FaXTwitter } from "react-icons/fa6";
 import { X, Loader2, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { div } from "framer-motion/client";
+import { usePathname } from "next/navigation";
 
 const API = "https://backend.madeinarnhemland.com.au/api";
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  const linkClass = (href: string) => {
+    const isActive = pathname === href || (href !== "/" && pathname.startsWith(href.split("?")[0]));
+    return `mb-2 transition-colors ${isActive ? "text-[#A48068]" : "text-white/80 hover:text-[#A48068]"}`;
+  };
+
   const [email, setEmail] = useState("");
   const [subState, setSubState] = useState<
     "idle" | "loading" | "success" | "error"
@@ -487,46 +494,25 @@ export default function Footer() {
           {/* Column 1 - Shop */}
           <div className="flex flex-col">
             <h2 className="mb-4 text-base md:text-lg font-semibold">Shop</h2>
-            <Link
-              href="/shop"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/shop" className={linkClass("/shop")}>
               All Products
             </Link>
-            <Link
-              href="/#featured-products"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/#featured-products" className="mb-2 text-white/80 hover:text-[#A48068] transition-colors">
               Shop featured Products
             </Link>
-            <Link
-              href="/shop?category=art-crafts"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/shop?category=art-crafts" className={linkClass("/shop?category=art-crafts")}>
               Art & Crafts
             </Link>
-            <Link
-              href="/shop?category=bush-foods"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/shop?category=bush-foods" className={linkClass("/shop?category=bush-foods")}>
               Bush Foods
             </Link>
-            <Link
-              href="/shop?category=apparel"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/shop?category=apparel" className={linkClass("/shop?category=apparel")}>
               Apparel
             </Link>
-            <Link
-              href="/shop?category=handmade-crafts"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/shop?category=handmade-crafts" className={linkClass("/shop?category=handmade-crafts")}>
               Handmade Crafts
             </Link>
-            <Link
-              href="/shop?category=accessories"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/shop?category=accessories" className={linkClass("/shop?category=accessories")}>
               Accessories
             </Link>
           </div>
@@ -536,43 +522,22 @@ export default function Footer() {
             <h2 className="mb-4 text-base md:text-lg font-semibold">
               Sell with us
             </h2>
-            {/* <Link href="/sellerOnboarding" className="mb-2 text-white/80 hover:text-[#A48068] transition-colors">
-              Sell with MIA
-            </Link> */}
-            <Link
-              href="/sellerOnboarding"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/sellerOnboarding" className={linkClass("/sellerOnboarding")}>
               Seller Registration
             </Link>
-            <Link
-              href="/seller-login"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/seller-login" className={linkClass("/seller-login")}>
               Seller Login
             </Link>
-            <Link
-              href="/seller-rules"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/seller-rules" className={linkClass("/seller-rules")}>
               Seller Guidelines
             </Link>
-            <Link
-              href="/certification"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/certification" className={linkClass("/certification")}>
               100% Made in Arnhem Land
             </Link>
-            <Link
-              href="/fees-and-commission"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/fees-and-commission" className={linkClass("/fees-and-commission")}>
               Fees & Commission
             </Link>
-            <Link
-              href="/contact-us"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/contact-us" className={linkClass("/contact-us")}>
               Seller Support
             </Link>
           </div>
@@ -580,22 +545,13 @@ export default function Footer() {
           {/* Column 3 - About */}
           <div className="flex flex-col">
             <h2 className="mb-4 text-base md:text-lg font-semibold">About</h2>
-            <Link
-              href="/about-us"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/about-us" className={linkClass("/about-us")}>
               About Us
             </Link>
-            <Link
-              href="/blog"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/blog" className={linkClass("/blog")}>
               Blog & Stories
             </Link>
-            <Link
-              href="/term-and-conditions#reinvestment"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/term-and-conditions#reinvestment" className={linkClass("/term-and-conditions")}>
               Community Impact
             </Link>
             <Link
@@ -609,72 +565,41 @@ export default function Footer() {
           {/* Column 4 - Support */}
           <div className="flex flex-col">
             <h2 className="mb-4 text-base md:text-lg font-semibold">Support</h2>
-            <Link
-              href="/contact-us"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/contact-us" className={linkClass("/contact-us")}>
               Contact Us
             </Link>
-
-            <Link
-              href="/faqs"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/faqs" className={linkClass("/faqs")}>
               FAQs
             </Link>
-            <Link
-              href="/guest/track-order"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/guest/track-order" className={linkClass("/guest/track-order")}>
               Track Order / Track Status
             </Link>
-            <Link
-              href="/feedback"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/feedback" className={linkClass("/feedback")}>
               Share Feedback
             </Link>
-            <Link
-              href="/accessibility"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/accessibility" className={linkClass("/accessibility")}>
               Accessibility
             </Link>
           </div>
 
-          {/* Column 4 - Policies */}
+          {/* Column 5 - Policies */}
           <div className="flex flex-col">
             <h2 className="mb-4 text-base md:text-lg font-semibold">
               Policies
             </h2>
-            <Link
-              href="/shipping-policy"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/shipping-policy" className={linkClass("/shipping-policy")}>
               Shipping & Returns
             </Link>
-            <Link
-              href="/guest/refund"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/guest/refund" className={linkClass("/guest/refund")}>
               Refund & Return Policy
             </Link>
-            <Link
-              href="/privacy"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/privacy" className={linkClass("/privacy")}>
               Privacy Policy
             </Link>
-            <Link
-              href="/term-and-conditions"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/term-and-conditions" className={linkClass("/term-and-conditions")}>
               Terms & Conditions
             </Link>
-            <Link
-              href="/cookie-policy"
-              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
-            >
+            <Link href="/cookie-policy" className={linkClass("/cookie-policy")}>
               Cookie Policy
             </Link>
           </div>

@@ -1942,6 +1942,10 @@ export default function ArtistOnboardingForm() {
     if (savedFormData) {
       try {
         const parsed = JSON.parse(savedFormData);
+        // Strip any previously stored dial code prefix from phone (e.g. "+61 125488758" → "125488758")
+        if (parsed.phone && /^\+\d/.test(parsed.phone)) {
+          parsed.phone = parsed.phone.replace(/^\+\d+\s*/, '');
+        }
         // File objects can't be serialized — restore everything except files
         setFormData(prev => ({ ...prev, ...parsed, storeLogo: null, idDocument: null }));
       } catch {}
@@ -2159,8 +2163,8 @@ export default function ArtistOnboardingForm() {
       return;
     }
     
-    // Store full number with dial code
-    setFormData(prev => ({ ...prev, phone: `${phoneCountry.dialCode} ${prev.phone.replace(/\D/g, '')}` }));
+    // Only store the local digits — dial code is kept separately in phoneCountry state
+    setFormData(prev => ({ ...prev, phone: prev.phone.replace(/\D/g, '') }));
     setErrors({});
     setCurrentStep(2);
   };
@@ -2277,7 +2281,7 @@ export default function ArtistOnboardingForm() {
     try {
       const fd = new FormData();
       fd.append('email', formData.email);
-      fd.append('phone', formData.phone);
+      fd.append('phone', `${phoneCountry.dialCode} ${formData.phone.replace(/\D/g, '')}`);
       fd.append('contactPerson', formData.contactPerson);
       fd.append('password', formData.password);
       fd.append('artistName', formData.artistName);
