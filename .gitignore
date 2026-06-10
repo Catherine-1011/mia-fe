@@ -42,3 +42,4 @@ next-env.d.ts
 
 # for testing purposes
 /app/test
+*.zip
