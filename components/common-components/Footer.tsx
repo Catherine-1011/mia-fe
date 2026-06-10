@@ -391,7 +391,8 @@ import { usePathname } from "next/navigation";
 
 const API = "https://backend.madeinarnhemland.com.au/api";
 
-export default function Footer() {
+export default function 
+Footer() {
   const pathname = usePathname();
 
   const linkClass = (href: string) => {
@@ -588,7 +589,7 @@ export default function Footer() {
               Policies
             </h2>
             <Link href="/shipping-policy" className={linkClass("/shipping-policy")}>
-              Shipping & Returns
+              Shipping 
             </Link>
             <Link href="/guest/refund" className={linkClass("/guest/refund")}>
               Refund & Return Policy
@@ -723,7 +724,7 @@ export default function Footer() {
           </div>
 
           {/* <p className="text-white/50 text-xs mt-1">
-            © 2026 Made in Arnhem Land. All rights reserved.
+            © 2026 Made in Arnhem Land. All rights reserved. 
           </p> */}
 
           <p className="text-white/50 text-xs mt-1">
@@ -734,7 +735,7 @@ export default function Footer() {
         <div className="flex-1 flex flex-col items-center text-center">
           <p className="text-white/80 text-xs md:text-sm text-center">
             
-            © 2026 Made in Arnhem Land. All rights reserved. | Honouring 65,000+ years of living culture.
+            © 2026 Made in Arnhem Land. All rights reserved. | Honouring 65,000+ years of living culture. All products and experiences are shared with community consent.
           </p>
           {/* <p className="text-white/50 text-xs mt-1">
             ABN: 52 755 439 387 &nbsp;|&nbsp; ICN: 7137

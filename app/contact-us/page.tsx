@@ -309,7 +309,7 @@ export default function Page() {
           </span>
           <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold mb-2 md:mb-6 tracking-tight">Contact Us</h1>
           <p className="text-sm sm:text-base text-gray-200 max-w-2xl leading-relaxed">
-            Have a question or need assistance? Reach out to our team and we'll get back to you shortly.
+            Have a question or need assistance? Reach out to our team and we'll get back to you.
           </p>
         </div>
       </VideoHeroSection>
@@ -321,7 +321,7 @@ export default function Page() {
           {/* LEFT: THE FORM (Takes up 2 cols) */}
           <div className="lg:col-span-2 bg-white rounded-3xl p-5 sm:p-8 md:p-12 shadow-2xl shadow-[#3b0f06]/5">
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#3b0f06] mb-2">Send us a message</h2>
-            <p className="text-sm sm:text-base text-gray-500 mb-2">Fill out the form below and our team will get back to you within 24 hours.</p>
+            <p className="text-sm sm:text-base text-gray-500 mb-2">Fill out the form below and our team will get back to you.</p>
             <p className="text-xs text-gray-400 mb-8"><span className="text-red-500 font-bold">*</span> Required fields</p>
             
             <form className="space-y-6" noValidate onSubmit={handleSubmit}>

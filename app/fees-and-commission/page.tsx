@@ -10,20 +10,19 @@ export const metadata: Metadata = {
 export default function FeesAndCommissionPage() {
   return (
     <div className="bg-[#f3e9dd]">
-
       {/* HERO SECTION */}
       <VideoHeroSection className="min-h-[70vh]">
         <div className="relative z-10 flex flex-col items-center justify-center text-white text-center px-4 py-32 md:py-60">
           <h1 className="text-5xl font-bold mb-2">Fees &amp; Commission</h1>
           <p className="text-lg max-w-2xl">
-            Transparent pricing for sellers on the Made in Arnhem Land Marketplace — know exactly what you keep from every sale.
+            Transparent pricing for sellers on the Made in Arnhem Land
+            Marketplace — know exactly what you keep from every sale.
           </p>
         </div>
       </VideoHeroSection>
 
       {/* CONTENT SECTION */}
       <div className="flex flex-col md:flex-row gap-10 md:gap-20 pt-10 pb-20 px-6 md:px-16 max-w-screen-2xl mx-auto">
-
         {/* TABLE OF CONTENTS */}
         <aside className="w-full md:w-64 lg:w-72 h-fit md:sticky md:top-32">
           <h2 className="font-bold mb-4 text-2xl">Table of Contents</h2>
@@ -33,7 +32,10 @@ export default function FeesAndCommissionPage() {
               { id: "platform-commission", label: "Platform Commission" },
               { id: "how-commission-works", label: "How Commission Works" },
               { id: "shipping", label: "Shipping & Handling" },
-              { id: "payment-processing", label: "Payment Processing (Stripe)" },
+              {
+                id: "payment-processing",
+                label: "Payment Processing (Stripe)",
+              },
               { id: "seller-payout", label: "What Sellers Receive" },
               { id: "example", label: "Worked Example" },
               { id: "faq", label: "FAQs" },
@@ -43,7 +45,10 @@ export default function FeesAndCommissionPage() {
                 key={item.id}
                 className="bg-[#D0BFB3] rounded-2xl hover:bg-[#440C03] hover:text-white transition"
               >
-                <a href={`#${item.id}`} className="flex items-center gap-3 px-4 py-2">
+                <a
+                  href={`#${item.id}`}
+                  className="flex items-center gap-3 px-4 py-2"
+                >
                   <FaFileInvoiceDollar size={18} />
                   <span>{item.label}</span>
                 </a>
@@ -63,13 +68,15 @@ export default function FeesAndCommissionPage() {
           <section id="overview" className="scroll-mt-32 mb-16">
             <h2 className="text-2xl font-bold mb-4">Overview</h2>
             <p className="leading-relaxed mb-4">
-              Made in Arnhem Land Marketplace is committed to supporting Indigenous Australian artists and
-              sellers with a fair, transparent fee structure. We keep our platform fees simple so you always
-              know what you earn before you list a product.
+              Made in Arnhem Land Marketplace is committed to supporting
+              Indigenous Australian artists and sellers with a fair, transparent
+              fee structure. We keep our platform fees simple so you always know
+              what you earn before you list a product.
             </p>
             <p className="leading-relaxed">
-              There are no monthly subscription fees, no listing fees, and no hidden charges. We only earn
-              when you earn — a single commission is taken per completed order.
+              There are no monthly subscription fees, no listing fees, and no
+              hidden charges. We only earn when you earn — a single commission
+              is taken per completed order.
             </p>
           </section>
 
@@ -81,13 +88,17 @@ export default function FeesAndCommissionPage() {
             <div className="bg-[#440C03] text-white rounded-2xl px-8 py-8 mb-8 flex flex-col md:flex-row md:items-center gap-6">
               <div className="text-center md:text-left">
                 <p className="text-5xl font-extrabold">10%</p>
-                <p className="text-white/70 text-sm mt-1">per completed order</p>
+                <p className="text-white/70 text-sm mt-1">
+                  per completed order
+                </p>
               </div>
               <div className="md:border-l md:border-white/20 md:pl-8">
                 <p className="text-white/90 leading-relaxed">
-                  Made in Arnhem Land Marketplace charges a <strong>10% commission (excluding GST)</strong> on
-                  the <strong>unit price</strong> of each product sold. This commission is deducted only from
-                  the product price — it does not apply to shipping costs.
+                  Made in Arnhem Land Marketplace charges a{" "}
+                  <strong>10% commission per order</strong>. The commission is
+                  calculated only on the product value excluding GST and does
+                  not apply to shipping charges or GST amounts on products or
+                  shipping.
                 </p>
               </div>
             </div>
@@ -107,7 +118,10 @@ export default function FeesAndCommissionPage() {
                   body: "Commission is only deducted when an order is successfully completed. Cancelled or fully refunded orders are not subject to commission.",
                 },
               ].map((item) => (
-                <div key={item.title} className="bg-[#e8d9cb] rounded-2xl px-6 py-5">
+                <div
+                  key={item.title}
+                  className="bg-[#e8d9cb] rounded-2xl px-6 py-5"
+                >
                   <h3 className="text-lg font-semibold mb-1">{item.title}</h3>
                   <p className="leading-relaxed text-gray-700">{item.body}</p>
                 </div>
@@ -119,8 +133,9 @@ export default function FeesAndCommissionPage() {
           <section id="how-commission-works" className="scroll-mt-32 mb-16">
             <h2 className="text-2xl font-bold mb-4">How Commission Works</h2>
             <p className="leading-relaxed mb-6">
-              When a buyer completes a purchase, the platform automatically calculates the commission
-              due from the seller&apos;s product revenue. The process works as follows:
+              When a buyer completes a purchase, the platform automatically
+              calculates the commission due from the seller&apos;s product
+              revenue. The process works as follows:
             </p>
             <ol className="space-y-4">
               {[
@@ -143,17 +158,18 @@ export default function FeesAndCommissionPage() {
           <section id="shipping" className="scroll-mt-32 mb-16">
             <h2 className="text-2xl font-bold mb-4">Shipping &amp; Handling</h2>
             <p className="leading-relaxed mb-4">
-              Sellers are responsible for fulfilling and dispatching orders to buyers. The full shipping
-              amount collected at checkout is passed on to the seller — Made in Arnhem Land Marketplace
-              does <strong>not</strong> take any commission on shipping.
+              Sellers are responsible for fulfilling and dispatching orders to
+              buyers. The full shipping amount collected at checkout is passed
+              on to the seller — Made in Arnhem Land Marketplace does{" "}
+              <strong>not</strong> take any commission on shipping.
             </p>
             <div className="bg-[#e8d9cb] rounded-2xl px-6 py-5">
               <ul className="space-y-3">
                 {[
-                  "Sellers set their own shipping rates when listing products.",
+                  // "Sellers set their own shipping rates when listing products.",
                   "100% of the shipping amount collected from the buyer is remitted to the seller.",
                   "Sellers are responsible for packaging, dispatch, and tracking.",
-                  "International shipping is available where enabled by the platform and set up by the seller.",
+                  "International shipping is available where enabled by the platform.",
                 ].map((item) => (
                   <li key={item} className="flex gap-2 leading-relaxed">
                     <span className="text-[#440C03] mt-1">&#9658;</span>
@@ -166,11 +182,14 @@ export default function FeesAndCommissionPage() {
 
           {/* PAYMENT PROCESSING */}
           <section id="payment-processing" className="scroll-mt-32 mb-16">
-            <h2 className="text-2xl font-bold mb-4">Payment Processing (Stripe)</h2>
+            <h2 className="text-2xl font-bold mb-4">
+              Payment Processing (Stripe)
+            </h2>
             <p className="leading-relaxed mb-4">
-              All payments on Made in Arnhem Land Marketplace are processed securely by{" "}
-              <strong>Stripe</strong>. Stripe charges their own payment processing fees for each
-              transaction, which are separate from the platform commission.
+              All payments on Made in Arnhem Land Marketplace are processed
+              securely by <strong>Stripe</strong>. Stripe charges their own
+              payment processing fees for each transaction, which are separate
+              from the platform commission.
             </p>
             <div className="bg-[#e8d9cb] rounded-2xl px-6 py-5 mb-4">
               <p className="leading-relaxed text-gray-700 mb-2">
@@ -199,8 +218,9 @@ export default function FeesAndCommissionPage() {
               </ul>
             </div>
             <p className="text-sm text-gray-500">
-              Stripe fees are charged independently and are not controlled by Made in Arnhem Land
-              Marketplace. Sellers should refer to Stripe&apos;s official pricing page for the latest rates.
+              Stripe fees are charged independently and are not controlled by
+              Made in Arnhem Land Marketplace. Sellers should refer to
+              Stripe&apos;s official pricing page for the latest rates.
             </p>
           </section>
 
@@ -208,28 +228,54 @@ export default function FeesAndCommissionPage() {
           <section id="seller-payout" className="scroll-mt-32 mb-16">
             <h2 className="text-2xl font-bold mb-4">What Sellers Receive</h2>
             <p className="leading-relaxed mb-6">
-              After all deductions, here is what a seller receives from each completed order:
+              After all deductions, here is what a seller receives from each
+              completed order:
             </p>
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-sm">
                 <thead>
                   <tr className="bg-[#440C03] text-white">
-                    <th className="px-4 py-3 font-semibold rounded-tl-xl">Component</th>
+                    <th className="px-4 py-3 font-semibold rounded-tl-xl">
+                      Component
+                    </th>
                     <th className="px-4 py-3 font-semibold">Seller Receives</th>
-                    <th className="px-4 py-3 font-semibold rounded-tr-xl">Notes</th>
+                    <th className="px-4 py-3 font-semibold rounded-tr-xl">
+                      Notes
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {[
-                    ["Product price (ex-GST)", "90%", "10% platform commission deducted"],
-                    ["GST component", "100%", "Sellers are responsible for GST obligations"],
-                    ["Shipping collected", "100%", "Full shipping amount passed to seller"],
-                    ["Stripe processing fees", "Deducted by Stripe", "Applied before seller payout"],
+                    [
+                      "Product price (ex-GST)",
+                      "90%",
+                      "10% platform commission deducted",
+                    ],
+                    [
+                      "GST component",
+                      "100%",
+                      "Sellers are responsible for GST obligations",
+                    ],
+                    [
+                      "Shipping collected",
+                      "100%",
+                      "Full shipping amount passed to seller",
+                    ],
+                    [
+                      "Stripe processing fees",
+                      "Deducted by Stripe",
+                      "Applied before seller payout",
+                    ],
                   ].map(([component, receives, notes], i) => (
-                    <tr key={i} className={i % 2 === 0 ? "bg-white/60" : "bg-[#e8d9cb]"}>
+                    <tr
+                      key={i}
+                      className={i % 2 === 0 ? "bg-white/60" : "bg-[#e8d9cb]"}
+                    >
                       <td className="px-4 py-3 font-medium">{component}</td>
                       <td className="px-4 py-3">{receives}</td>
-                      <td className="px-4 py-3 text-gray-600 text-xs">{notes}</td>
+                      <td className="px-4 py-3 text-gray-600 text-xs">
+                        {notes}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -241,8 +287,9 @@ export default function FeesAndCommissionPage() {
           <section id="example" className="scroll-mt-32 mb-16">
             <h2 className="text-2xl font-bold mb-4">Worked Example</h2>
             <p className="leading-relaxed mb-6">
-              The following is an illustrative example of how fees are calculated for a single product sale.
-              Stripe fees are indicative only.
+              The following is an illustrative example of how fees are
+              calculated for a single product sale. Stripe fees are indicative
+              only.
             </p>
             <div className="bg-[#440C03] text-white rounded-2xl px-8 py-6 text-sm space-y-3">
               {[
@@ -254,15 +301,19 @@ export default function FeesAndCommissionPage() {
                 ["Stripe fee (est. 1.7% + $0.30 on $122 total)", "− A$2.37"],
                 ["Estimated seller payout", "A$109.63"],
               ].map(([label, value]) => (
-                <div key={label} className="flex justify-between border-b border-white/10 pb-3">
+                <div
+                  key={label}
+                  className="flex justify-between border-b border-white/10 pb-3"
+                >
                   <span className="text-white/80">{label}</span>
                   <span className="font-semibold">{value}</span>
                 </div>
               ))}
             </div>
             <p className="text-xs text-gray-500 mt-3">
-              * This example is illustrative. Actual Stripe fees depend on card type, country of issue, and
-              current Stripe pricing. GST obligations are the seller&apos;s responsibility.
+              * This example is illustrative. Actual Stripe fees depend on card
+              type, country of issue, and current Stripe pricing. GST
+              obligations are the seller&apos;s responsibility.
             </p>
           </section>
 
@@ -292,9 +343,16 @@ export default function FeesAndCommissionPage() {
                   a: "Made in Arnhem Land Marketplace reserves the right to update its fee structure. Sellers will be notified in advance of any changes.",
                 },
               ].map((item) => (
-                <div key={item.q} className="bg-[#e8d9cb] rounded-2xl px-6 py-5">
-                  <h3 className="font-semibold text-[#440C03] mb-2">{item.q}</h3>
-                  <p className="leading-relaxed text-gray-700 text-sm">{item.a}</p>
+                <div
+                  key={item.q}
+                  className="bg-[#e8d9cb] rounded-2xl px-6 py-5"
+                >
+                  <h3 className="font-semibold text-[#440C03] mb-2">
+                    {item.q}
+                  </h3>
+                  <p className="leading-relaxed text-gray-700 text-sm">
+                    {item.a}
+                  </p>
                 </div>
               ))}
             </div>
@@ -304,27 +362,36 @@ export default function FeesAndCommissionPage() {
           <section id="contact" className="scroll-mt-32 mb-8">
             <h2 className="text-2xl font-bold mb-4">Contact Us</h2>
             <p className="leading-relaxed mb-4">
-              If you have any questions about our fees, commission structure, or payout process, please
-              don&apos;t hesitate to reach out to our seller support team.
+              If you have any questions about our fees, commission structure, or
+              payout process, please don&apos;t hesitate to reach out to our
+              seller support team.
             </p>
             <div className="bg-[#e8d9cb] rounded-2xl px-6 py-5">
               <p className="leading-relaxed">
-                <strong>Made in Arnhem Land Marketplace</strong><br />
+                <strong>Made in Arnhem Land Marketplace</strong>
+                <br />
                 Email:{" "}
-                <a href="mailto:support@madeinarnhemland.com.au" className="text-[#440C03] underline">
+                <a
+                  href="mailto:support@madeinarnhemland.com.au"
+                  className="text-[#440C03] underline"
+                >
                   support@madeinarnhemland.com.au
-                </a><br />
+                </a>
+                <br />
                 Website:{" "}
-                <a href="https://madeinarnhemland.com.au" className="text-[#440C03] underline" target="_blank" rel="noopener noreferrer">
+                <a
+                  href="https://madeinarnhemland.com.au"
+                  className="text-[#440C03] underline"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   madeinarnhemland.com.au
                 </a>
               </p>
             </div>
           </section>
-
         </main>
       </div>
     </div>
   );
 }
-
