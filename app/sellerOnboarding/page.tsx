@@ -1982,11 +1982,11 @@ export default function ArtistOnboardingForm() {
     return () => window.removeEventListener('scroll', close, true);
   }, []);
 
-  // ─── Handle return from Stripe hosted onboarding ──────────────────────────
+  // ─── Handle return from Stripe OAuth (Standard) — token passed via ?connected=1 ──
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const stripeParam = params.get('stripe');
-    if (stripeParam === 'success' || stripeParam === 'refresh') {
+    const connected = params.get('connected');
+    if (connected === '1') {
       window.history.replaceState({}, '', window.location.pathname);
       setCurrentStep(6);
     }
@@ -2211,28 +2211,23 @@ export default function ArtistOnboardingForm() {
     }
   };
 
-  // ─── Connect Stripe account and redirect ─────────────────────────────────
+  // ─── Connect Stripe account via OAuth (Standard) ─────────────────────────
   const handleConnectStripe = async () => {
     if (!token) { setError('stripe', 'Please log in to connect Stripe'); return; }
     setStripeLoading(true);
     try {
-      // Create (or retrieve) the Stripe account — idempotent
-      await fetch(`${baseURL}/api/seller-onboarding/stripe/connect`, {
-        method: 'POST',
+      const res = await fetch(`${baseURL}/api/seller-onboarding/stripe/oauth-url`, {
+        method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });
-      // Get the hosted onboarding link
-      const res = await fetch(`${baseURL}/api/seller-onboarding/stripe/onboarding-link`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          returnUrl: `${window.location.origin}/sellerOnboarding?stripe=success`,
-          refreshUrl: `${window.location.origin}/sellerOnboarding?stripe=refresh`,
-        }),
-      });
       if (!res.ok) { const d = await res.json().catch(() => ({})); setError('stripe', d.message || 'Failed to start Stripe setup'); return; }
-      const { url } = await res.json();
-      window.location.href = url;
+      const data = await res.json();
+      if (data.alreadyConnected) {
+        // Already connected — move to next step
+        await checkStripeStatus();
+        return;
+      }
+      window.location.href = data.url;
     } catch { setError('stripe', 'Failed to connect Stripe. Please try again.'); }
     finally { setStripeLoading(false); }
   };
@@ -2265,9 +2260,9 @@ export default function ArtistOnboardingForm() {
     if (!formData.storeName?.trim()) {
       newErrors.storeName = 'Store name is required';
     }
-    if (!formData.storeLogo) {
-      newErrors.storeLogo = 'Store logo is required';
-    }
+    // if (!formData.storeLogo) {
+    //   newErrors.storeLogo = 'Store logo is required';
+    // }
     if (!formData.storeBio?.trim()) {
       newErrors.storeBio = 'Store bio is required';
     }
