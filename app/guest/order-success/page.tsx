@@ -189,26 +189,27 @@ function OrderSuccessContent() {
 
         <div className="w-full px-10 py-8 flex flex-col gap-6">
           {/* Order ID */}
-          {(displayId || orderId) && (
-            <div className="w-full bg-[#5A1E12]/5 rounded-xl p-4">
-              <p className="text-xs text-[#5A1E12]/50 mb-1 uppercase tracking-wide font-medium">
-                Your Order #
-              </p>
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-mono text-sm font-semibold text-[#5A1E12] break-all">
-                  {displayId || orderId}
-                </span>
-                <button
-                  onClick={handleCopy}
-                  className="shrink-0 p-1.5 rounded-lg hover:bg-[#5A1E12]/10 transition-colors text-[#5A1E12]"
-                  title="Copy Order ID"
-                >
-                  {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-          )}
+         {(displayId || orderId) && (
+  <div className="w-full bg-[#5A1E12]/5 rounded-xl p-4">
+    <p className="text-xs text-[#5A1E12]/50 mb-1 uppercase tracking-wide font-medium">
+      Your Order #
+    </p>
 
+    <div className="relative flex items-center justify-center gap-2">
+      <span className="font-mono text-sm text-center font-semibold text-[#5A1E12] break-all px-8">
+        {displayId || orderId}
+      </span>
+
+      <button
+        onClick={handleCopy}
+        className="absolute right-0 shrink-0 p-1.5 rounded-lg hover:bg-[#5A1E12]/10 transition-colors text-[#5A1E12]"
+        title="Copy Order ID"
+      >
+        {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+      </button>
+    </div>
+  </div>
+)}
           {/* Email confirmation */}
           {email && (
             <div className="flex items-start gap-3 bg-blue-50 rounded-xl p-4 text-left">

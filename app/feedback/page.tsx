@@ -786,7 +786,7 @@ export default function FeedbackPage() {
             >
               <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                 <img 
-                  src="/images/feedback.jpg" 
+                  src="/images/feedback.webp" 
                   alt="Community feedback and engagement"
                   className="w-full h-auto object-cover rounded-3xl"
                 />

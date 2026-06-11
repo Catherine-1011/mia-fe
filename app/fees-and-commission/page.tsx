@@ -370,12 +370,12 @@ export default function FeesAndCommissionPage() {
               <p className="leading-relaxed">
                 <strong>Made in Arnhem Land Marketplace</strong>
                 <br />
-                Email:{" "}
+                Seller Support Email:{" "}
                 <a
                   href="mailto:support@madeinarnhemland.com.au"
                   className="text-[#440C03] underline"
                 >
-                  support@madeinarnhemland.com.au
+                  seller@madeinarnhemland.com.au
                 </a>
                 <br />
                 Website:{" "}

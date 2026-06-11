@@ -162,7 +162,7 @@ const TEAM = [
   {
     name: "James Wurramara",
     role: "Chief Executive Officer",
-    bio: "A proud Yolŋu man from Arnhem Land, James leads Alpa's mission to bring authentic Aboriginal commerce to the world.",
+    bio: "A proud Yolŋu man from Arnhem Land, James leads Made in Arnhem Land's mission to bring authentic Aboriginal commerce to the world.",
     initials: "JW",
     image: "/images/team/james.jpg",
     accent: "#5A1E12",
@@ -170,7 +170,7 @@ const TEAM = [
   {
     name: "Sarah Dhurrkay",
     role: "Head of Marketplace",
-    bio: "With over a decade in e-commerce, Sarah ensures every seller and product meets Alpa's strict quality standards.",
+    bio: "With over a decade in e-commerce, Sarah ensures every seller and product meets Made in Arnhem Land`'s strict quality standards.",
     initials: "SD",
     image: "/images/team/sarah.jpg",
     accent: "#803512",
@@ -186,7 +186,7 @@ const TEAM = [
   {
     name: "Emily Munuŋgurr",
     role: "Head of Community",
-    bio: "Emily champions the voices of Aboriginal artisans and communities, ensuring Alpa always stays rooted in culture.",
+    bio: "Emily champions the voices of Aboriginal artisans and communities, ensuring Made in Arnhem Land always stays rooted in culture.",
     initials: "EM",
     image: "/images/team/emily.jpg",
     accent: "#5A1E12",
@@ -251,7 +251,7 @@ export default function Page() {
               href="/shop"
               className="px-6 sm:px-7 py-2.5 sm:py-3 bg-[#5A1E12] hover:bg-[#441208] text-white rounded-full text-sm font-semibold transition-all shadow-lg hover:shadow-xl"
             >
-              Shop Now
+              Shap Now
             </Link>
             <a
               href="#our-story"

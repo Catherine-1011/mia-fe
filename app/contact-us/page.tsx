@@ -294,47 +294,47 @@ export default function Page() {
     }
   };
 
-  const inputBase = "w-full px-5 py-4 rounded-xl outline-none transition-all";
+  const inputBase = "w-full min-w-0 px-4 sm:px-5 py-4 rounded-xl outline-none transition-all";
   const inputNormal = `${inputBase} bg-gray-50 border border-gray-200 focus:ring-2 focus:ring-[#3b0f06]/20 focus:border-[#3b0f06]`;
   const inputError  = `${inputBase} bg-red-50 border border-red-400 focus:ring-2 focus:ring-red-200 focus:border-red-500`;
 
   return (
-    <main className="bg-[#ebe2d5] min-h-screen font-sans overflow-x-hidden">
+    <main className="bg-[#ebe2d5] min-h-screen font-sans overflow-x-hidden box-border">
       
       {/* --- HERO SECTION --- */}
       <VideoHeroSection className="h-[80vh]">
-        <div className="relative z-10 flex flex-col items-center justify-center h-full text-white text-center px-4">
-          <span className="mb-4 px-4 py-1.5 rounded-full border border-white/20 bg-white/10 text-sm font-medium backdrop-blur-md">
+        <div className="relative z-10 flex flex-col items-center justify-center h-full text-white text-center px-4 max-w-full box-border">
+          <span className="mb-4 max-w-[calc(100vw-2rem)] whitespace-normal px-4 py-1.5 rounded-full border border-white/20 bg-white/10 text-sm font-medium backdrop-blur-md">
              We'd love to hear from you
           </span>
           <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold mb-2 md:mb-6 tracking-tight">Contact Us</h1>
-          <p className="text-sm sm:text-base text-gray-200 max-w-2xl leading-relaxed">
+          <p className="text-sm sm:text-base text-gray-200 max-w-full sm:max-w-2xl leading-relaxed">
             Have a question or need assistance? Reach out to our team and we'll get back to you.
           </p>
         </div>
       </VideoHeroSection>
 
       {/* We pull this section UP to overlap the hero for a modern look (-mt-20) */}
-      <section className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-14 lg:-mt-20 mb-16 sm:mb-20">
-        <div className="grid lg:grid-cols-3 gap-8 lg:gap-12">
+      <section className="relative z-20 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 sm:-mt-14 lg:-mt-20 mb-16 sm:mb-20 box-border">
+        <div className="grid lg:grid-cols-3 gap-8 lg:gap-12 min-w-0">
           
           {/* LEFT: THE FORM (Takes up 2 cols) */}
-          <div className="lg:col-span-2 bg-white rounded-3xl p-5 sm:p-8 md:p-12 shadow-2xl shadow-[#3b0f06]/5">
+          <div className="lg:col-span-2 w-full min-w-0 max-w-full bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-12 shadow-2xl shadow-[#3b0f06]/5 box-border">
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#3b0f06] mb-2">Send us a message</h2>
-            <p className="text-sm sm:text-base text-gray-500 mb-2">Fill out the form below and our team will get back to you.</p>
+            <p className="text-sm sm:text-base text-gray-500 mb-2 break-words">Fill out the form below and our team will get back to you.</p>
             <p className="text-xs text-gray-400 mb-8"><span className="text-red-500 font-bold">*</span> Required fields</p>
             
             <form className="space-y-6" noValidate onSubmit={handleSubmit}>
 
               {submitted && (
-                <div className="flex items-center gap-3 px-5 py-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm font-medium">
+                <div className="flex items-start sm:items-center gap-3 px-4 sm:px-5 py-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm font-medium">
                   <svg className="w-5 h-5 shrink-0 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
                   Message sent! We'll get back to you within 24 hours.
                 </div>
               )}
 
               {errors.form && (
-                <div className="flex items-center gap-3 px-5 py-4 bg-red-50 border border-red-200 rounded-xl text-red-800 text-sm font-medium">
+                <div className="flex items-start sm:items-center gap-3 px-4 sm:px-5 py-4 bg-red-50 border border-red-200 rounded-xl text-red-800 text-sm font-medium">
                   {errors.form}
                 </div>
               )}
@@ -360,8 +360,8 @@ export default function Page() {
                 {errors.issueType && <p className="text-xs text-red-500 ml-1">{errors.issueType}</p>}
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="space-y-1.5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-w-0">
+                <div className="space-y-1.5 min-w-0">
                     <label className="text-sm font-semibold text-gray-600 ml-1">Full Name <span className="text-red-500">*</span></label>
                     <input
                         type="text"
@@ -373,10 +373,10 @@ export default function Page() {
                     />
                     {errors.name && <p className="text-xs text-red-500 ml-1">{errors.name}</p>}
                 </div>
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 min-w-0">
                     <label className="text-sm font-semibold text-gray-600 ml-1">Phone Number <span className="text-red-500">*</span></label>
-                    <div ref={phoneDropdownRef} className="relative">
-                      <div className={`flex items-center bg-gray-50 border rounded-xl overflow-visible transition-all ${
+                    <div ref={phoneDropdownRef} className="relative w-full max-w-full">
+                      <div className={`flex w-full min-w-0 items-center bg-gray-50 border rounded-xl overflow-visible transition-all ${
                         errors.phone
                           ? 'border-red-400 ring-2 ring-red-200 bg-red-50'
                           : phoneTouched && !phoneInputError && fields.phone.trim()
@@ -387,7 +387,7 @@ export default function Page() {
                         <button
                           type="button"
                           onClick={() => { setShowPhoneDropdown(v => !v); setPhoneSearch(''); }}
-                          className="flex items-center gap-1.5 px-3 py-4 text-sm font-medium border-r border-gray-200 hover:bg-gray-100 transition rounded-l-xl shrink-0"
+                          className="flex items-center gap-1.5 px-2.5 sm:px-3 py-4 text-sm font-medium border-r border-gray-200 hover:bg-gray-100 transition rounded-l-xl shrink-0"
                         >
                           <img src={phoneCountry.flagUrl} alt={phoneCountry.name} width={24} height={18} className="rounded-sm shrink-0" />
                           <span className="text-gray-700 text-xs font-semibold">{phoneCountry.dialCode}</span>
@@ -405,12 +405,12 @@ export default function Page() {
                           }}
                           onBlur={() => { setPhoneTouched(true); setPhoneInputError(validatePhone(fields.phone, phoneCountry)); }}
                           placeholder="Enter phone number"
-                          className="flex-1 px-4 py-4 text-sm bg-transparent outline-none placeholder-gray-400 text-gray-700"
+                          className="min-w-0 flex-1 px-3 sm:px-4 py-4 text-sm bg-transparent outline-none placeholder-gray-400 text-gray-700"
                         />
                       </div>
                       {/* Country dropdown */}
                       {showPhoneDropdown && (
-                        <div className="absolute top-full left-0 z-50 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden w-max max-w-[min(260px,calc(100vw-2rem))]">
+                        <div className="absolute top-full left-0 right-0 sm:right-auto z-50 mt-1 bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden w-full sm:w-64 max-w-full">
                           <div className="p-2 border-b border-gray-100">
                             <input
                               type="text"
@@ -435,7 +435,7 @@ export default function Page() {
                                       if (phoneTouched) setPhoneInputError(validatePhone(fields.phone, c));
                                       if (errors.phone) setErrors(prev => ({ ...prev, phone: '' }));
                                     }}
-                                    className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm hover:bg-gray-50 text-left transition ${
+                                    className={`w-full min-w-0 flex items-center gap-3 px-3 py-2.5 text-sm hover:bg-gray-50 text-left transition ${
                                       c.code === phoneCountry.code ? 'bg-[#3b0f06]/8 font-medium text-[#3b0f06]' : 'text-gray-700'
                                     }`}
                                   >
@@ -494,24 +494,24 @@ export default function Page() {
           </div>
 
           {/* RIGHT: CONTACT INFO & MAP (Takes up 1 col) */}
-          <div className="space-y-8">
+          <div className="space-y-8 w-full min-w-0 max-w-full">
             
             {/* Contact Details Card */}
-            <div className="bg-[#3b0f06] text-[#ebe2d5] rounded-3xl p-8 shadow-xl">
+            <div className="bg-[#3b0f06] text-[#ebe2d5] rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-xl w-full max-w-full box-border">
                 <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-4 sm:mb-6">Contact Information</h3>
                 
                 <div className="space-y-6">
-                    <div className="flex items-start gap-4">
-                        <div className="p-3 bg-white/10 rounded-lg">
+                    <div className="flex items-start gap-3 sm:gap-4 min-w-0">
+                        <div className="p-3 bg-white/10 rounded-lg shrink-0">
                             <MapPin className="w-6 h-6 text-[#d3b994]" />
                         </div>
-                        <div>
+                        <div className="min-w-0">
                             <p className="font-semibold text-white">Address</p>
                             <a
                               href={CONTACT_MAP_URL}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-sm text-white/70 leading-relaxed mt-1 inline-block hover:text-white underline-offset-2 hover:underline transition-colors"
+                              className="text-sm text-white/70 leading-relaxed mt-1 inline-block hover:text-white underline-offset-2 hover:underline break-words transition-colors"
                               aria-label="Open address in Google Maps"
                             >
                               70 O'Sullivan Circuit East Arm<br />
@@ -520,11 +520,11 @@ export default function Page() {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                        <div className="p-3 bg-white/10 rounded-lg">
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                        <div className="p-3 bg-white/10 rounded-lg shrink-0">
                             <Phone className="w-6 h-6 text-[#d3b994]" />
                         </div>
-                        <div>
+                        <div className="min-w-0">
                             <p className="font-semibold text-white">Phone Number</p>
                             <a
                               href="tel:+61889446444"
@@ -535,17 +535,17 @@ export default function Page() {
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-4">
-                        <div className="p-3 bg-white/10 rounded-lg">
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+                        <div className="p-3 bg-white/10 rounded-lg shrink-0">
                             <Mail className="w-6 h-6 text-[#d3b994]" />
                         </div>
-                        <div>
+                        <div className="min-w-0">
                             <p className="font-semibold text-white">Email Address</p>
                             <a
-                              href="mailto:reception@alpa.asn.au"
+                              href="support@madeinarnhemland.com.au"
                               className="text-sm text-white/70 mt-1 inline-block hover:text-white underline-offset-2 hover:underline break-all transition-colors"
                             >
-                              reception@alpa.asn.au
+                            support@madeinarnhemland.com.au
                             </a>
                         </div>
                     </div>
@@ -553,7 +553,7 @@ export default function Page() {
             </div>
 
             {/* Map Widget */}
-            <div className="h-80 w-full rounded-3xl overflow-hidden shadow-lg border-4 border-white">
+            <div className="h-64 sm:h-80 w-full max-w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-lg border-4 border-white">
                <iframe
                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3895.6913516580225!2d130.91642767464342!3d-12.47026374992954!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2cc097a791e164fb%3A0xac9093a704258e94!2s70%20O&#39;Sullivan%20Cct%2C%20East%20Arm%20NT%200822%2C%20Australia!5e0!3m2!1sen!2sin!4v1774333564171!5m2!1sen!2sin"
                  className="w-full h-full border-0 grayscale hover:grayscale-0 transition-all duration-700"
@@ -608,11 +608,11 @@ export default function Page() {
       </section> */}
 
       {/* --- EXPLORE SECTION --- */}
-      <section className="pb-12 px-4 w-full overflow-hidden">
-        <div className="max-w-7xl mx-auto relative bg-[url('/images/contact-us.jpg')] bg-cover bg-center min-h-80 sm:min-h-105 lg:h-125 w-full rounded-3xl sm:rounded-[2.5rem] overflow-hidden group">
+      <section className="pb-12 px-4 sm:px-6 lg:px-8 w-full overflow-hidden">
+        <div className="max-w-7xl mx-auto relative bg-[url('/images/contact-us.jpg')] bg-cover bg-center min-h-80 sm:min-h-105 lg:h-125 w-full rounded-2xl sm:rounded-[2.5rem] overflow-hidden group">
           <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/40 to-black/30 transition-opacity duration-500"></div>
 
-          <div className="relative z-10 flex flex-col items-center justify-center min-h-80 sm:min-h-105 lg:h-125 text-center px-4 sm:px-6 py-10 sm:py-0">
+          <div className="relative z-10 flex flex-col items-center justify-center min-h-80 sm:min-h-105 lg:h-125 text-center px-4 sm:px-6 py-10 sm:py-0 max-w-full">
             <Image
               src="/images/navbarLogo.png"
               alt="Logo"
@@ -624,12 +624,12 @@ export default function Page() {
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-6 transform transition-transform duration-500 group-hover:-translate-y-2">
               Ready to get started?
             </h1>
-            <p className="text-sm sm:text-base text-gray-200 max-w-xs sm:max-w-xl mb-6 sm:mb-8 leading-relaxed">
+            <p className="text-sm sm:text-base text-gray-200 max-w-full sm:max-w-xl mb-6 sm:mb-8 leading-relaxed">
                Discover our marketplace and find exactly what you need with our curated collection of premium items.
             </p>
 
-            <Link href="/shop">
-              <button className="flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 text-sm sm:text-base rounded-full bg-[#d3b994] text-[#3b0f06] font-bold hover:bg-white transition-all duration-300 shadow-lg hover:shadow-orange-500/20 cursor-pointer">
+            <Link href="/shop" className="max-w-full">
+              <button className="flex max-w-full items-center justify-center gap-2 px-5 sm:px-8 py-3 sm:py-3.5 text-sm sm:text-base rounded-full bg-[#d3b994] text-[#3b0f06] font-bold hover:bg-white transition-all duration-300 shadow-lg hover:shadow-orange-500/20 cursor-pointer">
                 Explore Marketplace
                 <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
