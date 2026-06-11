@@ -79,7 +79,7 @@ export default function FeesAndCommissionPage() {
               is taken per completed order.
             </p>
           </section>
-
+{/* new */}
           {/* PLATFORM COMMISSION */}
           <section id="platform-commission" className="scroll-mt-32 mb-16">
             <h2 className="text-2xl font-bold mb-6">Platform Commission</h2>
