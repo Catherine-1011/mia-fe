@@ -109,6 +109,8 @@ export function useEnhancedCart() {
   const selectedShippingRef = useRef<ShippingOption | null>(null);
   // Ref to access latest cartData inside async fetchCartData without stale closure
   const cartDataRef = useRef<EnhancedCartData | null>(null);
+  // Debounce timer for fetching missing shipping calculations on option change
+  const shippingFetchDebounce = useRef<NodeJS.Timeout | null>(null);
 
   const baseUrl = "https://backend.madeinarnhemland.com.au";
 
@@ -616,7 +618,8 @@ export function useEnhancedCart() {
     if (selectedShipping && cartData && cartData.cart.length > 0) {
       // If we don't already have the calculation for this method, fetch it
       if (!cartData.shippingCalculations?.[selectedShipping.id]) {
-        const fetchMissingShipping = async () => {
+        if (shippingFetchDebounce.current) clearTimeout(shippingFetchDebounce.current);
+        shippingFetchDebounce.current = setTimeout(async () => {
           setRefreshing(true);
           try {
             const itemsPayload = cartDataRef.current?.cart.map((i: CartItem) => ({
@@ -624,18 +627,18 @@ export function useEnhancedCart() {
               quantity: i.quantity,
               ...(i.variantId && { variantId: i.variantId }),
             })) || [];
-            
+
             const res = await fetch(`${baseUrl}/api/cart/calculate-guest`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ items: itemsPayload, shippingMethodId: selectedShipping.id }),
             });
-            
+
             if (res.ok) {
               const data = await res.json();
               const c = data.calculations || {};
               const sc = data.shippingCalculations?.[selectedShipping.id] || {};
-              
+
               setCartData((prev) => {
                 if (!prev) return prev;
                 return {
@@ -660,8 +663,7 @@ export function useEnhancedCart() {
           } finally {
             setRefreshing(false);
           }
-        };
-        fetchMissingShipping();
+        }, 350);
       }
     }
   }, [selectedShipping]);

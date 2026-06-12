@@ -41,6 +41,7 @@ export function useCartStock(
 ) {
   const cartQuantitiesRef = useRef(options?.cartQuantities ?? {});
   const onOverstockRef    = useRef(options?.onOverstock);
+  const snapshotDebounce  = useRef<NodeJS.Timeout | null>(null);
 
   // Keep refs up-to-date every render without re-running the socket effect
   useEffect(() => { cartQuantitiesRef.current = options?.cartQuantities ?? {}; });
@@ -95,8 +96,9 @@ export function useCartStock(
   useEffect(() => {
     if (!productIds.length || typeof window === "undefined") return;
 
-    // Bulk REST snapshot on every cart change (new items added / removed)
-    fetchBulkSnapshot(productIds);
+    // Debounced bulk REST snapshot — avoids a flood of calls during rapid cart changes
+    if (snapshotDebounce.current) clearTimeout(snapshotDebounce.current);
+    snapshotDebounce.current = setTimeout(() => fetchBulkSnapshot(productIds), 350);
 
     // Store for reconnect handler in socket singleton
     (window as any).__socketCartProductIds = productIds;
