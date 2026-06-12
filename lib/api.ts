@@ -40,11 +40,21 @@ export class ApiClient {
   }
 
   async get<T>(endpoint: string, useAuth: boolean = true): Promise<T> {
+    const url = `${this.baseUrl}${endpoint}`;
     const hadToken = useAuth && this.hasToken();
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-      method: "GET",
-      headers: this.getAuthHeaders(useAuth),
-    });
+    let response: Response;
+    try {
+      response = await fetch(url, {
+        method: "GET",
+        headers: this.getAuthHeaders(useAuth),
+      });
+    } catch (networkErr) {
+      console.error(`[API GET] Network error — ${url}`, networkErr);
+      throw networkErr;
+    }
+    if (!response.ok) {
+      console.error(`[API GET] ${response.status} ${response.statusText} — ${url}`);
+    }
     return this.handleResponse<T>(response, hadToken);
   }
 

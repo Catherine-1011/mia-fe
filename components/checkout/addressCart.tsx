@@ -320,7 +320,7 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
       cachedCountries = data.data || [];
       setCountries(cachedCountries);
     } catch (error) {
-      console.error("Failed to fetch countries", error);
+      console.error("[AddressCart] /location/countries failed:", error);
       toast.error("Failed to load countries. Please refresh the page.");
     }
   };
@@ -362,7 +362,7 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
         const data = await apiClient.get(`/location/countries/${iso2}/states`) as { data: State[] };
         setStates(data.data || []);
       } catch (error) {
-        console.error("Failed to fetch states", error);
+        console.error(`[AddressCart] /location/countries/${iso2}/states failed:`, error);
         toast.error("Failed to load states/provinces. Please try again.");
       }
     }
@@ -389,7 +389,7 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
       const data = await apiClient.get(`/location/countries/${selectedCountryCode}/states/${iso2}/cities`) as { data: City[] };
       setCities(data.data || []);
     } catch (error) {
-      console.error("Failed to fetch cities", error);
+      console.error(`[AddressCart] /location/countries/${selectedCountryCode}/states/${iso2}/cities failed:`, error);
       toast.error("Failed to load cities. Please try again.");
     }
   };
@@ -541,7 +541,7 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
             const data = await apiClient.get(`/location/countries/${fallback.iso2}/states`) as { data: State[] };
             setStates(data.data || []);
           } catch (error) {
-            console.error("Failed to fetch states", error);
+            console.error(`[AddressCart] initial load /location/countries/${fallback.iso2}/states failed:`, error);
           }
         };
         loadStates();
@@ -558,7 +558,7 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
           const data = await apiClient.get(`/location/countries/${selectedCountryCode}/states`) as { data: State[] };
           setStates(data.data || []);
         } catch (error) {
-          console.error("Failed to fetch states for restored country", error);
+          console.error(`[AddressCart] restore /location/countries/${selectedCountryCode}/states failed:`, error);
         }
       };
       loadStates();
@@ -573,7 +573,7 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
           const data = await apiClient.get(`/location/countries/${selectedCountryCode}/states/${selectedStateCode}/cities`) as { data: City[] };
           setCities(data.data || []);
         } catch (error) {
-          console.error("Failed to fetch cities for restored state", error);
+          console.error(`[AddressCart] restore /location/countries/${selectedCountryCode}/states/${selectedStateCode}/cities failed:`, error);
         }
       };
       loadCities();
@@ -810,25 +810,25 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
         const statesResponse = await apiClient.get(`/location/countries/${matchingCountry.iso2}/states`) as { data: State[] };
         const countryStates = statesResponse.data || [];
         setStates(countryStates);
-        
+
         // Find and set the state
-        const matchingState = countryStates.find((s: State) => 
+        const matchingState = countryStates.find((s: State) =>
           s.name.toLowerCase() === address.state.toLowerCase()
         );
-        
+
         if (matchingState) {
           setSelectedStateCode(matchingState.iso2);
-          
+
           // Fetch cities for the state
           try {
             const citiesResponse = await apiClient.get(`/location/countries/${matchingCountry.iso2}/states/${matchingState.iso2}/cities`) as { data: City[] };
             setCities(citiesResponse.data || []);
           } catch (error) {
-            console.error("Failed to fetch cities for saved address", error);
+            console.error(`[AddressCart] saved address /location/countries/${matchingCountry.iso2}/states/${matchingState.iso2}/cities failed:`, error);
           }
         }
       } catch (error) {
-        console.error("Failed to fetch states for saved address", error);
+        console.error(`[AddressCart] saved address /location/countries/${matchingCountry.iso2}/states failed:`, error);
       }
     }
     
@@ -991,7 +991,7 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
           setFormData(prev => ({ ...prev, city: matchingCity?.name || place }));
         }
       } catch (error) {
-        console.error("Failed to fetch cities for autocompleted state", error);
+        console.error(`[AddressCart] autocomplete /location/countries/${selectedCountryCodeRef.current}/states/${stateObj?.iso2}/cities failed:`, error);
       }
     }, 200);
   };
