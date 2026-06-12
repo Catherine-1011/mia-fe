@@ -2471,3 +2471,4 @@ export default function ArtistOnboardingForm() {
     </div>
   );
 }
+// 
