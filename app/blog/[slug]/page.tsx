@@ -227,7 +227,7 @@ const transformApiDataToBlogPost = (apiPost: ApiBlogPost): BlogPost => {
     tags: apiPost.tags.length > 0 ? apiPost.tags : ["General"],
     readTime: "5 min read", // Default read time
     date: formatDate(apiPost.createdAt),
-    author: "Alpa Editorial Team", // Default author
+    author: "Made in Arnhem Land Editorial Team", // Default author
     image: apiPost.coverImage || "/images/default-blog.jpg",
     href: `/blog/${apiPost.slug}`,
     cta: apiPost.ctaText || "Read more",
