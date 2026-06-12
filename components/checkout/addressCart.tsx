@@ -71,6 +71,14 @@ interface City {
   longitude: string;
 }
 
+interface MapboxFeature {
+  id: string;
+  place_name: string;
+  text: string;
+  address?: string;
+  context?: Array<{ id: string; text: string; short_code?: string }>;
+}
+
 interface AddressCartProps {
   onAddressChange: (data: {
     address: string;
@@ -402,6 +410,9 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
   const phoneListRef = useRef<HTMLUListElement>(null);
   const [dataLoaded, setDataLoaded] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [addressSuggestions, setAddressSuggestions] = useState<MapboxFeature[]>([]);
+  const [showAddressSuggestions, setShowAddressSuggestions] = useState(false);
+  const addressDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Touch all fields at once — called when user tries to move to next step
   const touchAllFields = () => {
@@ -410,12 +421,7 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
     setPhoneError(validatePhone(phoneNumber, selectedCountry));
   };
 
-  // ── Postcode ↔ State validation (fully dynamic, no hardcoding) ─────────────
-  // Strategy (ordered by reliability):
-  //   1. Google Geocoder   — primary: already loaded, most accurate, current data.
-  //                          Crucially, it can return multiple results for shared postcodes.
-  //   2. api.zippopotam.us — fallback: free, no key, 60+ countries
-  //   3. Silent pass       — if both unavailable (network error / timeout)
+  // ── Postcode ↔ State validation via api.zippopotam.us ─────────────────────
   const validateZipForState = async (zip: string, stateVal: string, countryIso: string): Promise<string | null> => {
     if (!zip.trim() || !stateVal.trim() || !countryIso) return null;
     const entered = stateVal.toLowerCase().trim();
@@ -423,49 +429,7 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
     const isMatch = (a: string, b: string) =>
       a === b || a.includes(b) || b.includes(a);
 
-    // ── 1. Google Geocoder (primary) ───────────────────────────────────────
-    if (typeof window !== "undefined") {
-      const geocoder = await new Promise<any | null>((resolve) => {
-        if (window.google?.maps?.Geocoder) { resolve(new window.google.maps.Geocoder()); return; }
-        let elapsed = 0;
-        const poll = setInterval(() => {
-          elapsed += 200;
-          if (window.google?.maps?.Geocoder) { clearInterval(poll); resolve(new window.google.maps.Geocoder()); }
-          else if (elapsed >= 5000) { clearInterval(poll); resolve(null); }
-        }, 200);
-      });
-
-      if (geocoder) {
-        const googleStates: string[] = await new Promise((resolve) => {
-          geocoder.geocode(
-            { componentRestrictions: { country: countryIso.toLowerCase(), postalCode: zip.trim() } },
-            (results: any[], status: any) => {
-              if (status !== "OK" || !results?.length) { resolve([]); return; }
-              // For shared postcodes, Google returns multiple results. Collect all unique state names.
-              const states = new Set<string>();
-              for (const result of results) {
-                const adminArea = result.address_components?.find(
-                  (c: any) => c.types.includes("administrative_area_level_1")
-                );
-                if (adminArea?.long_name) {
-                  states.add(adminArea.long_name.toLowerCase().trim());
-                }
-              }
-              resolve(Array.from(states));
-            }
-          );
-        });
-
-        if (googleStates.length > 0) {
-          const isValid = googleStates.some(gState => isMatch(gState, entered));
-          if (isValid) return null; // ✓ Google confirms valid
-          return `Please enter a valid postcode for ${stateVal}.`;
-        }
-        // Google returned no result for this postcode — fall through to zippopotam
-      }
-    }
-
-    // ── 2. Zippopotam (fallback when Google is unavailable) ────────────────
+    // api.zippopotam.us — free, no key, 60+ countries
     try {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 5000);
@@ -637,16 +601,11 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
   const [showSavedAddresses, setShowSavedAddresses] = useState(false);
   const [saveAsDefault, setSaveAsDefault] = useState(false);
 
-  // Refs for the address input and the Google Autocomplete instance
   const addressInputRef = useRef<HTMLInputElement>(null);
-  const autocompleteInstanceRef = useRef<any>(null);
-  // Always-current refs so the place_changed closure never goes stale
   const statesRef = useRef(states);
   useEffect(() => { statesRef.current = states; }, [states]);
   const selectedCountryCodeRef = useRef(selectedCountryCode);
   useEffect(() => { selectedCountryCodeRef.current = selectedCountryCode; }, [selectedCountryCode]);
-  // Holds the suburb/city from Google Autocomplete until city list loads
-  const pendingCityRef = useRef<string>("");
 
   // API functions for addresses
   const fetchSavedAddresses = async () => {
@@ -956,180 +915,86 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
     }));
   }, [formData, phoneNumber, selectedCountry, selectedCountryCode, selectedStateCode, dataLoaded]);
 
-  // Load Google Maps script and init autocomplete ONCE after data loads
-  useEffect(() => {
-    if (!dataLoaded) return;
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-    if (!apiKey) {
-      console.warn('Google Maps API key not found. Add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY to .env.local');
-      return;
-    }
+  // Fetch Mapbox address suggestions (debounced, called from address input onChange)
+  const fetchAddressSuggestions = (value: string) => {
+    if (addressDebounceRef.current) clearTimeout(addressDebounceRef.current);
+    if (!value.trim() || value.length < 3) { setAddressSuggestions([]); setShowAddressSuggestions(false); return; }
 
-    const attachAutocomplete = () => {
-      if (!addressInputRef.current) return;
-      if (autocompleteInstanceRef.current) {
-        // Already attached — just update country restriction
-        if (selectedCountryCodeRef.current) {
-          autocompleteInstanceRef.current.setComponentRestrictions(
-            { country: selectedCountryCodeRef.current.toLowerCase() }
-          );
-        }
-        return;
-      }
-      if (!window.google?.maps?.places?.Autocomplete) return;
-
-      const ac = new window.google.maps.places.Autocomplete(addressInputRef.current, {
-        types: ["address"],
-        fields: ["address_components", "formatted_address"],
-        ...(selectedCountryCodeRef.current && {
-          componentRestrictions: { country: selectedCountryCodeRef.current.toLowerCase() }
-        }),
-      });
-
-      ac.addListener("place_changed", () => {
-        const place = ac.getPlace();
-        if (!place?.address_components) return;
-
-        const getComponent = (type: string) =>
-          place.address_components.find((c: any) => c.types.includes(type))?.long_name || "";
-        const getShortComponent = (type: string) =>
-          place.address_components.find((c: any) => c.types.includes(type))?.short_name || "";
-
-        // Try multiple types — Australian suburbs can be locality OR sublocality
-        const city       = getComponent("locality") ||
-                           getComponent("sublocality_level_1") ||
-                           getComponent("sublocality") ||
-                           getComponent("administrative_area_level_2");
-        const stateLong  = getComponent("administrative_area_level_1");
-        const stateShort = getShortComponent("administrative_area_level_1");
-        const postalCode = getComponent("postal_code");
-        const countryName = getComponent("country");
-        const countryISO = getShortComponent("country");
-        const formattedAddr = place.formatted_address || "";
-
-        const stripTerms = new Set(
-          [city, stateLong, stateShort, postalCode, countryName]
-            .filter(Boolean)
-            .map((t: string) => t.toLowerCase())
+    addressDebounceRef.current = setTimeout(async () => {
+      try {
+        const token = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
+        if (!token) return;
+        const country = selectedCountryCodeRef.current?.toLowerCase() || 'au';
+        const encoded = encodeURIComponent(value);
+        const res = await fetch(
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encoded}.json?access_token=${token}&country=${country}&types=address,place&autocomplete=true&limit=5`
         );
-        const streetParts = formattedAddr
-          .split(",")
-          .map((p: string) => p.trim())
-          .filter((p: string) => p && !stripTerms.has(p.toLowerCase()));
-        const streetAddress = streetParts.join(", ") || formattedAddr.split(",")[0].trim();
+        const data = await res.json();
+        setAddressSuggestions(data.features || []);
+        setShowAddressSuggestions(true);
+      } catch {
+        setAddressSuggestions([]);
+      }
+    }, 300);
+  };
 
-        if (addressInputRef.current) addressInputRef.current.value = streetAddress;
-        pendingCityRef.current = city;
+  // Handle a Mapbox suggestion selection — parse feature and fill form fields
+  const handleMapboxSelect = (feature: MapboxFeature) => {
+    const ctx = feature.context || [];
+    const getCtx = (prefix: string) => ctx.find(c => c.id.startsWith(prefix));
 
-        setFormData(prev => ({
-          ...prev,
-          address: streetAddress,
-          city,
-          state: stateShort || stateLong,
-          zip: postalCode,
-          country: countries.find(c => c.iso2 === countryISO)?.name || prev.country,
-        }));
+    const postcode   = getCtx('postcode')?.text || '';
+    const place      = getCtx('place')?.text || '';
+    const regionCtx  = getCtx('region');
+    const stateName  = regionCtx?.text || '';
+    const stateShort = regionCtx?.short_code?.replace(/^[A-Z]+-/, '') || '';
+    const countryCtx = getCtx('country');
+    const countryISO = countryCtx?.short_code?.toUpperCase() || '';
 
-        // Sync country dropdown if it changed
-        if (countryISO && countryISO !== selectedCountryCodeRef.current) {
-          const newCountry = countries.find(c => c.iso2 === countryISO);
-          if (newCountry) {
-            handleCountryChange({ target: { value: newCountry.iso2 } } as React.ChangeEvent<HTMLSelectElement>);
-          }
-        }
+    const street = feature.place_name.split(',')[0].trim();
 
-        // Sync state + city dropdowns inline (avoid handleStateChange which resets city)
-        setTimeout(async () => {
-          const stateObj = statesRef.current.find(s =>
-            s.iso2.toLowerCase() === stateShort.toLowerCase() ||
-            s.name.toLowerCase() === stateLong.toLowerCase()
-          );
-          if (!stateObj) return;
+    setAddressSuggestions([]);
+    setShowAddressSuggestions(false);
 
-          setSelectedStateCode(stateObj.iso2);
-          setFormData(prev => ({ ...prev, state: stateObj.name }));
+    setFormData(prev => ({
+      ...prev,
+      address: street,
+      city: place,
+      state: stateName || stateShort,
+      zip: postcode,
+      country: countries.find(c => c.iso2 === countryISO)?.name || prev.country,
+    }));
 
-          try {
-            const data = await apiClient.get(`/location/countries/${selectedCountryCodeRef.current}/states/${stateObj.iso2}/cities`) as { data: City[] };
-            const newCities = data.data || [];
-            setCities(newCities);
-
-            const pendingCity = pendingCityRef.current;
-            if (pendingCity) {
-              const matchingCity = newCities.find(c =>
-                c.name.toLowerCase() === pendingCity.toLowerCase()
-              );
-              setFormData(prev => ({ ...prev, city: matchingCity?.name || pendingCity }));
-              pendingCityRef.current = "";
-            }
-          } catch (error) {
-            console.error("Failed to fetch cities for autocompleted state", error);
-          }
-        }, 200);
-      });
-
-      autocompleteInstanceRef.current = ac;
-    };
-
-    if (window.google?.maps?.places?.Autocomplete) {
-      attachAutocomplete();
-      return;
+    if (countryISO && countryISO !== selectedCountryCodeRef.current) {
+      const newCountry = countries.find(c => c.iso2 === countryISO);
+      if (newCountry) {
+        handleCountryChange({ target: { value: newCountry.iso2 } } as React.ChangeEvent<HTMLSelectElement>);
+      }
     }
 
-    if (document.querySelector(`script[src*="maps.googleapis.com/maps/api/js"]`)) {
-      const poll = setInterval(() => {
-        if (window.google?.maps?.places?.Autocomplete) {
-          attachAutocomplete();
-          clearInterval(poll);
-        }
-      }, 150);
-      return () => clearInterval(poll);
-    }
-
-    const script = document.createElement("script");
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
-    script.async = true;
-    script.defer = true;
-    script.onload = attachAutocomplete;
-    document.head.appendChild(script);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dataLoaded]);
-
-  // Update country restriction when country changes; also retry attaching if not yet initialised
-  useEffect(() => {
-    if (!selectedCountryCode) return;
-    if (autocompleteInstanceRef.current) {
-      autocompleteInstanceRef.current.setComponentRestrictions(
-        { country: selectedCountryCode.toLowerCase() }
+    setTimeout(async () => {
+      const stateObj = statesRef.current.find(s =>
+        s.name.toLowerCase() === stateName.toLowerCase() ||
+        s.iso2.toLowerCase() === stateShort.toLowerCase()
       );
-    } else if (window.google?.maps?.places?.Autocomplete && addressInputRef.current) {
-      // Autocomplete wasn't ready on first load — attach it now
-      const ac = new window.google.maps.places.Autocomplete(addressInputRef.current, {
-        types: ["address"],
-        fields: ["address_components", "formatted_address"],
-        componentRestrictions: { country: selectedCountryCode.toLowerCase() },
-      });
-      ac.addListener("place_changed", () => {
-        const ac2 = autocompleteInstanceRef.current;
-        if (!ac2) return;
-        const place = ac2.getPlace();
-        if (place?.address_components) {
-          const getC = (t: string) => place.address_components.find((c: any) => c.types.includes(t))?.long_name || "";
-          const getS = (t: string) => place.address_components.find((c: any) => c.types.includes(t))?.short_name || "";
-          const city = getC("locality") || getC("sublocality_level_1") || getC("sublocality") || getC("administrative_area_level_2");
-          const stateLong = getC("administrative_area_level_1");
-          const stateShort = getS("administrative_area_level_1");
-          const postalCode = getC("postal_code");
-          const formatted = place.formatted_address || "";
-          const stripTerms = new Set([city, stateLong, stateShort, postalCode, getC("country")].filter(Boolean).map((t: string) => t.toLowerCase()));
-          const street = formatted.split(",").map((p: string) => p.trim()).filter((p: string) => p && !stripTerms.has(p.toLowerCase())).join(", ") || formatted.split(",")[0].trim();
-          if (addressInputRef.current) addressInputRef.current.value = street;
-          setFormData(prev => ({ ...prev, address: street, city, state: stateShort || stateLong, zip: postalCode }));
+      if (!stateObj) return;
+
+      setSelectedStateCode(stateObj.iso2);
+      setFormData(prev => ({ ...prev, state: stateObj.name }));
+
+      try {
+        const data = await apiClient.get(`/location/countries/${selectedCountryCodeRef.current}/states/${stateObj.iso2}/cities`) as { data: City[] };
+        const newCities = data.data || [];
+        setCities(newCities);
+        if (place) {
+          const matchingCity = newCities.find(c => c.name.toLowerCase() === place.toLowerCase());
+          setFormData(prev => ({ ...prev, city: matchingCity?.name || place }));
         }
-      });
-      autocompleteInstanceRef.current = ac;
-    }
-  }, [selectedCountryCode]);
+      } catch (error) {
+        console.error("Failed to fetch cities for autocompleted state", error);
+      }
+    }, 200);
+  };
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -1208,7 +1073,7 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
         </div>
       </div>
 
-      {/* Street address autocomplete */}
+      {/* Street address autocomplete — powered by Mapbox */}
       <div className="flex flex-col gap-1.5 relative">
         <label htmlFor="address" className="text-sm font-medium text-gray-600">
           Street Address <span className="text-red-500">*</span>
@@ -1218,19 +1083,37 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
           id="address"
           name="address"
           type="text"
+          autoComplete="off"
           value={formData.address}
-          onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+          onChange={(e) => {
+            setFormData(prev => ({ ...prev, address: e.target.value }));
+            fetchAddressSuggestions(e.target.value);
+          }}
+          onBlur={() => setTimeout(() => setShowAddressSuggestions(false), 150)}
           placeholder={
-            formData.city && formData.state 
-              ? `Start typing street address in ${formData.country}...` 
+            formData.city && formData.state
+              ? `Start typing street address in ${formData.country}...`
               : "e.g., 123 Collins Street, Unit 5A"
           }
           className={inputNormal}
           required
         />
+        {showAddressSuggestions && addressSuggestions.length > 0 && (
+          <ul className="absolute z-50 top-full mt-1 w-full bg-white border border-[#d6b896] rounded-xl shadow-lg overflow-hidden">
+            {addressSuggestions.map((f) => (
+              <li
+                key={f.id}
+                onMouseDown={() => handleMapboxSelect(f)}
+                className="px-4 py-2.5 text-sm cursor-pointer hover:bg-[#f5e6d3] hover:text-[#5A1E12] text-gray-800 transition-colors"
+              >
+                {f.place_name}
+              </li>
+            ))}
+          </ul>
+        )}
         <p className="text-xs text-gray-500">
-          {selectedCountryCode 
-            ? "💡 Start typing for address suggestions" 
+          {selectedCountryCode
+            ? "💡 Start typing for address suggestions"
             : "Include street number, name, unit/apartment number"}
         </p>
       </div>
