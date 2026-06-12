@@ -264,6 +264,64 @@ export default function Page() {
     });
   }, [cartItems]);
 
+  // ── Real-time coupon revalidation when cart items change ────────────────
+  // When quantities change or items are removed, revalidate all applied coupons
+  // to ensure they remain eligible or get removed if thresholds are no longer met
+  useEffect(() => {
+    if (cartItems.length === 0) return;
+    
+    // Revalidate each product that has an applied coupon
+    const productsWithCoupons = Object.keys(productCoupons).filter(
+      pid => productCoupons[pid]?.applied
+    );
+    
+    if (productsWithCoupons.length === 0) return;
+
+    productsWithCoupons.forEach(productId => {
+      revalidateAppliedCoupon(productId);
+    });
+  }, [cartItems, productCoupons]);
+
+  // ── Real-time eligibility checks for open coupon pickers ───────────────
+  // When cart items change and a coupon picker is open, re-check eligibility
+  // for all available coupons to show real-time eligible/ineligible status
+  const rerunEligibilityChecks = useCallback((productId: string, coupons: any[]) => {
+    const productVariants = cartItems.filter(i => i.productId === productId).map(item => ({
+      productId: item.productId,
+      variantId: item.variantId ?? null,
+      quantity: item.quantity,
+    }));
+
+    coupons.forEach(async (c: any) => {
+      try {
+        const data = await sellerCouponsApi.applyCoupon(c.code, productVariants);
+        const eligibleSavings = Number(data.summary?.totalSavingsExGST ?? 0);
+        const eligible = !!(data.success && data.qualifyingItems?.length > 0 && eligibleSavings > 0);
+        setProductCoupons(prev => {
+          const cur = prev[productId] ?? makeFreshCouponState();
+          return { ...prev, [productId]: { ...cur, eligibilityMap: { ...(cur.eligibilityMap ?? {}), [c.code]: eligible } } };
+        });
+      } catch {
+        setProductCoupons(prev => {
+          const cur = prev[productId] ?? makeFreshCouponState();
+          return { ...prev, [productId]: { ...cur, eligibilityMap: { ...(cur.eligibilityMap ?? {}), [c.code]: false } } };
+        });
+      }
+    });
+  }, [cartItems]);
+
+  // Update eligibility in real-time whenever cart changes and picker is open
+  useEffect(() => {
+    if (cartItems.length === 0) return;
+
+    Object.entries(productCoupons).forEach(([productId, state]) => {
+      // Only re-check if picker is open and coupons are loaded
+      if (state.showPicker && state.availableCoupons.length > 0) {
+        rerunEligibilityChecks(productId, state.availableCoupons);
+      }
+    });
+  }, [cartItems, rerunEligibilityChecks]);
+
   // Build full world country list using Intl.DisplayNames (no API needed)
   useEffect(() => {
     const ISO_CODES = [
@@ -385,10 +443,12 @@ export default function Page() {
     const itemKey = variantId ? `${productId}:${variantId}` : productId;
     setUpdatingItems((prev) => new Set(prev).add(itemKey));
     setSummaryRefreshing(true);
-    if (productCoupons[productId]?.applied) handleRemoveCoupon(productId);
     try {
       await updateQuantity(productId, newQuantity, variantId ?? undefined);
       await fetchCartData(true);
+      // Re-validate applied coupon for this product in real-time
+      // This will keep the coupon if still eligible, remove if ineligible, or keep it with updated savings
+      await revalidateAppliedCoupon(productId);
     } finally {
       setSummaryRefreshing(false);
       setUpdatingItems((prev) => { const n = new Set(prev); n.delete(itemKey); return n; });
@@ -400,9 +460,12 @@ export default function Page() {
     const itemKey = variantId ? `${productId}:${variantId}` : productId;
     setUpdatingItems((prev) => new Set(prev).add(itemKey));
     setSummaryRefreshing(true);
-    if (productCoupons[productId]?.applied) handleRemoveCoupon(productId);
     try {
       await removeItem(productId, variantId ?? undefined);
+      // Clear coupon for this product since the item is removed
+      if (productCoupons[productId]?.applied) {
+        handleRemoveCoupon(productId);
+      }
     } finally {
       setSummaryRefreshing(false);
       setUpdatingItems((prev) => { const n = new Set(prev); n.delete(itemKey); return n; });
@@ -461,11 +524,24 @@ export default function Page() {
         updateProductCoupon(productId, { error: "This product is not eligible for that coupon.", loading: false });
         return;
       }
+
+      const savings = Number(data.summary?.totalSavingsExGST ?? 0);
+      if (savings <= 0) {
+        // Bundle coupon threshold not reached (e.g. need qty 2, only have 1) — show a
+        // meaningful message instead of silently applying a $0 discount.
+        const bundleQty = data.coupon?.bundleQty;
+        const notEligibleMsg = data.coupon?.couponType === "bundle" && bundleQty
+          ? `Add ${bundleQty} of this item to qualify for the bundle deal.`
+          : "Your cart doesn't meet the requirements for this coupon.";
+        updateProductCoupon(productId, { error: notEligibleMsg, loading: false });
+        return;
+      }
+
       const applied: AppliedSellerCoupon = {
         code: data.coupon.code,
         couponType: data.coupon.couponType,
         eligibleSellerId: data.eligibleSellerId,
-        savings: data.summary.totalSavingsExGST,
+        savings,
         total: data.summary.discountedInclTotal,
         nonQualifyingItems: data.nonQualifyingItems || [],
       };
@@ -496,6 +572,85 @@ export default function Page() {
     });
   };
 
+  // ── Real-time coupon re-validation on quantity changes ──────────────────
+  // When qty changes, re-validate the applied coupon. If still eligible, keep it
+  // with updated savings. If ineligible, remove with a notification.
+  const revalidateAppliedCoupon = async (productId: string) => {
+    const state = productCoupons[productId];
+    if (!state?.applied) return; // No coupon applied for this product
+
+    // Get current product variants in cart
+    const productVariants = cartItems.filter(i => i.productId === productId).map(item => ({
+      productId: item.productId,
+      variantId: item.variantId ?? null,
+      quantity: item.quantity,
+    }));
+
+    if (productVariants.length === 0) {
+      // Product was removed from cart
+      handleRemoveCoupon(productId);
+      return;
+    }
+
+    try {
+      const data = await sellerCouponsApi.applyCoupon(state.applied.code, productVariants);
+      const eligibleSavings = Number(data.summary?.totalSavingsExGST ?? 0);
+      const isEligible = !!(data.success && data.qualifyingItems?.length > 0 && eligibleSavings > 0);
+
+      if (!isEligible) {
+        // Coupon no longer qualifies (e.g., qty dropped below threshold)
+        const bundleQty = data.coupon?.bundleQty;
+        const notEligibleMsg = data.coupon?.couponType === "bundle" && bundleQty
+          ? `Add ${bundleQty} of this item to qualify for the bundle deal.`
+          : "Your cart doesn't meet the requirements for this coupon.";
+        updateProductCoupon(productId, { applied: null, error: notEligibleMsg });
+        
+        // Remove from persisted coupons
+        setProductCoupons(prev => {
+          const persisted: Record<string, any> = {};
+          Object.entries(prev).forEach(([pid, s]) => {
+            if (pid !== productId && s.applied) persisted[pid] = s.applied;
+          });
+          localStorage.setItem("cartProductCoupons", JSON.stringify(persisted));
+          return prev;
+        });
+      } else {
+        // Still eligible! Update with new savings amount
+        const newApplied: AppliedSellerCoupon = {
+          code: state.applied.code,
+          couponType: state.applied.couponType,
+          eligibleSellerId: state.applied.eligibleSellerId,
+          savings: eligibleSavings,
+          total: data.summary.discountedInclTotal,
+          nonQualifyingItems: data.nonQualifyingItems || [],
+        };
+        updateProductCoupon(productId, { applied: newApplied, error: "" });
+        
+        // Update persisted coupons with new savings
+        setProductCoupons(prev => {
+          const persisted: Record<string, any> = {};
+          Object.entries({ ...prev, [productId]: { ...(prev[productId] ?? makeFreshCouponState()), applied: newApplied } })
+            .forEach(([pid, s]) => { if (s.applied) persisted[pid] = s.applied; });
+          localStorage.setItem("cartProductCoupons", JSON.stringify(persisted));
+          return prev;
+        });
+      }
+    } catch (err: any) {
+      console.error("Failed to revalidate coupon:", err);
+      // On error, assume coupon is no longer valid
+      updateProductCoupon(productId, { applied: null, error: "Coupon validation failed. Please reapply if needed." });
+      
+      setProductCoupons(prev => {
+        const persisted: Record<string, any> = {};
+        Object.entries(prev).forEach(([pid, s]) => {
+          if (pid !== productId && s.applied) persisted[pid] = s.applied;
+        });
+        localStorage.setItem("cartProductCoupons", JSON.stringify(persisted));
+        return prev;
+      });
+    }
+  };
+
   const handleTogglePicker = async (productId: string, sellerId: string) => {
     const state = productCoupons[productId] ?? makeFreshCouponState();
     const nextOpen = !state.showPicker;
@@ -517,7 +672,8 @@ export default function Page() {
       coupons.forEach(async (c: any) => {
         try {
           const data = await sellerCouponsApi.applyCoupon(c.code, productVariants);
-          const eligible = !!(data.success && data.qualifyingItems?.length > 0);
+          const eligibleSavings = Number(data.summary?.totalSavingsExGST ?? 0);
+          const eligible = !!(data.success && data.qualifyingItems?.length > 0 && eligibleSavings > 0);
           setProductCoupons(prev => {
             const cur = prev[productId] ?? makeFreshCouponState();
             return { ...prev, [productId]: { ...cur, eligibilityMap: { ...(cur.eligibilityMap ?? {}), [c.code]: eligible } } };
