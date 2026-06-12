@@ -1090,7 +1090,7 @@ export default function Page() {
 
           {/* --- RIGHT COLUMN: SUMMARY (Sticky) --- */}
           <div className="xl:sticky xl:top-22 h-fit">
-            <div className="bg-[#EBE5D9] rounded-4xl p-8 shadow-lg border border-white/40 backdrop-blur-sm relative overflow-hidden">
+            <div className="bg-[#EBE5D9] rounded-4xl p-6 shadow-lg border border-white/40 backdrop-blur-sm relative overflow-hidden">
                 {/* Decorative background grain */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-linear-to-bl from-white/20 to-transparent rounded-full -mr-16 -mt-16 pointer-events-none" />
 
