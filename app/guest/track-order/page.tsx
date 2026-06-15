@@ -116,17 +116,17 @@ function SimplifiedSellerSection({
               <span className="truncate">{sellerOrder.seller.name}</span>
             </h3>
             <p className="text-xs md:text-sm text-[#5A1E12]/60 flex items-center gap-1">
-              <span className="truncate">Sub Order: #{sellerOrder.id?.slice(-8).toUpperCase() || 'No ID'}</span>
+              <span className="truncate">Sub Order: #{sellerOrder.subDisplayId || sellerOrder.id?.slice(-8).toUpperCase() || 'No ID'}</span>
             </p>
           </div>
         </div>
         <div className="text-right shrink-0 ml-2">
           {/* Current status badge */}
-          <div className="mb-2">
-            <div 
+          <div>
+            <div
               className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border"
-              style={{ 
-                backgroundColor: `${statusConfig?.color || '#10b981'}20`, 
+              style={{
+                backgroundColor: `${statusConfig?.color || '#10b981'}20`,
                 color: statusConfig?.color || '#10b981',
                 borderColor: `${statusConfig?.color || '#10b981'}40`
               }}
@@ -135,7 +135,6 @@ function SimplifiedSellerSection({
               {statusConfig?.label || sellerOrder.status}
             </div>
           </div>
-          <p className="text-sm md:text-lg font-bold text-[#5A1E12]">${parseFloat(sellerOrder.subTotal || '0').toFixed(2)}</p>
         </div>
       </div>
 
