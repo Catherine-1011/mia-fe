@@ -269,18 +269,18 @@ export default function Page() {
   // to ensure they remain eligible or get removed if thresholds are no longer met
   useEffect(() => {
     if (cartItems.length === 0) return;
-    
-    // Revalidate each product that has an applied coupon
+
     const productsWithCoupons = Object.keys(productCoupons).filter(
       pid => productCoupons[pid]?.applied
     );
-    
+
     if (productsWithCoupons.length === 0) return;
 
     productsWithCoupons.forEach(productId => {
       revalidateAppliedCoupon(productId);
     });
-  }, [cartItems, productCoupons]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cartItems]); // intentionally omit productCoupons — including it causes an infinite re-trigger
 
   // ── Real-time eligibility checks for open coupon pickers ───────────────
   // When cart items change and a coupon picker is open, re-check eligibility
@@ -561,14 +561,17 @@ export default function Page() {
   };
 
   const handleRemoveCoupon = (productId: string) => {
-    updateProductCoupon(productId, { applied: null, input: "", error: "" });
     setProductCoupons(prev => {
+      const next = {
+        ...prev,
+        [productId]: { ...(prev[productId] ?? makeFreshCouponState()), applied: null, input: "", error: "" },
+      };
       const persisted: Record<string, any> = {};
-      Object.entries(prev).forEach(([pid, s]) => {
-        if (pid !== productId && s.applied) persisted[pid] = s.applied;
+      Object.entries(next).forEach(([pid, s]) => {
+        if (s.applied) persisted[pid] = s.applied;
       });
       localStorage.setItem("cartProductCoupons", JSON.stringify(persisted));
-      return prev;
+      return next;
     });
   };
 
@@ -577,9 +580,11 @@ export default function Page() {
   // with updated savings. If ineligible, remove with a notification.
   const revalidateAppliedCoupon = async (productId: string) => {
     const state = productCoupons[productId];
-    if (!state?.applied) return; // No coupon applied for this product
+    if (!state?.applied) return;
 
-    // Get current product variants in cart
+    const savedCode = state.applied.code;
+    const savedApplied = state.applied;
+
     const productVariants = cartItems.filter(i => i.productId === productId).map(item => ({
       productId: item.productId,
       variantId: item.variantId ?? null,
@@ -587,66 +592,54 @@ export default function Page() {
     }));
 
     if (productVariants.length === 0) {
-      // Product was removed from cart
       handleRemoveCoupon(productId);
       return;
     }
 
     try {
-      const data = await sellerCouponsApi.applyCoupon(state.applied.code, productVariants);
+      const data = await sellerCouponsApi.applyCoupon(savedCode, productVariants);
       const eligibleSavings = Number(data.summary?.totalSavingsExGST ?? 0);
       const isEligible = !!(data.success && data.qualifyingItems?.length > 0 && eligibleSavings > 0);
 
-      if (!isEligible) {
-        // Coupon no longer qualifies (e.g., qty dropped below threshold)
-        const bundleQty = data.coupon?.bundleQty;
-        const notEligibleMsg = data.coupon?.couponType === "bundle" && bundleQty
-          ? `Add ${bundleQty} of this item to qualify for the bundle deal.`
-          : "Your cart doesn't meet the requirements for this coupon.";
-        updateProductCoupon(productId, { applied: null, error: notEligibleMsg });
-        
-        // Remove from persisted coupons
-        setProductCoupons(prev => {
+      setProductCoupons(prev => {
+        // Guard: if the coupon was manually removed while this API call was in-flight, do nothing
+        if (!prev[productId]?.applied) return prev;
+
+        if (!isEligible) {
+          const bundleQty = data.coupon?.bundleQty;
+          const notEligibleMsg = data.coupon?.couponType === "bundle" && bundleQty
+            ? `Add ${bundleQty} of this item to qualify for the bundle deal.`
+            : "Your cart doesn't meet the requirements for this coupon.";
+          const next = { ...prev, [productId]: { ...(prev[productId] ?? makeFreshCouponState()), applied: null, error: notEligibleMsg } };
           const persisted: Record<string, any> = {};
-          Object.entries(prev).forEach(([pid, s]) => {
-            if (pid !== productId && s.applied) persisted[pid] = s.applied;
-          });
+          Object.entries(next).forEach(([pid, s]) => { if (s.applied) persisted[pid] = s.applied; });
           localStorage.setItem("cartProductCoupons", JSON.stringify(persisted));
-          return prev;
-        });
-      } else {
-        // Still eligible! Update with new savings amount
+          return next;
+        }
+
         const newApplied: AppliedSellerCoupon = {
-          code: state.applied.code,
-          couponType: state.applied.couponType,
-          eligibleSellerId: state.applied.eligibleSellerId,
+          code: savedApplied.code,
+          couponType: savedApplied.couponType,
+          eligibleSellerId: savedApplied.eligibleSellerId,
           savings: eligibleSavings,
           total: data.summary.discountedInclTotal,
           nonQualifyingItems: data.nonQualifyingItems || [],
         };
-        updateProductCoupon(productId, { applied: newApplied, error: "" });
-        
-        // Update persisted coupons with new savings
-        setProductCoupons(prev => {
-          const persisted: Record<string, any> = {};
-          Object.entries({ ...prev, [productId]: { ...(prev[productId] ?? makeFreshCouponState()), applied: newApplied } })
-            .forEach(([pid, s]) => { if (s.applied) persisted[pid] = s.applied; });
-          localStorage.setItem("cartProductCoupons", JSON.stringify(persisted));
-          return prev;
-        });
-      }
+        const next = { ...prev, [productId]: { ...(prev[productId] ?? makeFreshCouponState()), applied: newApplied, error: "" } };
+        const persisted: Record<string, any> = {};
+        Object.entries(next).forEach(([pid, s]) => { if (s.applied) persisted[pid] = s.applied; });
+        localStorage.setItem("cartProductCoupons", JSON.stringify(persisted));
+        return next;
+      });
     } catch (err: any) {
       console.error("Failed to revalidate coupon:", err);
-      // On error, assume coupon is no longer valid
-      updateProductCoupon(productId, { applied: null, error: "Coupon validation failed. Please reapply if needed." });
-      
       setProductCoupons(prev => {
+        if (!prev[productId]?.applied) return prev;
+        const next = { ...prev, [productId]: { ...(prev[productId] ?? makeFreshCouponState()), applied: null, error: "Coupon validation failed. Please reapply if needed." } };
         const persisted: Record<string, any> = {};
-        Object.entries(prev).forEach(([pid, s]) => {
-          if (pid !== productId && s.applied) persisted[pid] = s.applied;
-        });
+        Object.entries(next).forEach(([pid, s]) => { if (s.applied) persisted[pid] = s.applied; });
         localStorage.setItem("cartProductCoupons", JSON.stringify(persisted));
-        return prev;
+        return next;
       });
     }
   };
