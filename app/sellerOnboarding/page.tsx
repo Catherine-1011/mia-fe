@@ -1015,7 +1015,7 @@ export default function ArtistOnboardingForm() {
           <div className="bg-white rounded-2xl shadow-2xl p-10 border border-[#5A1E12]/15">
 
             {/* ── Accuracy / Stripe notice — conditional on step ── */}
-            {currentStep === 6 ? (
+            {/* {currentStep === 6 ? (
               <div className="flex items-start gap-3 bg-amber-50 border border-amber-300 rounded-xl px-4 py-3 mb-6">
                 <span className="text-amber-500 text-lg mt-0.5">ⓘ</span>
                 <p className="md:text-sm text-xs text-amber-800 leading-relaxed">
@@ -1041,7 +1041,7 @@ export default function ArtistOnboardingForm() {
                   The information you provide including your business summary, store profile, and contact details may be visible to buyers and other users on the platform. Incorrect or misleading information may result in delays to your application or account suspension.
                 </p>
               </div>
-            )}
+            )} */}
 
             {/* ── Step 1 ── */}
             {currentStep === 1 && (
@@ -1243,156 +1243,154 @@ export default function ArtistOnboardingForm() {
 
             {/* ── Step 6 — Connect Stripe Account ── */}
             {currentStep === 6 && (
-              <div className="space-y-5">
+              <div className="space-y-6">
 
-                {/* TOP ROW — Left CTA + Right Fee Summary */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-start">
-
-                  {/* LEFT — CTA */}
-                  <div className="space-y-4">
-                    <div>
-                      <h3 className="text-xl font-bold text-[#5A1E12]">Set up your payout account</h3>
-                      <p className="text-sm text-[#5A1E12]/70 leading-relaxed mt-1.5">
-                        Connect a Stripe account to receive payments. Stripe securely handles your identity verification and debit card details.
-                      </p>
-                    </div>
-
-                    {stripeLoading && (
-                      <div className="flex items-center gap-2 p-3 bg-[#5A1E12]/5 border border-[#5A1E12]/20 rounded-xl">
-                        <div className="w-4 h-4 border-2 border-[#5A1E12] border-t-transparent rounded-full animate-spin shrink-0" />
-                        <p className="text-sm text-[#5A1E12]">Checking your Stripe status…</p>
-                      </div>
-                    )}
-
-                    {!stripeLoading && stripeStatus?.stripeOnboardingComplete && stripeStatus?.stripeChargesEnabled && (
-                      <div className="flex items-start gap-2 p-3 bg-green-50 border border-green-300 rounded-xl">
-                        <span className="text-green-600 text-base mt-0.5">✓</span>
-                        <div>
-                          <p className="text-sm font-semibold text-green-800">Stripe account connected</p>
-                          <p className="text-xs text-green-700 mt-0.5">Your payout account is active and ready.</p>
-                        </div>
-                      </div>
-                    )}
-
-                    {!stripeLoading && stripeStatus?.connected && (!stripeStatus?.stripeOnboardingComplete || !stripeStatus?.stripeChargesEnabled) && (
-                      <div className="space-y-3">
-                        <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-300 rounded-xl">
-                          <span className="text-amber-600 text-base mt-0.5">⚠</span>
-                          <div>
-                            <p className="text-sm font-semibold text-amber-800">Stripe setup incomplete</p>
-                            <p className="text-xs text-amber-700 mt-0.5">Additional information required before you can receive payouts.</p>
-                          </div>
-                        </div>
-                        <button type="button" onClick={handleConnectStripe} disabled={stripeLoading} className="w-full py-3 bg-[#5A1E12] hover:bg-[#4a180f] text-white rounded-xl text-sm font-semibold transition-all disabled:opacity-60">
-                          Continue Stripe Setup
-                        </button>
-                      </div>
-                    )}
-
-                    {!stripeLoading && !stripeStatus?.connected && (
-                      <button type="button" onClick={handleConnectStripe} disabled={stripeLoading} className="w-full py-3 bg-[#5A1E12] hover:bg-[#4a180f] text-white rounded-xl text-sm font-semibold transition-all disabled:opacity-60">
-                        Connect with Stripe
-                      </button>
-                    )}
-
-                    {errors.stripe && <p className="text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{errors.stripe}</p>}
-                    {errors.submit && <p className="text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{errors.submit}</p>}
-
-                    <div className="pt-3 border-t border-[#5A1E12]/10">
-                      <p className="text-sm font-bold text-[#5A1E12] mb-1">What happens next</p>
-                      <p className="text-sm text-[#5A1E12]/70 leading-relaxed">
-                        Once verification is complete, your seller account gets activated and you can start listing products. We'll email you to confirm.
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* RIGHT — Fee summary */}
-                  <div className="border border-[#5A1E12]/20 rounded-xl p-4 bg-[#EAD7B7]/30 space-y-3">
-                    <p className="text-sm font-bold text-[#5A1E12]">Before you connect: quick summary</p>
-                    <div>
-                      <p className="text-sm font-semibold text-[#5A1E12] mb-2">What it costs</p>
-                      <table className="w-full text-sm border-collapse rounded-lg overflow-hidden">
-                        <thead>
-                          <tr className="bg-[#5A1E12]/10">
-                            <th className="text-left px-3 py-2 font-semibold text-[#5A1E12] border border-[#5A1E12]/20">Fee</th>
-                            <th className="text-left px-3 py-2 font-semibold text-[#5A1E12] border border-[#5A1E12]/20">Amount</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr className="bg-white">
-                            <td className="px-3 py-2.5 text-[#5A1E12]/80 border border-[#5A1E12]/20">Our commission (our only fee)</td>
-                            <td className="px-3 py-2.5 font-bold text-[#5A1E12] border border-[#5A1E12]/20">10% per sale</td>
-                          </tr>
-                          <tr className="bg-white">
-                            <td className="px-3 py-2.5 text-[#5A1E12]/80 border border-[#5A1E12]/20">Stripe card processing</td>
-                            <td className="px-3 py-2.5 font-bold text-[#5A1E12] border border-[#5A1E12]/20">1.7% + A$0.30</td>
-                          </tr>
-                          <tr className="bg-white">
-                            <td className="px-3 py-2.5 text-[#5A1E12]/80 border border-[#5A1E12]/20">Stripe instant payout</td>
-                            <td className="px-3 py-2.5 font-bold text-[#5A1E12] border border-[#5A1E12]/20">1.5% per payout</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      <p className="mt-2 text-xs text-[#5A1E12]/60 italic leading-relaxed">
-                        Commission on product price only (excl. GST &amp; shipping).<br />
-                        Stripe fees charged by Stripe.{" "}
-                        <a href="/fees" className="not-italic font-semibold text-[#5A1E12] underline underline-offset-2 hover:text-[#4a180f] transition-colors">See full fees →</a>
-                      </p>
-                    </div>
-                  </div>
-
+                {/* 1 — Fee summary card (top, full width) */}
+                <div className="border border-[#5A1E12]/20 rounded-xl p-5">
+                  <p className="text-base font-bold text-[#5A1E12] mb-3">Before you connect: quick summary</p>
+                  <p className="text-sm font-semibold text-[#5A1E12] mb-2">What it costs</p>
+                  <table className="w-full text-sm border-collapse">
+                    <thead>
+                      <tr>
+                        <th className="text-left px-3 py-2.5 font-semibold text-[#5A1E12] border border-[#5A1E12]/20 bg-[#f5ede8]">Fee</th>
+                        <th className="text-left px-3 py-2.5 font-semibold text-[#5A1E12] border border-[#5A1E12]/20 bg-[#f5ede8]">Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="px-3 py-3 text-[#5A1E12]/80 border border-[#5A1E12]/20">Our commission (our only fee)</td>
+                        <td className="px-3 py-3 font-bold text-[#5A1E12] border border-[#5A1E12]/20">10% per sale</td>
+                      </tr>
+                      <tr>
+                        <td className="px-3 py-3 text-[#5A1E12]/80 border border-[#5A1E12]/20">Stripe card processing</td>
+                        <td className="px-3 py-3 font-bold text-[#5A1E12] border border-[#5A1E12]/20">1.7% + A$0.30</td>
+                      </tr>
+                      <tr>
+                        <td className="px-3 py-3 text-[#5A1E12]/80 border border-[#5A1E12]/20">Stripe instant payout</td>
+                        <td className="px-3 py-3 font-bold text-[#5A1E12] border border-[#5A1E12]/20">1.5% per payout</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <p className="mt-3 text-xs text-[#5A1E12]/60 italic leading-relaxed">
+                    Commission on product price only (excl. GST &amp; shipping).<br />
+                    Stripe fees charged by Stripe.{" "}
+                    <a href="/fees-and-commission" className="not-italic font-semibold text-[#5A1E12] underline underline-offset-2 hover:text-[#4a180f] transition-colors">See full fees →</a>
+                  </p>
                 </div>
 
-                {/* GOOD TO KNOW — full width */}
-                <div className="border border-[#5A1E12]/20 rounded-xl p-5 bg-[#EAD7B7]/30">
-                  <p className="text-sm font-bold text-[#5A1E12] mb-4">Good to know</p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {[
-                      {
-                        text: "You'll need an Australian Visa or Mastercard debit card.",
-                        icon: (
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-                            <rect x="2" y="5" width="20" height="14" rx="2" />
-                            <line x1="2" y1="10" x2="22" y2="10" />
-                          </svg>
-                        ),
-                      },
-                      {
-                        text: "Payouts reach your card in around 30 minutes.",
-                        icon: (
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-                            <circle cx="12" cy="12" r="10" />
-                            <polyline points="12 6 12 12 16 14" />
-                          </svg>
-                        ),
-                      },
-                      {
-                        text: "Your first payout is held 7–14 days by Stripe.",
-                        icon: (
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-                            <rect x="3" y="4" width="18" height="18" rx="2" />
-                            <line x1="16" y1="2" x2="16" y2="6" />
-                            <line x1="8" y1="2" x2="8" y2="6" />
-                            <line x1="3" y1="10" x2="21" y2="10" />
-                          </svg>
-                        ),
-                      },
-                      {
-                        text: "KYC takes ~5–10 min — save the email & password you use.",
-                        icon: (
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                          </svg>
-                        ),
-                      },
-                    ].map((item, i) => (
-                      <div key={i} className="flex items-start gap-3">
-                        <div className="shrink-0 w-10 h-10 rounded-xl bg-[#5A1E12]/10 flex items-center justify-center text-[#5A1E12]">
-                          {item.icon}
-                        </div>
-                        <p className="text-sm text-[#5A1E12]/80 leading-snug pt-1">{item.text}</p>
+                {/* 2 — Set up payout account */}
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-[#5A1E12]">Set up your payout account</h3>
+                    <p className="text-sm text-[#5A1E12]/70 leading-relaxed mt-1.5">
+                      Connect a Stripe account to receive payments. Stripe securely handles your identity verification and debit card details.
+                    </p>
+                  </div>
+
+                  {stripeLoading && (
+                    <div className="flex items-center gap-2 p-3 bg-[#5A1E12]/5 border border-[#5A1E12]/20 rounded-xl">
+                      <div className="w-4 h-4 border-2 border-[#5A1E12] border-t-transparent rounded-full animate-spin shrink-0" />
+                      <p className="text-sm text-[#5A1E12]">Checking your Stripe status…</p>
+                    </div>
+                  )}
+
+                  {!stripeLoading && stripeStatus?.stripeOnboardingComplete && stripeStatus?.stripeChargesEnabled && (
+                    <div className="flex items-start gap-2 p-3 bg-green-50 border border-green-300 rounded-xl">
+                      <span className="text-green-600 text-base mt-0.5">✓</span>
+                      <div>
+                        <p className="text-sm font-semibold text-green-800">Stripe account connected</p>
+                        <p className="text-xs text-green-700 mt-0.5">Your payout account is active and ready.</p>
                       </div>
-                    ))}
+                    </div>
+                  )}
+
+                  {!stripeLoading && stripeStatus?.connected && (!stripeStatus?.stripeOnboardingComplete || !stripeStatus?.stripeChargesEnabled) && (
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-300 rounded-xl">
+                        <span className="text-amber-600 text-base mt-0.5">⚠</span>
+                        <div>
+                          <p className="text-sm font-semibold text-amber-800">Stripe setup incomplete</p>
+                          <p className="text-xs text-amber-700 mt-0.5">Additional information required before you can receive payouts.</p>
+                        </div>
+                      </div>
+                      <button type="button" onClick={handleConnectStripe} disabled={stripeLoading} className="px-8 py-3 bg-[#5A1E12] hover:bg-[#4a180f] text-white rounded-xl text-sm font-semibold transition-all disabled:opacity-60">
+                        Continue Stripe Setup
+                      </button>
+                    </div>
+                  )}
+
+                  {!stripeLoading && !stripeStatus?.connected && (
+                    <button type="button" onClick={handleConnectStripe} disabled={stripeLoading} className="px-8 py-3 bg-[#5A1E12] hover:bg-[#4a180f] text-white rounded-xl text-sm font-semibold transition-all disabled:opacity-60">
+                      Connect with Stripe
+                    </button>
+                  )}
+
+                  {errors.stripe && <p className="text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{errors.stripe}</p>}
+                  {errors.submit && <p className="text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">{errors.submit}</p>}
+                </div>
+
+                {/* 3 — What happens next */}
+                <div className="border-t border-[#5A1E12]/15 pt-5">
+                  <h4 className="text-base font-bold text-[#5A1E12] mb-1.5">What happens next</h4>
+                  <p className="text-sm text-[#5A1E12]/70 leading-relaxed">
+                    Once verification is complete, your seller account gets activated and you can start listing products. We'll email you to confirm.
+                  </p>
+                </div>
+
+                {/* 4 — Good to know */}
+                <div className="border-t border-[#5A1E12]/15 pt-5">
+                  <h4 className="text-base font-bold text-[#5A1E12] mb-4">Good to know</h4>
+                  <div className="border border-[#5A1E12]/20 rounded-xl p-5">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      {[
+                        {
+                          text: (<>You&apos;ll need an Australian Visa<br />or Mastercard debit card.</>),
+                          icon: (
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                              <rect x="2" y="5" width="20" height="14" rx="2" />
+                              <line x1="2" y1="10" x2="22" y2="10" />
+                            </svg>
+                          ),
+                        },
+                        {
+                          text: (<>Payouts reach your card<br />in around 30 minutes.</>),
+                          icon: (
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                              <circle cx="12" cy="12" r="10" />
+                              <polyline points="12 6 12 12 16 14" />
+                            </svg>
+                          ),
+                        },
+                        {
+                          text: (<>Your first payout is held<br />7–14 days by Stripe.</>),
+                          icon: (
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                              <rect x="3" y="4" width="18" height="18" rx="2" />
+                              <line x1="16" y1="2" x2="16" y2="6" />
+                              <line x1="8" y1="2" x2="8" y2="6" />
+                              <line x1="3" y1="10" x2="21" y2="10" />
+                              <polyline points="9 16 11 18 15 14" />
+                            </svg>
+                          ),
+                        },
+                        {
+                          text: (<>KYC takes ~5–10 min —<br />save the email &amp; password you use.</>),
+                          icon: (
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                              <polyline points="9 12 11 14 15 10" />
+                            </svg>
+                          ),
+                        },
+                      ].map((item, i) => (
+                        <div key={i} className="flex items-start gap-3">
+                          <div className="shrink-0 w-10 h-10 rounded-xl bg-[#EAD7B7]/80 border border-[#5A1E12]/15 flex items-center justify-center text-[#5A1E12]">
+                            {item.icon}
+                          </div>
+                          <p className="text-sm text-[#5A1E12]/80 leading-snug pt-1.5">{item.text}</p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
@@ -1403,7 +1401,7 @@ export default function ArtistOnboardingForm() {
             <div className="flex justify-between mt-8 pt-6 border-t border-[#5A1E12]/15">
               <button
                 onClick={handlePrevious}
-                disabled={currentStep === 1 || currentStep === 5}
+                disabled={currentStep === 1 || currentStep === 5 || currentStep === 6}
                 className={`px-4 py-2.5 text-sm sm:px-6 sm:py-3 sm:text-base rounded-xl font-semibold transition-all shadow-sm border ${currentStep === 1 || currentStep === 5 || currentStep === 6 ? "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed" : "border-[#5A1E12]/30 bg-[#EAD7B7] text-[#5A1E12] hover:bg-[#5A1E12]/10"}`}
               >
                 Previous
