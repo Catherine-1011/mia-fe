@@ -600,7 +600,7 @@ Footer() {
               Policies
             </h2>
             <Link href="/shipping-policy" className={linkClass("/shipping-policy")}>
-              Shipping 
+              Shipping Policy
             </Link>
             <Link href="/guest/refund" className={linkClass("/guest/refund")}>
               Refund & Return Policy
