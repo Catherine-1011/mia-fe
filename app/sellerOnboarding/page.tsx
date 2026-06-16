@@ -784,6 +784,7 @@ type Mode =
   | "onboarding"
   | "login"
   | "resume"
+  | "resume-otp"
   | "forgot-password"
   | "reset-password";
 
@@ -885,12 +886,14 @@ export default function ArtistOnboardingForm() {
   const [mode, setMode] = useState<Mode>("onboarding");
   const [currentStep, setCurrentStep] = useState(1);
   const [token, setToken] = useState<string | null>(null);
+  const [hydrated, setHydrated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [abnVerified, setAbnVerified] = useState(false);
   const [resumeInfo, setResumeInfo] = useState<{
     step?: number;
     stepName?: string;
   } | null>(null);
+  const [resumeOtp, setResumeOtp] = useState("");
   const totalSteps = 6;
 
   const [formData, setFormData] = useState<FormData>({
@@ -981,6 +984,7 @@ export default function ArtistOnboardingForm() {
         }));
       } catch {}
     }
+    setHydrated(true);
   }, []);
 
   useEffect(() => {
@@ -1074,18 +1078,55 @@ export default function ArtistOnboardingForm() {
         body: JSON.stringify({ email: formData.loginEmail }),
       });
       const data = await res.json();
-      if (data.action === "verify_otp") {
+      if (data.canResume && data.action === "verify_otp") {
+        // Seller exists but hasn't completed Stripe — verify identity then continue
         setFormData((prev) => ({ ...prev, email: formData.loginEmail }));
-        setMode("onboarding");
-        setCurrentStep(1);
-      } else if (data.action === "login_required") {
-        setResumeInfo({ step: data.currentStep, stepName: data.stepName });
-        setMode("login");
+        setResumeOtp("");
+        setMode("resume-otp");
+      } else if (data.action === "already_complete" || data.action === "login") {
+        // Fully onboarded — direct them to login
+        setError("loginEmail", data.message || "Your account is already set up. Please log in to your seller dashboard.");
+      } else if (data.action === "start_new") {
+        // OTP was never verified during signup — nothing to resume
+        setError("loginEmail", data.message || "No saved application found for this email. Please start a new application.");
       } else if (!res.ok) {
-        setError("loginEmail", data.message || "No account found");
+        setError("loginEmail", data.message || "No account found with this email.");
       }
     } catch {
       setError("submit", "An error occurred.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // ─── RESUME OTP VERIFY ───────────────────────────────────────────────────
+  const handleResumeVerifyOtp = async () => {
+    if (!resumeOtp.trim()) {
+      setError("resumeOtp", "Please enter the OTP sent to your email");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch(`${baseURL}/api/sellers/resume-verify-otp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.loginEmail, otp: resumeOtp }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError("resumeOtp", data.message || "Invalid or expired OTP");
+        return;
+      }
+      setToken(data.token);
+      localStorage.setItem("sellerToken", data.token);
+      const backendStep = data.nextStep?.step ?? data.onboardingStatus?.currentStep ?? 3;
+      const frontendStep = backendStepToFrontend(backendStep);
+      setCurrentStep(frontendStep);
+      setMode("onboarding");
+      setErrors({});
+      setResumeOtp("");
+    } catch {
+      setError("resumeOtp", "An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -1486,17 +1527,30 @@ export default function ArtistOnboardingForm() {
                       placeholder="your@email.com"
                       className={inputCls("loginEmail")}
                     />
-                    {errors.loginEmail && (
+                    {errors.loginEmail && !errors.loginEmail.includes("already set up") && (
                       <p className="mt-1 text-xs text-red-600">
                         {errors.loginEmail}
                       </p>
                     )}
                   </div>
+                  {errors.loginEmail && errors.loginEmail.includes("already set up") && (
+                    <div className="bg-amber-50 border border-amber-300 rounded-xl p-4">
+                      <p className="text-sm font-semibold text-amber-800 mb-1">Account Already Set Up</p>
+                      <p className="text-sm text-amber-700">{errors.loginEmail}</p>
+                      <button
+                        onClick={() => { setMode("login"); setErrors({}); }}
+                        className="mt-3 w-full py-2 bg-[#5A1E12] hover:bg-[#4a180f] text-white rounded-xl text-sm font-semibold transition-all"
+                      >
+                        Go to Login
+                      </button>
+                    </div>
+                  )}
                   {errors.submit && (
                     <div className="bg-red-50 border border-red-200 rounded-xl p-3">
                       <p className="text-sm text-red-800">{errors.submit}</p>
                     </div>
                   )}
+                  {!errors.loginEmail?.includes("already set up") && (
                   <button
                     onClick={handleCheckResume}
                     disabled={loading}
@@ -1504,6 +1558,7 @@ export default function ArtistOnboardingForm() {
                   >
                     {loading ? "Checking…" : "Check Progress"}
                   </button>
+                  )}
                 </div>
                 <div className="mt-6 text-center space-y-2">
                   <button
@@ -1519,6 +1574,76 @@ export default function ArtistOnboardingForm() {
               </>
             )}
 
+            {mode === "resume-otp" && (
+              <>
+                <h2 className="text-2xl font-extrabold text-[#5A1E12] mb-1">
+                  Verify Your Email
+                </h2>
+                <p className="text-sm text-[#5A1E12]/60 mb-6">
+                  We sent a one-time code to{" "}
+                  <span className="font-semibold text-[#5A1E12]">
+                    {formData.loginEmail}
+                  </span>
+                </p>
+                <div className="space-y-4">
+                  <div>
+                    <label className={labelCls}>One-Time Password (OTP) *</label>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={6}
+                      value={resumeOtp}
+                      onChange={(e) => {
+                        setResumeOtp(e.target.value.replace(/\D/g, ""));
+                        if (errors.resumeOtp)
+                          setErrors((prev) => ({ ...prev, resumeOtp: "" }));
+                      }}
+                      placeholder="Enter 6-digit code"
+                      className={inputCls("resumeOtp")}
+                    />
+                    {errors.resumeOtp && (
+                      <p className="mt-1 text-xs text-red-600">
+                        {errors.resumeOtp}
+                      </p>
+                    )}
+                  </div>
+                  <button
+                    onClick={handleResumeVerifyOtp}
+                    disabled={loading}
+                    className="w-full py-3 bg-[#5A1E12] hover:bg-[#4a180f] text-white rounded-xl font-semibold transition-all disabled:opacity-60"
+                  >
+                    {loading ? "Verifying…" : "Continue My Application"}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setLoading(true);
+                      fetch(`${baseURL}/api/sellers/resume`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ email: formData.loginEmail }),
+                      }).finally(() => setLoading(false));
+                    }}
+                    disabled={loading}
+                    className="w-full py-2 text-sm text-[#5A1E12] hover:underline disabled:opacity-50"
+                  >
+                    Resend code
+                  </button>
+                </div>
+                <div className="mt-4 text-center">
+                  <button
+                    onClick={() => {
+                      setMode("resume");
+                      setResumeOtp("");
+                      setErrors({});
+                    }}
+                    className="text-sm text-[#5A1E12] hover:underline cursor-pointer"
+                  >
+                    ← Use a different email
+                  </button>
+                </div>
+              </>
+            )}
+
             {mode === "login" && (
               <>
                 <h2 className="text-2xl font-extrabold text-[#5A1E12] mb-1">
@@ -1527,7 +1652,7 @@ export default function ArtistOnboardingForm() {
                 {resumeInfo && (
                   <div className="mb-4 bg-[#5A1E12]/5 border border-[#5A1E12]/20 rounded-xl p-3">
                     <p className="text-sm text-[#5A1E12]">
-                      📍 You left off at <strong>Step {resumeInfo.step}</strong>
+                      You left off at <strong>Step {resumeInfo.step}</strong>
                       : {resumeInfo.stepName}
                     </p>
                   </div>
@@ -1874,6 +1999,18 @@ export default function ArtistOnboardingForm() {
     <p className="text-[#5A1E12]/70 mb-1">
       Complete all steps to sign-up & start your selling
     </p>
+    {hydrated && currentStep === 1 && (
+      <button
+        onClick={() => {
+          setFormData((prev) => ({ ...prev, loginEmail: "" }));
+          setErrors({});
+          setMode("resume");
+        }}
+        className="mt-3 text-sm text-[#5A1E12] font-semibold underline underline-offset-2 hover:text-[#4a180f] transition-colors"
+      >
+        Already started? Resume your application
+      </button>
+    )}
   </div>
 
         <div className="max-w-2xl mx-auto">

@@ -269,8 +269,11 @@ function TrackOrderContent() {
   }, []); // Run only once on mount
 
   useEffect(() => {
-    // Only call handleTrack if we have credentials but no cached order
-    if (orderId && email && !order) {
+    // Only auto-fetch if we have credentials AND no order is cached in sessionStorage.
+    // Checking sessionStorage directly (not `order` state) because both effects fire
+    // on the same render — `order` is still null here even if the first effect just set it.
+    const hasCachedOrder = !!sessionStorage.getItem("guestOrderData");
+    if (orderId && email && !hasCachedOrder) {
       handleTrack();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
