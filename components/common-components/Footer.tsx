@@ -414,16 +414,6 @@ Footer() {
   >("idle");
   const [unsubMsg, setUnsubMsg] = useState("");
 
-  // Media / Press modal
-  const [showMediaPress, setShowMediaPress] = useState(false);
-  const [emailCopied, setEmailCopied] = useState(false);
-
-  const handleCopyEmail = () => {
-    navigator.clipboard.writeText("media@alpa.asn.au");
-    setEmailCopied(true);
-    setTimeout(() => setEmailCopied(false), 2000);
-  };
-
   const handleSubscribe = async () => {
     const trimmed = email.trim();
     if (!trimmed) {
@@ -565,13 +555,12 @@ Footer() {
             <Link href="/term-and-conditions#reinvestment" className={linkClass("/term-and-conditions")}>
               Community Impact
             </Link>
-            <button
-              type="button"
-              onClick={() => setShowMediaPress(true)}
-              className="mb-2 text-left text-white/80 hover:text-[#A48068] transition-colors"
+            <Link
+              href="mailto:media@alpa.asn.au"
+              className="mb-2 text-white/80 hover:text-[#A48068] transition-colors"
             >
               Media / Press
-            </button>
+            </Link>
           </div>
 
           {/* Column 4 - Support */}
@@ -861,56 +850,6 @@ Footer() {
         </div>
         {/* end social + payment wrapper */}
       </div>
-
-      {/* ── Media / Press Modal ───────────────────────────────────────────── */}
-      {showMediaPress && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
-          onClick={() => setShowMediaPress(false)}
-        >
-          <div
-            className="bg-[#F5ECD8] rounded-2xl shadow-2xl w-full max-w-sm p-8 text-center relative"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              onClick={() => setShowMediaPress(false)}
-              className="absolute top-4 right-4 text-[#440C03]/50 hover:text-[#440C03] transition-colors"
-              aria-label="Close"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="w-14 h-14 rounded-full border-2 border-[#A48068] flex items-center justify-center mx-auto mb-5">
-              <FaEnvelope className="w-6 h-6 text-[#A48068]" />
-            </div>
-
-            <h3 className="text-2xl font-bold text-[#440C03] mb-3">
-              Media &amp; Press
-            </h3>
-            <p className="text-sm text-[#440C03]/70 mb-6 leading-relaxed">
-              For all media and press enquiries, please get in touch using the email below.
-            </p>
-
-            <div className="flex items-center border border-[#A48068] rounded-lg overflow-hidden mb-6">
-              <span className="flex-1 px-4 py-2.5 text-sm text-[#440C03] text-left truncate">
-                media@alpa.asn.au
-              </span>
-              <button
-                type="button"
-                onClick={handleCopyEmail}
-                className="px-4 py-2.5 bg-[#440C03] text-white text-sm font-semibold shrink-0 hover:bg-[#5a1e12] transition-colors"
-              >
-                {emailCopied ? "Copied!" : "Copy email"}
-              </button>
-            </div>
-
-            <p className="text-xs text-[#440C03]/50">
-              We&apos;ll get back to you as soon as we can.
-            </p>
-          </div>
-        </div>
-      )}
 
       {/* ── Unsubscribe Modal ─────────────────────────────────────────────── */}
       {showUnsub && (

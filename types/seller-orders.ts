@@ -28,7 +28,6 @@ export interface SellerOrderItem {
 
 export interface SellerOrder {
   id: any;
-  subDisplayId?: string;
   sellerId: string;
   seller: Seller;
   status: string;
