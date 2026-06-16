@@ -95,8 +95,8 @@ const VALUES = [
         />
       </svg>
     ),
-    title: "Trust & Integrity",
-    desc: "We operate with full transparency — honest pricing, genuine products, and no hidden surprises.",
+    title: "Authenticity & background ",
+    desc: "We celebrate work made in Arnhem Land and are upfront about where products come from.",
   },
   {
     icon: (
@@ -114,8 +114,8 @@ const VALUES = [
         />
       </svg>
     ),
-    title: "Quality First",
-    desc: "Every product in our catalogue is hand-picked and held to a high standard before it reaches you.",
+    title: "Fairness & transparency ",
+    desc: "One clear commission, no hidden costs, and honest pricing for buyers and makers alike. ",
   },
   {
     icon: (
@@ -133,8 +133,8 @@ const VALUES = [
         />
       </svg>
     ),
-    title: "Community Focused",
-    desc: "We believe shopping should bring people together — building a community around shared passions.",
+    title: "Community & culture ",
+    desc: "Every sale supports First Nations livelihoods and helps keep living culture strong.",
   },
   {
     icon: (
@@ -152,8 +152,8 @@ const VALUES = [
         />
       </svg>
     ),
-    title: "Fast & Reliable",
-    desc: "From checkout to doorstep — we obsess over speed, accuracy, and keeping you in the loop.",
+    title: "Care & reliability",
+    desc: "From checkout to doorstep, we obsess over getting your order to you and keeping you informed.",
   },
 ];
 
@@ -200,7 +200,7 @@ export default function Page() {
           HERO
       ══════════════════════════════════════════════════ */}
       <VideoHeroSection className="h-[65vh] sm:h-[70vh] md:h-[75vh] lg:h-[75vh] xl:h-[93vh] flex items-center justify-center">
-        <div className="relative mt-8 sm:mt-12 md:mt-16 z-10 text-white text-center px-4 max-w-3xl mx-auto">
+        <div className="relative mt-8 sm:mt-12 md:mt-16 z-10 text-white text-center px-4 max-w-[1100px] mx-auto">
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -214,32 +214,41 @@ export default function Page() {
             <motion.h1
               initial={{ y: 60, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.75, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              transition={{
+                duration: 0.75,
+                delay: 0.2,
+                ease: [0.22, 1, 0.36, 1],
+              }}
               className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold leading-tight"
             >
-              Built with <span className="text-[#e5d3b3]">Passion.</span>
+              Real makers.<span className="text-[#e5d3b3]">Real Country.</span>
             </motion.h1>
           </div>
           <div className="overflow-hidden mb-4 sm:mb-6">
             <motion.h1
               initial={{ y: 60, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.75, delay: 0.38, ease: [0.22, 1, 0.36, 1] }}
+              transition={{
+                duration: 0.75,
+                delay: 0.38,
+                ease: [0.22, 1, 0.36, 1],
+              }}
               className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold leading-tight"
             >
-              Driven by people.
+              One Marketplace.
             </motion.h1>
           </div>
 
-          {/* <motion.p
+          <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.58, ease: "easeOut" }}
             className="text-sm sm:text-base md:text-lg text-white/75 max-w-xl mx-auto leading-relaxed"
           >
-            We started Alpa to make premium shopping accessible, honest, and
-            delightful for everyone, everywhere in Australia.
-          </motion.p> */}
+            Made in Arnhem Land brings the art and craft of Arnhem Land’s First
+            Nations makers to the global platform. Sold directly by the people
+            who create them.
+          </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -251,7 +260,7 @@ export default function Page() {
               href="/shop"
               className="px-6 sm:px-7 py-2.5 sm:py-3 bg-[#5A1E12] hover:bg-[#441208] text-white rounded-full text-sm font-semibold transition-all shadow-lg hover:shadow-xl"
             >
-              Shap Now
+              Shop Now
             </Link>
             <a
               href="#our-story"
@@ -269,21 +278,45 @@ export default function Page() {
       <section className="bg-[#5A1E12] py-5 px-4">
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 max-w-4xl mx-auto">
           <span className="flex items-center gap-2 text-white/80 text-sm font-medium tracking-wide">
-            <svg className="w-4 h-4 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+            <svg
+              className="w-4 h-4 text-white shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.8}
+                d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
+              />
             </svg>
             Locally sourced
           </span>
           <span className="text-white/30 hidden sm:inline">·</span>
           <span className="flex items-center gap-2 text-white/80 text-sm font-medium tracking-wide">
-            <svg className="w-4 h-4 text-white shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+            <svg
+              className="w-4 h-4 text-white shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.8}
+                d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12"
+              />
             </svg>
             Fast Australia-wide delivery
           </span>
           <span className="text-white/30 hidden sm:inline">·</span>
           <span className="flex items-center gap-2 text-white/80 text-sm font-medium tracking-wide">
-            <svg className="w-4 h-4 text-white shrink-0" fill="currentColor" viewBox="0 0 24 24">
+            <svg
+              className="w-4 h-4 text-white shrink-0"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354l-4.543 2.826c-.998.608-2.231-.29-1.96-1.425l1.257-5.273L2.637 10.955c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.006z" />
             </svg>
             Trusted by our customers
@@ -303,7 +336,7 @@ export default function Page() {
               alt="Our story"
               width={800}
               height={600}
-               className="w-full h-auto"
+              className="w-full h-auto"
             />
           </div>
 
@@ -314,17 +347,18 @@ export default function Page() {
             </p>
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold leading-snug mb-4 md:mb-5">
               A marketplace built on{" "}
-              <span className="text-[#5A1E12]">values, not just products.</span>
+              <span className="text-[#5A1E12]">
+                {" "}
+                culture, not just commerce.
+              </span>
             </h2>
             <p className="text-gray-500 leading-relaxed mb-4 text-[15px] md:text-base">
-              A marketplace where quality is guaranteed, sellers are vetted, and every delivery is backed by a team that cares.
+              Made in Arnhem Land is an online marketplace dedicated to the
+              artists, makers, and producers of Arnhem Land. Every product is
+              created on Country and shared with community consent, connecting
+              you directly with the people and stories behind the work, and
+              giving makers a fair, direct route to market.
             </p>
-            {/* <p className="text-gray-500 leading-relaxed mb-6 md:mb-8 text-[15px] md:text-base">
-              From our first sale to thousands of happy deliveries, we&apos;ve
-              stayed true to our founding belief: great commerce is built on
-              trust. We&apos;re not just a marketplace — we&apos;re the team
-              behind every package that arrives at your door.
-            </p> */}
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-[#F4E9DC] flex items-center justify-center text-[#5A1E12] shrink-0">
                 <svg
@@ -340,7 +374,7 @@ export default function Page() {
                 </svg>
               </div>
               <p className="text-sm text-gray-600 font-medium">
-                Founded in Australia &middot; 100% locally operated
+                Made on Country &middot; Shared with community consent
               </p>
             </div>
           </div>
@@ -380,61 +414,61 @@ export default function Page() {
       </section> */}
 
       <section className="bg-[#F4E9DC] py-16 md:py-24 px-4 relative overflow-hidden">
-  {/* Decorative circles */}
-  <div className="absolute -top-10 -left-10 w-40 h-40 rounded-full bg-[#5A1E12]/5" />
-<div className="absolute -bottom-12 -right-8 w-52 h-52 rounded-full bg-[#5A1E12]/5" />
-<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-[#5A1E12]/3" />
+        {/* Decorative circles */}
+        <div className="absolute -top-10 -left-10 w-40 h-40 rounded-full bg-[#5A1E12]/5" />
+        <div className="absolute -bottom-12 -right-8 w-52 h-52 rounded-full bg-[#5A1E12]/5" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-[#5A1E12]/3" />
 
-  <div className="relative z-10 max-w-6xl mx-auto">
-    <div className="text-center mb-8 md:mb-12">
-      <p className="text-xs font-bold tracking-[0.25em] uppercase text-[#5A1E12] mb-2">
-        By The Numbers
-      </p>
-      <h2 className="text-3xl md:text-4xl font-bold">
-        Growing every day.
-      </h2>
-    </div>
+        <div className="relative z-10 max-w-6xl mx-auto">
+          <div className="text-center mb-8 md:mb-12">
+            <p className="text-xs font-bold tracking-[0.25em] uppercase text-[#5A1E12] mb-2">
+              By The Numbers
+            </p>
+            <h2 className="text-3xl md:text-4xl font-bold">
+              Growing every day.
+            </h2>
+          </div>
 
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-      {STATS.map((s, i) => (
-        <div
-          key={s.label}
-          className={`rounded-2xl p-6 md:p-8 text-center transition-transform hover:-translate-y-1 duration-300 ${
-            i === 1 || i === 2
-              ? "bg-[#5A1E12] border border-[#5A1E12]"
-              : "bg-white border border-[#e8d5c0] shadow-sm"
-          }`}
-        >
-          <p
-            className={`text-2xl md:text-3xl font-black mb-1 ${
-              i === 1 || i === 2 ? "text-white" : "text-[#5A1E12]"
-            }`}
-          >
-            <Counter end={s.end} suffix={s.suffix} />
-          </p>
-          <p
-            className={`font-semibold text-sm mb-2 ${
-              i === 1 || i === 2 ? "text-white/80" : "text-gray-800"
-            }`}
-          >
-            {s.label}
-          </p>
-          <div
-            className={`h-0.5 w-6 rounded-full mx-auto mb-2 ${
-              i === 1 || i === 2 ? "bg-white/30" : "bg-[#5A1E12]/30"
-            }`}
-          />
-          <p
-            className={`text-xs leading-relaxed hidden md:block ${
-              i === 1 || i === 2 ? "text-white/60" : "text-gray-400"
-            }`}
-          >
-            {s.desc}
-          </p>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
+            {STATS.map((s, i) => (
+              <div
+                key={s.label}
+                className={`rounded-2xl p-6 md:p-8 text-center transition-transform hover:-translate-y-1 duration-300 ${
+                  i === 1 || i === 2
+                    ? "bg-[#5A1E12] border border-[#5A1E12]"
+                    : "bg-white border border-[#e8d5c0] shadow-sm"
+                }`}
+              >
+                <p
+                  className={`text-2xl md:text-3xl font-black mb-1 ${
+                    i === 1 || i === 2 ? "text-white" : "text-[#5A1E12]"
+                  }`}
+                >
+                  <Counter end={s.end} suffix={s.suffix} />
+                </p>
+                <p
+                  className={`font-semibold text-sm mb-2 ${
+                    i === 1 || i === 2 ? "text-white/80" : "text-gray-800"
+                  }`}
+                >
+                  {s.label}
+                </p>
+                <div
+                  className={`h-0.5 w-6 rounded-full mx-auto mb-2 ${
+                    i === 1 || i === 2 ? "bg-white/30" : "bg-[#5A1E12]/30"
+                  }`}
+                />
+                <p
+                  className={`text-xs leading-relaxed hidden md:block ${
+                    i === 1 || i === 2 ? "text-white/60" : "text-gray-400"
+                  }`}
+                >
+                  {s.desc}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
-      ))}
-    </div>
-  </div>
       </section>
 
       {/* ══════════════════════════════════════════════════
@@ -449,48 +483,57 @@ export default function Page() {
             <h2 className="text-5xl md:text-6xl font-bold text-[#3a1208] leading-[1.05] mb-8">
               One place.
               <br />
-              Every <span className="text-[#803512]">thing.</span>
+              Every <span className="text-[#803512]">story.</span>
             </h2>
             <p className="text-base leading-[1.75] text-[#7a6558] border-l-2 border-[#C47A5A] pl-5 max-w-xl">
-              A carefully curated marketplace where quality, convenience, and
-              trust come together in one seamless experience.
+              A marketplace where culture, authenticity, and trust come together
+              in one seamless experience.
             </p>
           </div>
 
           <div className="flex flex-col">
             <div className="flex items-start gap-5 py-7 border-y border-[#e8d5c0]">
-              <p className="text-xs font-medium text-[#C47A5A] min-w-7 pt-1">01</p>
+              <p className="text-xs font-medium text-[#C47A5A] min-w-7 pt-1">
+                01
+              </p>
               <div>
                 <h3 className="text-base font-semibold text-[#1a0a06] mb-1.5">
-                  Curated catalogue
+                  Genuinely Arnhem Land–made
                 </h3>
+
                 <p className="text-[13px] leading-[1.65] text-[#7a6558]">
-                  Every category is managed by a dedicated team who reviews
-                  listings, compares pricing, and holds our standards firm.
+                  Every maker lists under our 100% Made in Arnhem Land promise,
+                  attesting that their work is created in the region. It’s the
+                  standard our sellers commit to, so you can shop with
+                  confidence in where each product comes from.
                 </p>
               </div>
             </div>
             <div className="flex items-start gap-5 py-7 border-b border-[#e8d5c0]">
-              <p className="text-xs font-medium text-[#C47A5A] min-w-7 pt-1">02</p>
+              <p className="text-xs font-medium text-[#C47A5A] min-w-7 pt-1">
+                02
+              </p>
               <div>
                 <h3 className="text-base font-semibold text-[#1a0a06] mb-1.5">
-                  Built around real needs
+                  Direct from the maker
                 </h3>
                 <p className="text-[13px] leading-[1.65] text-[#7a6558]">
-                  From everyday essentials to specialty products, we stock what
-                  customers genuinely look for, nothing filler.
+                  You buy directly from the artists and producers behind each
+                  piece, supporting their work and communities.
                 </p>
               </div>
             </div>
             <div className="flex items-start gap-5 py-7 border-b border-[#e8d5c0]">
-              <p className="text-xs font-medium text-[#C47A5A] min-w-7 pt-1">03</p>
+              <p className="text-xs font-medium text-[#C47A5A] min-w-7 pt-1">
+                03
+              </p>
               <div>
                 <h3 className="text-base font-semibold text-[#1a0a06] mb-1.5">
-                  Seller partnership
+                  Support for sellers
                 </h3>
                 <p className="text-[13px] leading-[1.65] text-[#7a6558]">
-                  We equip sellers with tools, insights, and support so their
-                  businesses thrive, and in turn, so do you.
+                  We give makers the tools, guidance, and support to sell online
+                  with confidence, many for the first time.
                 </p>
               </div>
             </div>
@@ -533,28 +576,25 @@ export default function Page() {
       {/* ══════════════════════════════════════════════════
           LEADERSHIP
       ══════════════════════════════════════════════════ */}
-     
 
       {/* ══════════════════════════════════════════════════
           IMAGE + COPY  (What We Offer detail row)
       ══════════════════════════════════════════════════ */}
       <section className="py-20 md:py-28 px-4 bg-gray-100 ">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-   
           <div>
-            <span className="inline-flex items-center gap-2 bg-[#5A1E12]/10 text-[#5A1E12] text-xs font-bold tracking-[0.2em] uppercase px-4 py-1.5 rounded-full mb-5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#5A1E12] animate-pulse" />
+            <span className="inline-flex items-center gap-2  text-[#5A1E12] text-xs font-bold tracking-[0.2em] uppercase px-4 py-1.5 rounded-full mb-5">
               Why Choose Us
             </span>
             <h2 className="text-4xl md:text-5xl font-black leading-[1.1] tracking-tight mb-5">
-              Shopping that{" "}
+              Shopping with{" "}
               <span className="relative inline-block">
-                <span className="relative z-10 text-[#5A1E12]">feels personal.</span>
+                <span className="relative z-10 text-[#5A1E12]">meaning.</span>
                 <span className="absolute left-0 -bottom-1 w-full h-0.75 rounded-full bg-[#5A1E12]/30" />
               </span>
             </h2>
             <p className="text-gray-500 leading-relaxed mb-4">
-             Personal from first click to final purchase.
+              Every purchase supports a maker, a community, and a culture.
             </p>
             {/* <p className="text-gray-500 leading-relaxed mb-8">
               Whether you&apos;re buying for yourself or gifting someone you
@@ -596,6 +636,27 @@ export default function Page() {
         </div>
       </section>
 
+      <section className="bg-[#F4E9DC] py-16 md:py-20 px-4">
+        <div className="max-w-3xl mx-auto text-center">
+          <p className="text-xs font-bold tracking-[0.25em] uppercase text-[#5a1e12] mb-3">
+            Sell With Us
+          </p>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Are you a maker in Arnhem Land?
+          </h2>
+          <p className="max-w-2xl mx-auto text-grey-500 leading-relaxed mb-8">
+            Join a marketplace built for you. You set your products and prices;
+            we handle the rest so you can focus on your craft.
+          </p>
+          <Link
+            href="/sellerOnboarding"
+            className="inline-flex items-center justify-center rounded-full bg-[#5A1E12] hover:bg-[#441208] text-white px-8 py-3 text-sm font-bold  shadow-md transition-all hover:shadow-lg"
+          >
+            Register as a Seller
+          </Link>
+        </div>
+      </section>
+
       {/* ══════════════════════════════════════════════════
           CTA BANNER
       ══════════════════════════════════════════════════ */}
@@ -626,13 +687,13 @@ export default function Page() {
       </section> */}
 
       {/* Certifications & Recognition */}
-    {/* ══════════════════════════════════════════════════
+      {/* ══════════════════════════════════════════════════
     CERTIFICATIONS & RECOGNITION
 ══════════════════════════════════════════════════ */}
-{/* ══════════════════════════════════════════════════
+      {/* ══════════════════════════════════════════════════
     CERTIFICATIONS & RECOGNITION
 ══════════════════════════════════════════════════ */}
-{/* 
+      {/*
 <section className="bg-[#f4e9dc] py-12 sm:py-16 md:py-20 lg:py-28 px-3 sm:px-4 border-t border-[#e8d5c0]">
   <div className="max-w-5xl mx-auto">
 
@@ -690,7 +751,6 @@ export default function Page() {
 
   </div>
 </section> */}
-    
     </main>
   );
 }

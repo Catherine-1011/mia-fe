@@ -307,7 +307,7 @@ export default function Page() {
           <span className="mb-4 max-w-[calc(100vw-2rem)] whitespace-normal px-4 py-1.5 rounded-full border border-white/20 bg-white/10 text-sm font-medium backdrop-blur-md">
              We'd love to hear from you
           </span>
-          <h1 className="text-2xl sm:text-4xl md:text-6xl font-bold mb-2 md:mb-6 tracking-tight">Contact Us</h1>
+          <h1 className="text-[2.25rem] sm:text-4xl md:text-6xl font-bold mb-2 md:mb-6 tracking-tight">Contact Us</h1>
           <p className="text-sm sm:text-base text-gray-200 max-w-full sm:max-w-2xl leading-relaxed">
             Have a question or need assistance? Reach out to our team and we'll get back to you.
           </p>

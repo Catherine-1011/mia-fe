@@ -116,17 +116,17 @@ function SimplifiedSellerSection({
               <span className="truncate">{sellerOrder.seller.name}</span>
             </h3>
             <p className="text-xs md:text-sm text-[#5A1E12]/60 flex items-center gap-1">
-              <span className="truncate">Sub Order: #{sellerOrder.subDisplayId || sellerOrder.id?.slice(-8).toUpperCase() || 'No ID'}</span>
+              <span className="truncate">Sub Order: #{sellerOrder.id?.slice(-8).toUpperCase() || 'No ID'}</span>
             </p>
           </div>
         </div>
         <div className="text-right shrink-0 ml-2">
           {/* Current status badge */}
-          <div>
-            <div
+          <div className="mb-2">
+            <div 
               className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border"
-              style={{
-                backgroundColor: `${statusConfig?.color || '#10b981'}20`,
+              style={{ 
+                backgroundColor: `${statusConfig?.color || '#10b981'}20`, 
                 color: statusConfig?.color || '#10b981',
                 borderColor: `${statusConfig?.color || '#10b981'}40`
               }}
@@ -135,6 +135,7 @@ function SimplifiedSellerSection({
               {statusConfig?.label || sellerOrder.status}
             </div>
           </div>
+          <p className="text-sm md:text-lg font-bold text-[#5A1E12]">${parseFloat(sellerOrder.subTotal || '0').toFixed(2)}</p>
         </div>
       </div>
 
@@ -241,9 +242,6 @@ function TrackOrderContent() {
   const [isLoading, setIsLoading]       = useState(false);
   const [errorMsg, setErrorMsg]         = useState("");
   const [isDownloading, setIsDownloading] = useState(false);
-  const [showCancelModal, setShowCancelModal] = useState(false);
-  const [cancelReason, setCancelReason]       = useState("");
-  const [isCancelling, setIsCancelling]       = useState(false);
   // Users cannot edit status - removed parent status updating
   // const [updatingParentStatus, setUpdatingParentStatus] = useState(false);
 
@@ -746,38 +744,6 @@ function TrackOrderContent() {
     }
   };
 
-  const handleCancelOrder = async () => {
-    if (!cancelReason.trim()) {
-      toast.error("Please provide a reason for cancellation.");
-      return;
-    }
-    setIsCancelling(true);
-    try {
-      const res = await fetch("https://backend.madeinarnhemland.com.au/api/orders/guest/cancel", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          displayId: orderId.trim().toUpperCase(),
-          customerEmail: email.trim(),
-          reason: cancelReason.trim(),
-        }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.success) {
-        toast.error(data.message || "Failed to cancel order.");
-        return;
-      }
-      toast.success("Order cancelled successfully.");
-      setShowCancelModal(false);
-      setCancelReason("");
-      await handleTrack();
-    } catch {
-      toast.error("Something went wrong. Please try again.");
-    } finally {
-      setIsCancelling(false);
-    }
-  };
-
   const currentStepIndex = order
     ? ORDER_STEPS.findIndex((s) => s.key === order.status)
     : -1;
@@ -883,19 +849,6 @@ function TrackOrderContent() {
         {order && !isLoading && (
           <div className="px-6 md:px-8 py-6 md:py-10 w-full">
 
-            {/* Cancelled banner */}
-            {order.status === "CANCELLED" && (
-              <div className="flex items-center gap-3 bg-red-50 border border-red-200 rounded-2xl px-4 py-3.5 mb-6">
-                <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center shrink-0">
-                  <X className="w-4 h-4 text-red-600" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-red-700">Order Cancelled</p>
-                  <p className="text-xs text-red-500 mt-0.5">This order has been cancelled and will not be processed.</p>
-                </div>
-              </div>
-            )}
-
             {/* Parent Order Progress - Same for both single and multi-seller */}
             <div className="bg-white rounded-2xl border border-[#5A1E12]/8 p-4 md:p-6 mb-6 md:mb-8">
               <p className="text-xs font-semibold uppercase tracking-widest text-[#5A1E12]/40 mb-4 md:mb-6">Delivery Progress</p>
@@ -954,32 +907,10 @@ function TrackOrderContent() {
             </div>
 
             {/* Page heading */}
-            <div className="flex items-start justify-between mb-6 md:mb-8">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-widest text-[#5A1E12]/40 mb-1">Order Summary</p>
-                <h2 className="text-xl md:text-2xl font-bold text-[#5A1E12]">Hello, {order.customerName.split(" ")[0]} 👋</h2>
-                <p className="text-sm text-[#5A1E12]/50 mt-1">Here's the latest on your order.</p>
-              </div>
-              {order.status !== "DELIVERED" && order.status !== "CANCELLED" && (
-                order.status === "CONFIRMED" ? (
-                  <button
-                    onClick={() => setShowCancelModal(true)}
-                    className="flex items-center gap-1.5 px-3 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-all text-xs shrink-0 mt-1"
-                  >
-                    <X className="w-3 h-3" />
-                    Cancel Order
-                  </button>
-                ) : (
-                  <button
-                    disabled
-                    title="Cancel order is only available when the order status is Confirmed."
-                    className="flex items-center gap-1.5 px-3 py-2 bg-gray-100 text-gray-400 font-semibold rounded-lg cursor-not-allowed text-xs shrink-0 mt-1"
-                  >
-                    <X className="w-3 h-3" />
-                    Cancel Order
-                  </button>
-                )
-              )}
+            <div className="mb-6 md:mb-8">
+              <p className="text-xs font-semibold uppercase tracking-widest text-[#5A1E12]/40 mb-1">Order Summary</p>
+              <h2 className="text-xl md:text-2xl font-bold text-[#5A1E12]">Hello, {order.customerName.split(" ")[0]} 👋</h2>
+              <p className="text-sm text-[#5A1E12]/50 mt-1">Here's the latest on your order.</p>
             </div>
 
             {/* Key stats row */}
@@ -1333,72 +1264,9 @@ function TrackOrderContent() {
                 Download Invoice
               </button>
             )}
-
           </div>
         )}
       </main>
-
-      {/* Cancel Order Modal */}
-      {showCancelModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center">
-                  <X className="w-4 h-4 text-red-600" />
-                </div>
-                <h3 className="text-base font-bold text-gray-900">Cancel Order</h3>
-              </div>
-              <button
-                onClick={() => { setShowCancelModal(false); setCancelReason(""); }}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {/* Warning */}
-            <p className="text-sm text-gray-600 mb-4">
-              Are you sure you want to cancel order{" "}
-              <span className="font-bold text-gray-900">#{orderId.toUpperCase()}</span>?{" "}
-              This action cannot be undone.
-            </p>
-
-            {/* Reason */}
-            <div className="mb-5">
-              <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-                Reason for Cancellation <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                value={cancelReason}
-                onChange={(e) => setCancelReason(e.target.value)}
-                placeholder="Please tell us why you're cancelling this order..."
-                rows={3}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 resize-none transition-all"
-              />
-            </div>
-
-            {/* Actions */}
-            <div className="flex gap-3">
-              <button
-                onClick={() => { setShowCancelModal(false); setCancelReason(""); }}
-                className="flex-1 py-2.5 border border-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-all text-sm"
-              >
-                Keep Order
-              </button>
-              <button
-                onClick={handleCancelOrder}
-                disabled={isCancelling || !cancelReason.trim()}
-                className="flex-1 py-2.5 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 text-sm"
-              >
-                {isCancelling ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />}
-                {isCancelling ? "Cancelling…" : "Cancel Order"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
