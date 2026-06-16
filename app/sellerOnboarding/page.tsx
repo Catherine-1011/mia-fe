@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
 
 const baseURL = "https://backend.madeinarnhemland.com.au";
@@ -1838,31 +1838,43 @@ export default function ArtistOnboardingForm() {
   // ─── MAIN ONBOARDING FORM ─────────────────────────────────────────────────
   return (
     <div className="relative min-h-screen bg-[#EAD7B7] py-8 sm:py-12 px-4">
-      <Link
-        href="/"
-        className="mx-auto mb-4 block w-fit md:absolute md:top-8 md:left-8 md:mx-0 md:mb-0"
-      >
-        {!logoError && (
-          <Image
-            src="/images/navbarLogo.png"
-            alt="Logo"
-            width={90}
-            height={90}
-            className="w-14 h-14 md:w-22.5 md:h-22.5"
-            onError={() => setLogoError(true)}
-          />
-        )}
-      </Link>
+{/* Logo — centered on mobile, top-left on desktop */}
+<div className="absolute top-4 left-1/2 -translate-x-1/2 md:top-8 md:left-8 md:translate-x-0 z-50">
+  <Link href="/" className="block w-fit" aria-label="Go to homepage">
+    {!logoError && (
+      <Image
+        src="/images/navbarLogo.png"
+        alt="Logo"
+        width={90}
+        height={90}
+        className="w-14 h-14 md:w-22.5 md:h-22.5"
+        onError={() => setLogoError(true)}
+      />
+    )}
+  </Link>
+</div>
 
-      <div>
-        <div className="mb-8 flex flex-col items-center justify-center text-center">
-          <h2 className="text-3xl font-extrabold text-[#5A1E12] mb-2 tracking-tight">
-            Start your journey as a Seller
-          </h2>
-          <p className="text-[#5A1E12]/70 mb-1">
-            Complete all steps to sign-up & start your selling
-          </p>
-        </div>
+{/* Back to Home — icon-only circle on mobile, full button on desktop */}
+<div className="absolute top-4 left-4 md:top-8 md:left-auto md:right-8 z-50 flex h-9 md:h-22.5 items-center">
+  <Link
+    href="/"
+    aria-label="Back to home"
+    className="inline-flex items-center justify-center gap-2 w-9 h-9 rounded-full md:w-auto md:h-auto md:rounded-xl border border-[#5A1E12]/25 bg-white/70 px-0 md:px-4 py-0 md:py-2 text-sm font-semibold text-[#5A1E12] shadow-sm backdrop-blur transition-all hover:bg-white hover:border-[#5A1E12]/40 hover:shadow-md"
+  >
+    <ArrowLeft className="h-4 w-4 shrink-0" />
+    <span className="hidden md:inline">Back to Home</span>
+  </Link>
+</div>
+
+<div>
+  <div className="mb-8 flex flex-col items-center justify-center text-center pt-16 md:pt-0">
+    <h2 className="text-3xl font-extrabold text-[#5A1E12] mb-2 tracking-tight">
+      Start your journey as a Seller
+    </h2>
+    <p className="text-[#5A1E12]/70 mb-1">
+      Complete all steps to sign-up & start your selling
+    </p>
+  </div>
 
         <div className="max-w-2xl mx-auto">
           {/* Progress Bar */}
