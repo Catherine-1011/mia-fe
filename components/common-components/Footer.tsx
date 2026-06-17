@@ -391,8 +391,8 @@ import { usePathname } from "next/navigation";
 
 const API = "https://backend.madeinarnhemland.com.au/api";
 
-export default function 
-Footer() {
+export default function
+  Footer() {
   const pathname = usePathname();
 
   const linkClass = (href: string) => {
@@ -745,7 +745,7 @@ Footer() {
         {/* Copyright */}
         <div className="flex-1 flex flex-col items-center text-center">
           <p className="text-white/80 text-xs md:text-sm text-center">
-            
+
             © 2026 Made in Arnhem Land. All rights reserved. | Honouring 65,000+ years of living culture. All products and experiences are shared with community consent.
           </p>
           {/* <p className="text-white/50 text-xs mt-1">
@@ -759,18 +759,13 @@ Footer() {
           <div className="flex items-center gap-2">
             {/* Visa */}
             <span className="bg-white rounded px-2 py-1 flex items-center justify-center h-7 w-12">
-              <svg viewBox="0 0 48 16" className="h-4 w-auto" aria-label="Visa">
-                <text
-                  x="0"
-                  y="13"
-                  fontFamily="Arial"
-                  fontWeight="bold"
-                  fontSize="14"
-                  fill="#1A1F71"
-                >
-                  VISA
-                </text>
-              </svg>
+              <Image
+                src="/visa.svg"
+                alt="Visa"
+                width={58}
+                height={16}
+                className="h-8 w-auto"
+              />
             </span>
             {/* Mastercard */}
             <span

@@ -9,6 +9,8 @@ import Sponsored from "@/components/cards/Sponsored";
 
 const SLIDE_COUNT = 2;
 const API_BASE_URL = "https://backend.madeinarnhemland.com.au/api";
+const HERO_VIDEO_SRC = "/home-video.mp4";
+const HERO_VIDEO_FADE_SECONDS = 0.65;
 
 // Blog post type for homepage
 interface ApiBlogPost {
@@ -55,9 +57,10 @@ const Page = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const productScrollRef = useRef<HTMLDivElement>(null);
   const heroVideoRefs = useRef<(HTMLVideoElement | null)[]>([]);
-  const heroLoopingRef = useRef(false);
+  const heroActiveVideoRef = useRef(0);
+  const heroSwitchingRef = useRef(false);
+  const heroResetTimerRef = useRef<number | null>(null);
   const [activeSlide, setActiveSlide] = useState(0);
-  const [activeHeroVideo, setActiveHeroVideo] = useState(0);
   const { data: products = [], isLoading: productsLoading } = useProducts();
   const limitedProducts = products
     .filter((product) => product.featured)
@@ -150,41 +153,83 @@ const Page = () => {
     }
   };
 
-  const handleHeroVideoTimeUpdate = (index: number) => {
-    const current = heroVideoRefs.current[index];
-    if (!current || heroLoopingRef.current) return;
+  useEffect(() => {
+    const videos = heroVideoRefs.current.filter(Boolean) as HTMLVideoElement[];
+    const first = videos[0];
+    const second = videos[1];
 
-    const remaining = current.duration - current.currentTime;
-    if (!Number.isFinite(remaining) || remaining > 0.4) return;
+    if (!first || !second) return;
 
-    const nextIndex = index === 0 ? 1 : 0;
-    const next = heroVideoRefs.current[nextIndex];
-    if (!next) return;
+    const showVideo = (index: number) => {
+      videos.forEach((video, videoIndex) => {
+        video.style.opacity = videoIndex === index ? "1" : "0";
+      });
+    };
 
-    heroLoopingRef.current = true;
-    next.currentTime = 0;
+    const switchVideos = async () => {
+      if (heroSwitchingRef.current) return;
 
-    next
-      .play()
-      .then(() => {
-        setActiveHeroVideo(nextIndex);
-        window.setTimeout(() => {
+      const currentIndex = heroActiveVideoRef.current;
+      const nextIndex = currentIndex === 0 ? 1 : 0;
+      const current = videos[currentIndex];
+      const next = videos[nextIndex];
+
+      if (!current || !next) return;
+
+      heroSwitchingRef.current = true;
+      next.currentTime = 0;
+
+      try {
+        await next.play();
+        showVideo(nextIndex);
+        heroActiveVideoRef.current = nextIndex;
+
+        if (heroResetTimerRef.current !== null) {
+          window.clearTimeout(heroResetTimerRef.current);
+        }
+
+        heroResetTimerRef.current = window.setTimeout(() => {
           current.pause();
           current.currentTime = 0;
-          heroLoopingRef.current = false;
-        }, 500);
-      })
-      .catch(() => {
-        heroLoopingRef.current = false;
-      });
-  };
+          heroSwitchingRef.current = false;
+        }, HERO_VIDEO_FADE_SECONDS * 1000);
+      } catch {
+        heroSwitchingRef.current = false;
+      }
+    };
 
-  useEffect(() => {
-    const first = heroVideoRefs.current[0];
-    if (!first) return;
+    const handleTimeUpdate = () => {
+      const current = videos[heroActiveVideoRef.current];
+      if (!current || heroSwitchingRef.current) return;
 
+      const remaining = current.duration - current.currentTime;
+      if (Number.isFinite(remaining) && remaining <= HERO_VIDEO_FADE_SECONDS) {
+        void switchVideos();
+      }
+    };
+
+    videos.forEach((video) => {
+      video.muted = true;
+      video.playsInline = true;
+      video.preload = "auto";
+      video.addEventListener("timeupdate", handleTimeUpdate);
+      video.load();
+    });
+
+    showVideo(0);
     first.currentTime = 0;
-    first.play().catch(() => undefined);
+    void first.play();
+
+    return () => {
+      videos.forEach((video) => {
+        video.removeEventListener("timeupdate", handleTimeUpdate);
+        video.pause();
+      });
+
+      if (heroResetTimerRef.current !== null) {
+        window.clearTimeout(heroResetTimerRef.current);
+      }
+    };
   }, []);
 
   return (
@@ -192,35 +237,27 @@ const Page = () => {
       {/* ================= HERO ================= */}
       <section>
         <div className="relative min-h-[75vh] md:min-h-screen h-[75vh] md:h-screen overflow-hidden bg-black">
-          <video
-            ref={(el) => {
-              heroVideoRefs.current[0] = el;
-            }}
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-              activeHeroVideo === 0 ? "opacity-100" : "opacity-0"
-            }`}
-            autoPlay
-            muted
-            playsInline
-            preload="metadata"
-            onTimeUpdate={() => handleHeroVideoTimeUpdate(0)}
-          >
-            <source src="/home-video.mp4" type="video/mp4" />
-          </video>
-          <video
-            ref={(el) => {
-              heroVideoRefs.current[1] = el;
-            }}
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
-              activeHeroVideo === 1 ? "opacity-100" : "opacity-0"
-            }`}
-            muted
-            playsInline
-            preload="metadata"
-            onTimeUpdate={() => handleHeroVideoTimeUpdate(1)}
-          >
-            <source src="/home-video.mp4" type="video/mp4" />
-          </video>
+          {[0, 1].map((index) => (
+            <video
+              key={index}
+              ref={(el) => {
+                heroVideoRefs.current[index] = el;
+              }}
+              className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-linear"
+              style={{ opacity: index === 0 ? 1 : 0 }}
+              autoPlay={index === 0}
+              muted
+              playsInline
+              preload="auto"
+              disablePictureInPicture
+              aria-hidden="true"
+            >
+              <source
+                src={HERO_VIDEO_SRC}
+                type='video/mp4; codecs="avc1.640032"'
+              />
+            </video>
+          ))}
           {/* Layered gradient overlay */}
           <div className="absolute inset-0 bg-linear-to-b from-amber-900/70 via-amber-900/40 to-black/80" />
           <div className="absolute inset-0 bg-linear-to-r from-black/40 via-transparent to-transparent" />
