@@ -2758,10 +2758,10 @@ export default function ArtistOnboardingForm() {
                       <tbody>
                         {feeSummaryRows.map((row, index) => (
                           <tr key={index} className="align-top">
-                            <td className="px-3 py-3 text-[#5A1E12]/80 border-r border-[#5A1E12]/20 break-words">
+                            <td className="px-3 py-3 text-[#5A1E12]/80 border-r border-[#5A1E12]/20 wrap-break-word">
                               {row.title}
                             </td>
-                            <td className="px-3 py-3 text-[#5A1E12]/80 break-words leading-relaxed">
+                            <td className="px-3 py-3 text-[#5A1E12]/80 wrap-break-word leading-relaxed">
                               {row.description}
                             </td>
                           </tr>
@@ -2799,7 +2799,7 @@ export default function ArtistOnboardingForm() {
                 {showFeeDetails &&
                   createPortal(
                     <div
-                      className="fixed left-0 top-0 z-[9999] flex h-dvh w-dvw items-start justify-center overflow-y-auto bg-black/50 p-3 py-4 sm:items-center sm:p-6"
+                      className="fixed left-0 top-0 z-9999 flex h-dvh w-dvw items-start justify-center overflow-y-auto bg-black/50 p-3 py-4 sm:items-center sm:p-6"
                       onClick={(event) => {
                         if (event.target === event.currentTarget) {
                           setShowFeeDetails(false);
@@ -2829,7 +2829,7 @@ export default function ArtistOnboardingForm() {
                         </div>
                         <div className="overflow-y-auto p-4 sm:p-6">
                           <div className="max-w-full overflow-x-auto rounded-xl border-2 border-[#2F2A26]">
-                            <table className="w-full min-w-[720px] border-collapse text-xs sm:min-w-[900px] sm:text-sm lg:min-w-[1100px]">
+                            <table className="w-full min-w-180 border-collapse text-xs sm:min-w-225 sm:text-sm lg:min-w-275">
                               <thead>
                                 <tr className="bg-[#F3B400]">
                                   <th className="border border-[#2F2A26] px-3 py-3 text-left font-bold text-black sm:px-4">
@@ -2880,7 +2880,7 @@ export default function ArtistOnboardingForm() {
                   <div>
                     <h3 className="text-xl font-bold text-[#5A1E12]">Set up your payout account</h3>
                     <p className="text-sm text-[#5A1E12]/70 leading-relaxed mt-1.5">
-                      To receive payments from your sales, connect a Stripe account. Stripe securely handles your identity verification and debit card details. Click below to complete the setup.
+                      To receive payments from your sales, create a Stripe account. Stripe securely handles your identity verification and debit card details. Click below to complete the setup.
                     </p>
                   </div>
 
@@ -2929,7 +2929,7 @@ export default function ArtistOnboardingForm() {
                       disabled={stripeLoading}
                       className="px-8 py-3 bg-[#5A1E12] hover:bg-[#4a180f] text-white rounded-xl text-sm font-semibold transition-all disabled:opacity-60"
                     >
-                      Connect with Stripe
+                      Create Stripe Account
                     </button>
                   )}
 
