@@ -411,17 +411,18 @@ export default function FeesAndCommissionPage() {
           <section id="seller-payout" className="scroll-mt-32 mb-16">
             <h2 className="text-2xl font-bold mb-4">What Sellers Receive</h2>
             <p className="leading-relaxed mb-6">
-              After all deductions, here is what a seller receives from each
-              completed order:
+              Here is the current breakdown of seller-related fees, charges, and
+              who applies them across each completed order and payout:
             </p>
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse text-sm">
                 <thead>
                   <tr className="bg-[#440C03] text-white">
                     <th className="px-4 py-3 font-semibold rounded-tl-xl">
-                      Component
+                      Fee / Charge
                     </th>
-                    <th className="px-4 py-3 font-semibold">Seller receives</th>
+                    <th className="px-4 py-3 font-semibold">Amount / Basis</th>
+                    <th className="px-4 py-3 font-semibold">Charged By</th>
                     <th className="px-4 py-3 font-semibold rounded-tr-xl">
                       Notes
                     </th>
@@ -430,33 +431,61 @@ export default function FeesAndCommissionPage() {
                 <tbody>
                   {[
                     [
-                      "Product price (ex-GST)",
-                      "90%",
-                      "10% platform commission deducted",
+                      "Marketplace Commission",
+                      "10% of product sale value",
+                      "ALPA Marketplace",
+                      "Currently applied to product sale value only. Shipping, GST treatment, refunds, and other applicable charges are handled separately.",
                     ],
                     [
-                      "GST component",
-                      "100%",
-                      "Sellers are responsible for GST obligations",
+                      "Stripe Card Processing - Domestic Cards",
+                      "Currently 1.7% + A$0.30 per successful transaction",
+                      "Stripe",
+                      "Deducted by Stripe from the connected seller account, subject to Stripe's current AU pricing and account setup.",
                     ],
                     [
-                      "Shipping collected",
-                      "100%",
-                      "Full shipping amount passed to seller",
+                      "Stripe Card Processing - International Cards",
+                      "Currently 3.5% + A$0.30 per successful transaction",
+                      "Stripe",
+                      "Applies where an international card is used. Additional currency conversion or cross-border charges may apply.",
                     ],
                     [
-                      "Stripe processing fees",
-                      "Paid by seller",
-                      "Charged by Stripe to your account; the platform takes no share",
+                      "Instant Payouts",
+                      "Currently 1.5% of payout volume, where eligible",
+                      "Stripe",
+                      "Optional. Only applies if the seller uses Instant Payouts and is eligible under Stripe rules.",
                     ],
-                    ["Instant Payout fee", "1.5%", "Paid by seller."],
-                  ].map(([component, receives, notes], i) => (
+                    [
+                      "Refunds",
+                      "As per Stripe rules",
+                      "Stripe / Seller Account",
+                      "Stripe may not return the original processing, Connect, or currency conversion fees. Refund handling depends on transaction status and seller balance. Connected sellers remain responsible for obligations associated with their Stripe account, subject to Stripe's policies and account configuration.",
+                    ],
+                    [
+                      "Disputes / Chargebacks",
+                      "As per Stripe rules",
+                      "Stripe / Seller Account",
+                      "Any dispute fees, chargeback outcomes, or balance impacts are governed by Stripe's policies.",
+                    ],
+                    [
+                      "Shipping Charges",
+                      "Shown at checkout",
+                      "Customer",
+                      "Shipping is charged separately based on the platform's shipping setup.",
+                    ],
+                    [
+                      "GST",
+                      "As applicable under Australian tax rules",
+                      "Seller / ALPA as applicable",
+                      "Sellers are responsible for their own tax obligations. This page is not tax advice.",
+                    ],
+                  ].map(([feeType, amount, chargedBy, notes], i) => (
                     <tr
                       key={i}
                       className={i % 2 === 0 ? "bg-white/60" : "bg-[#e8d9cb]"}
                     >
-                      <td className="px-4 py-3 font-medium">{component}</td>
-                      <td className="px-4 py-3">{receives}</td>
+                      <td className="px-4 py-3 font-medium">{feeType}</td>
+                      <td className="px-4 py-3">{amount}</td>
+                      <td className="px-4 py-3">{chargedBy}</td>
                       <td className="px-4 py-3 text-gray-600 text-xs">
                         {notes}
                       </td>
@@ -465,10 +494,15 @@ export default function FeesAndCommissionPage() {
                 </tbody>
               </table>
             </div>
+            <p className="text-xs text-gray-500 mt-3">
+              Fee examples and Stripe pricing references are indicative only and
+              may change over time. Sellers should review Stripe&apos;s latest
+              pricing and policies directly before using the platform.
+            </p>
           </section>
 
           {/* FEE SUMMARY */}
-          <section id="fee-summary" className="scroll-mt-32 mb-16">
+          {/* <section id="fee-summary" className="scroll-mt-32 mb-16">
             <h2 className="text-2xl font-bold mb-6">
               Fee Summary - at a glance
             </h2>
@@ -513,7 +547,7 @@ export default function FeesAndCommissionPage() {
                 </tbody>
               </table>
             </div>
-          </section>
+          </section> */}
 
           {/* WORKED EXAMPLE */}
           <section id="example" className="scroll-mt-32 mb-16">
