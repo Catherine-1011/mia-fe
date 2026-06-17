@@ -524,7 +524,7 @@ export default function OptimisticProductCard({
         </div>
 
         {/* Title */}
-        <h2 className="font-serif text-lg font-medium text-stone-800 mb-1 leading-tight group-hover:text-[#973c00] transition-colors">
+        <h2 className="font-serif text-lg font-medium text-stone-800 mb-1 leading-tight group-hover:text-[#973c00] transition-colors line-clamp-2">
           <Link href={`/shop/${slug}`}>
             {name}
           </Link>
