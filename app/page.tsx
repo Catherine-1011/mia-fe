@@ -45,10 +45,10 @@ const transformApiBlogToHomePost = (apiPost: ApiBlogPost): HomeBlogPost => ({
   title: apiPost.title,
   excerpt: apiPost.shortDescription,
   tags: apiPost.tags.length > 0 ? apiPost.tags : ["General"],
-  readTime: "5 min read", // Default read time 
+  readTime: "5 min read", // Default read time
   cta: apiPost.ctaText || "Read more",
   image: apiPost.coverImage || "/images/default-blog.jpg",
-  href: `/blog/${apiPost.slug}`
+  href: `/blog/${apiPost.slug}`,
 });
 
 const Page = () => {
@@ -59,7 +59,9 @@ const Page = () => {
   const [activeSlide, setActiveSlide] = useState(0);
   const [activeHeroVideo, setActiveHeroVideo] = useState(0);
   const { data: products = [], isLoading: productsLoading } = useProducts();
-  const limitedProducts = products.filter((product) => product.featured).slice(0, 12);
+  const limitedProducts = products
+    .filter((product) => product.featured)
+    .slice(0, 12);
 
   // Blog state management
   const [blogPosts, setBlogPosts] = useState<HomeBlogPost[]>([]);
@@ -72,15 +74,15 @@ const Page = () => {
       try {
         setBlogsLoading(true);
         setBlogsError(null);
-        
+
         const response = await fetch(`${API_BASE_URL}/blogs`);
         if (!response.ok) {
-          throw new Error('Failed to fetch blogs');
+          throw new Error("Failed to fetch blogs");
         }
-        
+
         const responseData = await response.json();
-        console.log('API Response:', responseData); // Debug log
-        
+        console.log("API Response:", responseData); // Debug log
+
         // Handle different response structures
         let blogData: ApiBlogPost[] = [];
         if (Array.isArray(responseData)) {
@@ -90,18 +92,20 @@ const Page = () => {
         } else if (responseData.blogs && Array.isArray(responseData.blogs)) {
           blogData = responseData.blogs;
         } else {
-          throw new Error('Invalid API response structure');
+          throw new Error("Invalid API response structure");
         }
-        
+
         const transformedPosts = blogData
-          .filter(post => post.status?.toLowerCase() === 'published')
+          .filter((post) => post.status?.toLowerCase() === "published")
           .slice(0, 3) // Limit to 3 posts for homepage
           .map(transformApiBlogToHomePost);
-          
+
         setBlogPosts(transformedPosts);
       } catch (error) {
-        console.error('Error fetching blogs:', error);
-        setBlogsError(error instanceof Error ? error.message : 'Failed to fetch blogs');
+        console.error("Error fetching blogs:", error);
+        setBlogsError(
+          error instanceof Error ? error.message : "Failed to fetch blogs",
+        );
         setBlogPosts([]);
       } finally {
         setBlogsLoading(false);
@@ -136,7 +140,8 @@ const Page = () => {
   const scrollProductByOne = (direction: 1 | -1) => {
     if (productScrollRef.current) {
       const card = productScrollRef.current.children[0] as HTMLElement;
-      const gap = window.innerWidth >= 1024 ? 24 : window.innerWidth >= 640 ? 16 : 12;
+      const gap =
+        window.innerWidth >= 1024 ? 24 : window.innerWidth >= 640 ? 16 : 12;
       const cardWidth = card ? card.offsetWidth + gap : 300;
       productScrollRef.current.scrollBy({
         left: direction * cardWidth,
@@ -304,8 +309,8 @@ const Page = () => {
               transition={{ duration: 0.65, delay: 0.58, ease: "easeOut" }}
               className="text-sm sm:text-base lg:text-lg max-w-lg mb-10 leading-relaxed text-white/75"
             >
-              Authentic Aboriginal products and experiences, each carrying
-              stories passed down through thousands of generations.
+              Uncover authentic products and experiences that carry stories
+              passed down through generations
             </motion.p>
 
             {/* CTA Row */}
@@ -383,7 +388,10 @@ const Page = () => {
       <Sponsored />
 
       {/* Fetch the Product cards dynamically  */}
-      <section id="featured-products" className="relative max-w-screen-2xl mx-auto py-10 sm:py-16 lg:py-20 sm:px-12 px-4 overflow-hidden">
+      <section
+        id="featured-products"
+        className="relative max-w-screen-2xl mx-auto py-10 sm:py-16 lg:py-20 sm:px-12 px-4 overflow-hidden"
+      >
         {/* ── ABORIGINAL PATTERN: TOP-RIGHT ── */}
         <div
           className="absolute top-0 right-0 w-72 h-72 sm:w-96 sm:h-96 pointer-events-none opacity-[0.13]"
@@ -563,121 +571,130 @@ const Page = () => {
               className="flex overflow-x-auto snap-x snap-mandatory gap-3 sm:gap-4 lg:gap-6 pb-4 scroll-smooth"
               style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
-              {productsLoading
-                ? Array.from({ length: 4 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className="shrink-0 snap-start snap-always w-[calc(100%-1px)] sm:w-[calc(50%-8px)] lg:w-[calc(25%-18px)] rounded-xl border border-stone-100 shadow-sm overflow-hidden bg-white flex flex-col"
-                    >
-                      {/* ── IMAGE SECTION ── */}
-                      <div className="relative aspect-6/4 overflow-hidden bg-[#EAD7B7]/30">
-                        {/* Shimmer overlay */}
-                        <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/60 to-transparent" />
-                        {/* Logo placeholder top-left */}
-                        <div className="absolute top-3 left-3 w-10 h-10 rounded-lg bg-[#EAD7B7]/80" />
-                        {/* Low-stock badge placeholder top-right */}
-                        <div className="absolute top-3 right-3 w-16 h-5 rounded-full bg-[#EAD7B7]/60" />
+              {productsLoading ? (
+                Array.from({ length: 4 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="shrink-0 snap-start snap-always w-[calc(100%-1px)] sm:w-[calc(50%-8px)] lg:w-[calc(25%-18px)] rounded-xl border border-stone-100 shadow-sm overflow-hidden bg-white flex flex-col"
+                  >
+                    {/* ── IMAGE SECTION ── */}
+                    <div className="relative aspect-6/4 overflow-hidden bg-[#EAD7B7]/30">
+                      {/* Shimmer overlay */}
+                      <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/60 to-transparent" />
+                      {/* Logo placeholder top-left */}
+                      <div className="absolute top-3 left-3 w-10 h-10 rounded-lg bg-[#EAD7B7]/80" />
+                      {/* Low-stock badge placeholder top-right */}
+                      <div className="absolute top-3 right-3 w-16 h-5 rounded-full bg-[#EAD7B7]/60" />
+                    </div>
+
+                    {/* ── DETAILS SECTION ── */}
+                    <div className="flex flex-col grow p-4 bg-white gap-y-3">
+                      {/* Artist label + stars */}
+                      <div className="flex justify-between items-center">
+                        <div className="h-2.5 w-20 rounded-full bg-stone-200 relative overflow-hidden">
+                          <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/70 to-transparent" />
+                        </div>
+                        <div className="flex gap-0.5">
+                          {Array.from({ length: 5 }).map((_, j) => (
+                            <div
+                              key={j}
+                              className="h-3 w-3 rounded-sm bg-stone-200 relative overflow-hidden"
+                            >
+                              <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/70 to-transparent" />
+                            </div>
+                          ))}
+                        </div>
                       </div>
 
-                      {/* ── DETAILS SECTION ── */}
-                      <div className="flex flex-col grow p-4 bg-white gap-y-3">
-                        {/* Artist label + stars */}
-                        <div className="flex justify-between items-center">
-                          <div className="h-2.5 w-20 rounded-full bg-stone-200 relative overflow-hidden">
-                            <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/70 to-transparent" />
-                          </div>
-                          <div className="flex gap-0.5">
-                            {Array.from({ length: 5 }).map((_, j) => (
-                              <div key={j} className="h-3 w-3 rounded-sm bg-stone-200 relative overflow-hidden">
-                                <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/70 to-transparent" />
-                              </div>
-                            ))}
-                          </div>
+                      {/* Title lines */}
+                      <div className="space-y-1.5">
+                        <div className="h-4 w-4/5 rounded-full bg-stone-200 relative overflow-hidden">
+                          <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/70 to-transparent" />
                         </div>
+                        <div className="h-4 w-2/5 rounded-full bg-stone-200 relative overflow-hidden">
+                          <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/70 to-transparent" />
+                        </div>
+                      </div>
 
-                        {/* Title lines */}
+                      {/* Description lines */}
+                      <div className="space-y-1.5">
+                        <div className="h-3 w-full rounded-full bg-stone-200 relative overflow-hidden">
+                          <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/70 to-transparent" />
+                        </div>
+                        <div className="h-3 w-3/4 rounded-full bg-stone-200 relative overflow-hidden">
+                          <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/70 to-transparent" />
+                        </div>
+                      </div>
+
+                      {/* Tags */}
+                      <div className="flex gap-1.5">
+                        <div className="h-5 w-14 rounded-sm bg-[#EAD7B7]/70 relative overflow-hidden">
+                          <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/70 to-transparent" />
+                        </div>
+                        <div className="h-5 w-16 rounded-sm bg-[#EAD7B7]/70 relative overflow-hidden">
+                          <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/70 to-transparent" />
+                        </div>
+                      </div>
+
+                      {/* Footer: price + buttons */}
+                      <div className="mt-auto pt-3 border-t border-stone-100 flex items-center justify-between">
                         <div className="space-y-1.5">
-                          <div className="h-4 w-4/5 rounded-full bg-stone-200 relative overflow-hidden">
+                          <div className="h-2.5 w-8 rounded-full bg-stone-200 relative overflow-hidden">
                             <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/70 to-transparent" />
                           </div>
-                          <div className="h-4 w-2/5 rounded-full bg-stone-200 relative overflow-hidden">
-                            <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/70 to-transparent" />
-                          </div>
-                        </div>
-
-                        {/* Description lines */}
-                        <div className="space-y-1.5">
-                          <div className="h-3 w-full rounded-full bg-stone-200 relative overflow-hidden">
-                            <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/70 to-transparent" />
-                          </div>
-                          <div className="h-3 w-3/4 rounded-full bg-stone-200 relative overflow-hidden">
+                          <div className="h-5 w-16 rounded-full bg-stone-200 relative overflow-hidden">
                             <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/70 to-transparent" />
                           </div>
                         </div>
-
-                        {/* Tags */}
-                        <div className="flex gap-1.5">
-                          <div className="h-5 w-14 rounded-sm bg-[#EAD7B7]/70 relative overflow-hidden">
+                        <div className="flex items-center gap-2">
+                          <div className="h-9 w-9 rounded-full bg-[#EAD7B7]/70 relative overflow-hidden">
                             <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/70 to-transparent" />
                           </div>
-                          <div className="h-5 w-16 rounded-sm bg-[#EAD7B7]/70 relative overflow-hidden">
-                            <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/70 to-transparent" />
-                          </div>
-                        </div>
-
-                        {/* Footer: price + buttons */}
-                        <div className="mt-auto pt-3 border-t border-stone-100 flex items-center justify-between">
-                          <div className="space-y-1.5">
-                            <div className="h-2.5 w-8 rounded-full bg-stone-200 relative overflow-hidden">
-                              <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/70 to-transparent" />
-                            </div>
-                            <div className="h-5 w-16 rounded-full bg-stone-200 relative overflow-hidden">
-                              <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/70 to-transparent" />
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="h-9 w-9 rounded-full bg-[#EAD7B7]/70 relative overflow-hidden">
-                              <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/70 to-transparent" />
-                            </div>
-                            <div className="h-10 w-24 rounded-full bg-[#973c00]/20 relative overflow-hidden">
-                              <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/50 to-transparent" />
-                            </div>
+                          <div className="h-10 w-24 rounded-full bg-[#973c00]/20 relative overflow-hidden">
+                            <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/50 to-transparent" />
                           </div>
                         </div>
                       </div>
                     </div>
-                  ))
-                : limitedProducts.length === 0 ? (
-                  <div className="w-full text-center py-12">
-                    <p className="text-[#3a1208] font-semibold text-lg mb-1">Coming Soon</p>
-                    <p className="text-[#803512]/60 text-sm">Our Products are coming soon. Stay tuned!</p>
                   </div>
-                ) : limitedProducts.map((product) => (
-                    <div
-                      key={product.id}
-                      className="shrink-0 snap-start snap-always w-[calc(100%-1px)] sm:w-[calc(50%-8px)] lg:w-[calc(25%-18px)]"
-                    >
-                      <OptimisticProductCard
-                        id={product.id}
-                        photo={
-                          product.featuredImage ||
-                          product.images?.[0] ||
-                          "/images/placeholder.png"
-                        }
-                        name={product.title || "Untitled"}
-                        description={product.description || ""}
-                        amount={parseFloat(product.price || "0")}
-                        displayPrice={product.price || undefined}
-                        stock={product.stock}
-                        slug={product.slug}
-                        rating={product.rating}
-                        tags={product.tags}
-                        featured={product.featured}
-                        artistName={product.artistName}
-                        productType={product.productType || product.type}
-                      />
-                    </div>
-                  ))}
+                ))
+              ) : limitedProducts.length === 0 ? (
+                <div className="w-full text-center py-12">
+                  <p className="text-[#3a1208] font-semibold text-lg mb-1">
+                    Coming Soon
+                  </p>
+                  <p className="text-[#803512]/60 text-sm">
+                    Our Products are coming soon. Stay tuned!
+                  </p>
+                </div>
+              ) : (
+                limitedProducts.map((product) => (
+                  <div
+                    key={product.id}
+                    className="shrink-0 snap-start snap-always w-[calc(100%-1px)] sm:w-[calc(50%-8px)] lg:w-[calc(25%-18px)]"
+                  >
+                    <OptimisticProductCard
+                      id={product.id}
+                      photo={
+                        product.featuredImage ||
+                        product.images?.[0] ||
+                        "/images/placeholder.png"
+                      }
+                      name={product.title || "Untitled"}
+                      description={product.description || ""}
+                      amount={parseFloat(product.price || "0")}
+                      displayPrice={product.price || undefined}
+                      stock={product.stock}
+                      slug={product.slug}
+                      rating={product.rating}
+                      tags={product.tags}
+                      featured={product.featured}
+                      artistName={product.artistName}
+                      productType={product.productType || product.type}
+                    />
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
@@ -748,7 +765,8 @@ const Page = () => {
               <span className="text-[#ead7b7]">Seller</span>
             </h3>
             <p className="text-sm text-white/50 max-w-xs leading-relaxed mb-4">
-              Share your authentic art and crafts with a global audience. Join our community of artists and creators.
+              Share your authentic art and crafts with a global audience. Join
+              our community of artists and creators.
             </p>
             <div className="inline-flex items-center gap-3 text-[#ead7b7] text-sm font-semibold tracking-wide uppercase">
               <span className="w-8 h-px bg-[#ead7b7]/60 group-hover:w-14 transition-all duration-400" />
@@ -867,7 +885,8 @@ const Page = () => {
               <span className="text-orange-200">Blog</span>
             </h3>
             <p className="text-sm text-white/50 max-w-xs leading-relaxed mb-4">
-              Discover stories, cultural insights, artist features, and the latest news from our Aboriginal art community.
+              Discover stories, cultural insights, artist features, and the
+              latest news from our Aboriginal art community.
             </p>
             <div className="inline-flex items-center gap-3 text-orange-200 text-sm font-semibold tracking-wide uppercase">
               <span className="w-8 h-px bg-orange-300/60 group-hover:w-14 transition-all duration-400" />
@@ -895,7 +914,6 @@ const Page = () => {
           </div>
         </Link>
       </section>
-
 
       {/* STATIC VIDEO SECTION */}
       <section className="relative mx-auto sm:px-12 px-4 bg-[url('/images/about-pattern2.jpg')] bg-cover bg-center pt-12 sm:pt-22 pb-14 sm:pb-28">
@@ -983,7 +1001,7 @@ const Page = () => {
                       <div className="w-20 h-6 rounded-full bg-[#e8d5c0]" />
                     </div>
                   </div>
-                  
+
                   {/* Content skeleton */}
                   <div className="flex flex-col flex-1 p-6">
                     {/* Tags skeleton */}
@@ -991,20 +1009,20 @@ const Page = () => {
                       <div className="w-16 h-5 rounded-full bg-[#F4E9DC]" />
                       <div className="w-12 h-5 rounded-full bg-[#F4E9DC]" />
                     </div>
-                    
+
                     {/* Title skeleton */}
                     <div className="space-y-2 mb-3">
                       <div className="w-full h-5 rounded bg-[#F4E9DC]" />
                       <div className="w-3/4 h-5 rounded bg-[#F4E9DC]" />
                     </div>
-                    
+
                     {/* Excerpt skeleton */}
                     <div className="space-y-2 flex-1 mb-5">
                       <div className="w-full h-4 rounded bg-[#F4E9DC]" />
                       <div className="w-full h-4 rounded bg-[#F4E9DC]" />
                       <div className="w-2/3 h-4 rounded bg-[#F4E9DC]" />
                     </div>
-                    
+
                     {/* CTA skeleton */}
                     <div className="pt-4 border-t border-[#e8d5c0]">
                       <div className="w-24 h-4 rounded bg-[#F4E9DC]" />
@@ -1015,14 +1033,21 @@ const Page = () => {
             ) : blogsError ? (
               // Error state
               <div className="col-span-full text-center py-8">
-                <p className="text-[#803512] font-semibold mb-2">Unable to load blog posts</p>
+                <p className="text-[#803512] font-semibold mb-2">
+                  Unable to load blog posts
+                </p>
                 <p className="text-[#803512]/60 text-sm">{blogsError}</p>
               </div>
             ) : blogPosts.length === 0 ? (
               // No posts state
               <div className="col-span-full text-center py-10">
-                <p className="text-[#803512] font-semibold text-lg mb-1">Coming Soon</p>
-                <p className="text-[#803512]/60 text-sm">Stories and insights from Arnhem Land are on their way. Stay tuned!</p>
+                <p className="text-[#803512] font-semibold text-lg mb-1">
+                  Coming Soon
+                </p>
+                <p className="text-[#803512]/60 text-sm">
+                  Stories and insights from Arnhem Land are on their way. Stay
+                  tuned!
+                </p>
               </div>
             ) : (
               // Actual blog posts
@@ -1040,7 +1065,7 @@ const Page = () => {
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                       onError={(e) => {
                         const target = e.target as HTMLImageElement;
-                        target.src = '/images/default-blog.jpg';
+                        target.src = "/images/default-blog.jpg";
                       }}
                     />
                     {/* Read time pill — top right */}
