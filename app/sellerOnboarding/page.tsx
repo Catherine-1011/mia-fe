@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
@@ -1077,6 +1078,25 @@ export default function ArtistOnboardingForm() {
   useEffect(() => {
     if (token) localStorage.setItem("sellerToken", token);
   }, [token]);
+
+  useEffect(() => {
+    if (!showFeeDetails) return;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setShowFeeDetails(false);
+      }
+    };
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [showFeeDetails]);
 
   // ─── Close phone dropdowns on outside click ───────────────────────────────
   useEffect(() => {
@@ -2776,65 +2796,84 @@ export default function ArtistOnboardingForm() {
                   </p>
                 </div>
 
-                {showFeeDetails && (
-                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-                    <div className="relative w-full max-w-6xl rounded-2xl bg-white shadow-2xl">
-                      <button
-                        type="button"
-                        onClick={() => setShowFeeDetails(false)}
-                        className="absolute right-4 top-4 rounded-full border border-[#5A1E12]/20 px-3 py-1 text-sm font-semibold text-[#5A1E12] hover:bg-[#f5ede8] transition-colors"
+                {showFeeDetails &&
+                  createPortal(
+                    <div
+                      className="fixed left-0 top-0 z-[9999] flex h-dvh w-dvw items-start justify-center overflow-y-auto bg-black/50 p-3 py-4 sm:items-center sm:p-6"
+                      onClick={(event) => {
+                        if (event.target === event.currentTarget) {
+                          setShowFeeDetails(false);
+                        }
+                      }}
+                    >
+                      <div
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="fee-details-title"
+                        className="relative flex max-h-[calc(100dvh-2rem)] w-[calc(100vw-1.5rem)] max-w-6xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl sm:max-h-[calc(100dvh-3rem)] sm:w-full sm:rounded-2xl"
                       >
-                        Close
-                      </button>
-                      <div className="p-5 sm:p-6">
-                        <h4 className="text-lg font-bold text-[#5A1E12] mb-4">
-                          Fees and charges details
-                        </h4>
-                        <div className="overflow-auto rounded-xl border-2 border-[#2F2A26]">
-                          <table className="w-full min-w-[1100px] border-collapse text-sm">
-                            <thead>
-                              <tr className="bg-[#F3B400]">
-                                <th className="border border-[#2F2A26] px-4 py-3 text-left font-bold text-black">
-                                  Fee / Charge
-                                </th>
-                                <th className="border border-[#2F2A26] px-4 py-3 text-left font-bold text-black">
-                                  Amount / Basis
-                                </th>
-                                <th className="border border-[#2F2A26] px-4 py-3 text-left font-bold text-black">
-                                  Charged By
-                                </th>
-                                <th className="border border-[#2F2A26] px-4 py-3 text-left font-bold text-black">
-                                  Notes
-                                </th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {feeDetailRows.map((row, index) => (
-                                <tr key={index} className="align-top">
-                                  <td className="border border-[#2F2A26] px-4 py-4 text-black">
-                                    {row.feeCharge}
-                                  </td>
-                                  <td className="border border-[#2F2A26] px-4 py-4 text-black">
-                                    {row.amountBasis}
-                                  </td>
-                                  <td className="border border-[#2F2A26] px-4 py-4 text-black">
-                                    {row.chargedBy}
-                                  </td>
-                                  <td className="border border-[#2F2A26] px-4 py-4 text-black">
-                                    {row.notes}
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
+                        <div className="flex items-start justify-between gap-4 border-b border-[#5A1E12]/15 px-4 py-3 sm:px-6 sm:py-4">
+                          <h4
+                            id="fee-details-title"
+                            className="text-base font-bold text-[#5A1E12] sm:text-lg"
+                          >
+                            Fees and charges details
+                          </h4>
+                          <button
+                            type="button"
+                            onClick={() => setShowFeeDetails(false)}
+                            className="shrink-0 rounded-full border border-[#5A1E12]/20 px-3 py-1 text-sm font-semibold text-[#5A1E12] transition-colors hover:bg-[#f5ede8]"
+                          >
+                            Close
+                          </button>
                         </div>
-                        <p className="mt-4 text-sm text-[#5A1E12]/80">
-                          {feeDetailFootnote}
-                        </p>
+                        <div className="overflow-y-auto p-4 sm:p-6">
+                          <div className="max-w-full overflow-x-auto rounded-xl border-2 border-[#2F2A26]">
+                            <table className="w-full min-w-[720px] border-collapse text-xs sm:min-w-[900px] sm:text-sm lg:min-w-[1100px]">
+                              <thead>
+                                <tr className="bg-[#F3B400]">
+                                  <th className="border border-[#2F2A26] px-3 py-3 text-left font-bold text-black sm:px-4">
+                                    Fee / Charge
+                                  </th>
+                                  <th className="border border-[#2F2A26] px-3 py-3 text-left font-bold text-black sm:px-4">
+                                    Amount / Basis
+                                  </th>
+                                  <th className="border border-[#2F2A26] px-3 py-3 text-left font-bold text-black sm:px-4">
+                                    Charged By
+                                  </th>
+                                  <th className="border border-[#2F2A26] px-3 py-3 text-left font-bold text-black sm:px-4">
+                                    Notes
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {feeDetailRows.map((row, index) => (
+                                  <tr key={index} className="align-top">
+                                    <td className="border border-[#2F2A26] px-3 py-3 text-black sm:px-4 sm:py-4">
+                                      {row.feeCharge}
+                                    </td>
+                                    <td className="border border-[#2F2A26] px-3 py-3 text-black sm:px-4 sm:py-4">
+                                      {row.amountBasis}
+                                    </td>
+                                    <td className="border border-[#2F2A26] px-3 py-3 text-black sm:px-4 sm:py-4">
+                                      {row.chargedBy}
+                                    </td>
+                                    <td className="border border-[#2F2A26] px-3 py-3 text-black sm:px-4 sm:py-4">
+                                      {row.notes}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                          <p className="mt-4 text-sm text-[#5A1E12]/80">
+                            {feeDetailFootnote}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                )}
+                    </div>,
+                    document.body,
+                  )}
 
                 {/* Set up payout account */}
                 <div className="space-y-4">
