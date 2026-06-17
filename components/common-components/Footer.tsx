@@ -869,7 +869,7 @@ Footer() {
           onClick={() => setShowMediaPress(false)}
         >
           <div
-            className="bg-[#F5ECD8] rounded-2xl shadow-2xl w-full max-w-sm p-8 text-center relative"
+            className="bg-[#ead7b7] rounded-2xl shadow-2xl w-full max-w-sm p-8 text-center relative"
             onClick={(e) => e.stopPropagation()}
           >
             <button
