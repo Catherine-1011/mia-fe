@@ -35,7 +35,6 @@ export default function VideoHeroSection({
 
     const primeVideo = (video: HTMLVideoElement) => {
       if (video.currentSrc) return;
-
       video.src = HERO_VIDEO_SRC;
       video.load();
     };
@@ -52,7 +51,9 @@ export default function VideoHeroSection({
 
       isSwitchingRef.current = true;
       primeVideo(next);
-      next.currentTime = 0;
+      // Do NOT seek next.currentTime here — video.load() already resets it to 0,
+      // and seeking before the video has buffered causes Safari to stall on a
+      // network seek request, which is what causes the visible freeze on desktop.
 
       try {
         await next.play();
@@ -140,11 +141,11 @@ export default function VideoHeroSection({
             videoRefs.current[index] = el;
           }}
           className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-linear"
-          style={{ opacity: index === 0 ? 1 : 0 }}
+          style={{ opacity: index === 0 ? 1 : 0, willChange: "opacity" }}
           autoPlay={index === 0}
           muted
           playsInline
-          preload="auto"
+          preload={index === 0 ? "auto" : "none"}
           disablePictureInPicture
           aria-hidden="true"
         >
