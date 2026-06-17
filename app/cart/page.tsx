@@ -461,6 +461,11 @@ export default function Page() {
         updateProductCoupon(productId, { error: "This product is not eligible for that coupon.", loading: false });
         return;
       }
+      const savingsAmount = Number(data.summary?.totalSavingsExGST ?? 0);
+      if (savingsAmount <= 0) {
+        updateProductCoupon(productId, { error: data.message || "Your cart doesn't meet the minimum quantity required for this coupon.", loading: false });
+        return;
+      }
       const applied: AppliedSellerCoupon = {
         code: data.coupon.code,
         couponType: data.coupon.couponType,
@@ -517,7 +522,7 @@ export default function Page() {
       coupons.forEach(async (c: any) => {
         try {
           const data = await sellerCouponsApi.applyCoupon(c.code, productVariants);
-          const eligible = !!(data.success && data.qualifyingItems?.length > 0);
+          const eligible = !!(data.success && data.qualifyingItems?.length > 0 && Number(data.summary?.totalSavingsExGST ?? 0) > 0);
           setProductCoupons(prev => {
             const cur = prev[productId] ?? makeFreshCouponState();
             return { ...prev, [productId]: { ...cur, eligibilityMap: { ...(cur.eligibilityMap ?? {}), [c.code]: eligible } } };
