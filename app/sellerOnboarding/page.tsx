@@ -825,6 +825,83 @@ interface FormData {
   newPassword: string;
 }
 
+const feeSummaryRows = [
+  {
+    title: "Marketplace Fees",
+    description: "10% Commission",
+  },
+  {
+    title: "Stripe Fees",
+    description: "Domestic Cards, International Cards, Instant Payouts, Disputes",
+  },
+  {
+    title: "Important Notes",
+    description: "GST, Refunds, Stripe policy disclaimer",
+  },
+];
+
+const feeDetailRows = [
+  {
+    feeCharge: "Marketplace Commission",
+    amountBasis: "10% of product sale value",
+    chargedBy: "ALPA Marketplace",
+    notes:
+      "Currently applied to product sale value only. Shipping, GST treatment, refunds, and other applicable charges are handled separately.",
+  },
+  {
+    feeCharge: "Stripe Card Processing - Domestic Cards",
+    amountBasis: "Currently 1.7% + A$0.30 per successful transaction",
+    chargedBy: "Stripe",
+    notes:
+      "Deducted by Stripe from the connected seller account, subject to Stripe's current AU pricing and account setup.",
+  },
+  {
+    feeCharge: "Stripe Card Processing - International Cards",
+    amountBasis: "Currently 3.5% + A$0.30 per successful transaction",
+    chargedBy: "Stripe",
+    notes:
+      "Applies where an international card is used. Additional currency conversion or cross-border charges may apply.",
+  },
+  {
+    feeCharge: "Instant Payouts",
+    amountBasis: "Currently 1.5% of payout volume, where eligible",
+    chargedBy: "Stripe",
+    notes:
+      "Optional. Only applies if the seller uses Instant Payouts and is eligible under Stripe rules.",
+  },
+  {
+    feeCharge: "Refunds",
+    amountBasis: "As per Stripe rules",
+    chargedBy: "Stripe / Seller Account",
+    notes:
+      "Stripe may not return the original processing, Connect, or currency conversion fees. Refund handling depends on transaction status and seller balance. Connected sellers remain responsible for obligations associated with their Stripe account, subject to Stripe's policies and account configuration.",
+  },
+  {
+    feeCharge: "Disputes / Chargebacks",
+    amountBasis: "As per Stripe rules",
+    chargedBy: "Stripe / Seller Account",
+    notes:
+      "Any dispute fees, chargeback outcomes, or balance impacts are governed by Stripe's policies.",
+  },
+  {
+    feeCharge: "Shipping Charges",
+    amountBasis: "Shown at checkout",
+    chargedBy: "Customer",
+    notes:
+      "Shipping is charged separately based on the platform's shipping setup.",
+  },
+  {
+    feeCharge: "GST",
+    amountBasis: "As applicable under Australian tax rules",
+    chargedBy: "Seller / ALPA as applicable",
+    notes:
+      "Sellers are responsible for their own tax obligations. This page is not tax advice.",
+  },
+];
+
+const feeDetailFootnote =
+  "Fee examples and Stripe pricing references are indicative only and may change over time. Sellers should review Stripe's latest pricing and policies directly before using the platform.";
+
 // ─── Helper ──────────────────────────────────────────────────────────────────
 /** Map backend onboardingStep to frontend step (1-6) */
 const backendStepToFrontend = (backendStep: number): number => {
@@ -948,6 +1025,7 @@ export default function ArtistOnboardingForm() {
   } | null>(null);
   const [stripeLoading, setStripeLoading] = useState(false);
   const [registrationComplete, setRegistrationComplete] = useState(false);
+  const [showFeeDetails, setShowFeeDetails] = useState(false);
 
   // ─── Phone picker — Step 1 ────────────────────────────────────────────────
   const [phoneCountry, setPhoneCountry] = useState<Country>(COUNTRIES[0]);
@@ -2645,28 +2723,45 @@ export default function ArtistOnboardingForm() {
                 <div className="border border-[#5A1E12]/20 rounded-xl p-5">
                   <p className="text-base font-bold text-[#5A1E12] mb-3">Before you connect: quick summary</p>
                   <p className="text-sm font-semibold text-[#5A1E12] mb-2">What it costs</p>
-                  <table className="w-full text-sm border-collapse">
-                    <thead>
-                      <tr>
-                        <th className="text-left px-3 py-2.5 font-semibold text-[#5A1E12] border border-[#5A1E12]/20 bg-[#f5ede8]">Fee</th>
-                        <th className="text-left px-3 py-2.5 font-semibold text-[#5A1E12] border border-[#5A1E12]/20 bg-[#f5ede8]">Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td className="px-3 py-3 text-[#5A1E12]/80 border border-[#5A1E12]/20">Our commission (our only fee)</td>
-                        <td className="px-3 py-3 font-bold text-[#5A1E12] border border-[#5A1E12]/20">10% per sale</td>
-                      </tr>
-                      <tr>
-                        <td className="px-3 py-3 text-[#5A1E12]/80 border border-[#5A1E12]/20">Stripe card processing</td>
-                        <td className="px-3 py-3 font-bold text-[#5A1E12] border border-[#5A1E12]/20">1.7% + A$0.30</td>
-                      </tr>
-                      <tr>
-                        <td className="px-3 py-3 text-[#5A1E12]/80 border border-[#5A1E12]/20">Stripe instant payout</td>
-                        <td className="px-3 py-3 font-bold text-[#5A1E12] border border-[#5A1E12]/20">1.5% per payout</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                  <div className="rounded-xl border border-[#5A1E12]/20 overflow-hidden">
+                    <table className="w-full table-fixed text-sm border-collapse">
+                      <thead>
+                        <tr>
+                          <th className="w-[34%] text-left px-3 py-2.5 font-semibold text-[#5A1E12] border-b border-r border-[#5A1E12]/20 bg-[#f5ede8]">
+                            Fee Type
+                          </th>
+                          <th className="text-left px-3 py-2.5 font-semibold text-[#5A1E12] border-b border-[#5A1E12]/20 bg-[#f5ede8]">
+                            Description
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {feeSummaryRows.map((row, index) => (
+                          <tr key={index} className="align-top">
+                            <td className="px-3 py-3 text-[#5A1E12]/80 border-r border-[#5A1E12]/20 break-words">
+                              {row.title}
+                            </td>
+                            <td className="px-3 py-3 text-[#5A1E12]/80 break-words leading-relaxed">
+                              {row.description}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <div className="mt-4 rounded-xl border border-[#5A1E12]/15 bg-[#FCF7F1] px-4 py-3">
+                    <p className="text-sm text-[#5A1E12]/80 leading-relaxed">
+                      To see more details{" "}
+                      <button
+                        type="button"
+                        onClick={() => setShowFeeDetails(true)}
+                        className="font-semibold text-[#5A1E12] underline underline-offset-2 hover:text-[#4a180f] transition-colors"
+                      >
+                        Click here
+                      </button>
+                      .
+                    </p>
+                  </div>
                   <p className="mt-3 text-xs text-[#5A1E12]/60 italic leading-relaxed">
                     Commission on product price only (excl. GST &amp; shipping).<br />
                     Stripe fees charged by Stripe.{" "}
@@ -2680,6 +2775,66 @@ export default function ArtistOnboardingForm() {
                     </a>
                   </p>
                 </div>
+
+                {showFeeDetails && (
+                  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <div className="relative w-full max-w-6xl rounded-2xl bg-white shadow-2xl">
+                      <button
+                        type="button"
+                        onClick={() => setShowFeeDetails(false)}
+                        className="absolute right-4 top-4 rounded-full border border-[#5A1E12]/20 px-3 py-1 text-sm font-semibold text-[#5A1E12] hover:bg-[#f5ede8] transition-colors"
+                      >
+                        Close
+                      </button>
+                      <div className="p-5 sm:p-6">
+                        <h4 className="text-lg font-bold text-[#5A1E12] mb-4">
+                          Fees and charges details
+                        </h4>
+                        <div className="overflow-auto rounded-xl border-2 border-[#2F2A26]">
+                          <table className="w-full min-w-[1100px] border-collapse text-sm">
+                            <thead>
+                              <tr className="bg-[#F3B400]">
+                                <th className="border border-[#2F2A26] px-4 py-3 text-left font-bold text-black">
+                                  Fee / Charge
+                                </th>
+                                <th className="border border-[#2F2A26] px-4 py-3 text-left font-bold text-black">
+                                  Amount / Basis
+                                </th>
+                                <th className="border border-[#2F2A26] px-4 py-3 text-left font-bold text-black">
+                                  Charged By
+                                </th>
+                                <th className="border border-[#2F2A26] px-4 py-3 text-left font-bold text-black">
+                                  Notes
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {feeDetailRows.map((row, index) => (
+                                <tr key={index} className="align-top">
+                                  <td className="border border-[#2F2A26] px-4 py-4 text-black">
+                                    {row.feeCharge}
+                                  </td>
+                                  <td className="border border-[#2F2A26] px-4 py-4 text-black">
+                                    {row.amountBasis}
+                                  </td>
+                                  <td className="border border-[#2F2A26] px-4 py-4 text-black">
+                                    {row.chargedBy}
+                                  </td>
+                                  <td className="border border-[#2F2A26] px-4 py-4 text-black">
+                                    {row.notes}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                        <p className="mt-4 text-sm text-[#5A1E12]/80">
+                          {feeDetailFootnote}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Set up payout account */}
                 <div className="space-y-4">
