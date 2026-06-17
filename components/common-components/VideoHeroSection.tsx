@@ -2,8 +2,8 @@
 
 import React, { useEffect, useRef } from "react";
 
-const HERO_VIDEO_SRC = "/home-video.mp4";
-const HERO_VIDEO_TYPE = 'video/mp4; codecs="avc1.640032"';
+const HERO_VIDEO_SRC = "/home-video-safari.mp4";
+const HERO_VIDEO_TYPE = 'video/mp4; codecs="avc1.640029"';
 const HERO_VIDEO_FADE_SECONDS = 0.65;
 
 interface VideoHeroSectionProps {
