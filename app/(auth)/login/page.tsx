@@ -225,12 +225,12 @@ export default function LoginPage() {
         )}
       </AnimatePresence>
 
-      {/* Back to Home — circle icon on mobile, full button on desktop */}
-      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 md:top-8 md:right-8 z-50 flex items-center">
+      {/* Back to Home — top left */}
+     <div className="absolute top-4 left-4 md:top-8 md:left-auto md:right-8 z-50 flex items-center">
         <Link
           href="/"
           aria-label="Back to home"
-          className="inline-flex items-center justify-center gap-2 w-9 h-9 rounded-full md:w-auto md:h-auto md:rounded-xl border border-white/30 bg-white/10 px-0 md:px-4 py-0 md:py-2 text-sm font-semibold text-white shadow-sm backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50"
+          className="inline-flex items-center justify-center gap-2 w-9 h-9 rounded-full md:w-auto md:h-auto md:rounded-xl border border-[#5A1E12]/25 bg-white/70 px-0 md:px-4 py-0 md:py-2 text-sm font-semibold text-[#5A1E12] shadow-sm backdrop-blur transition-all hover:bg-white hover:border-[#5A1E12]/40 hover:shadow-md"
         >
           <ArrowLeft className="h-4 w-4 shrink-0" />
           <span className="hidden md:inline">Back to Home</span>
@@ -241,7 +241,7 @@ export default function LoginPage() {
         src="/images/top2.jpg"
         alt="Auth Visual"
         fill
-        className="hidden object-contain object-[130%_center] lg:block"
+        className="hidden object-cover object-right-center lg:block"
         priority
       />
 
@@ -249,15 +249,17 @@ export default function LoginPage() {
       <div className="absolute inset-0 hidden lg:block bg-[linear-gradient(90deg,#440C03_0%,#440C03_44%,rgba(68,12,3,0.55)_68%,rgba(68,12,3,0)_100%)]" />
 
       <section className="relative z-10 flex min-h-screen w-full items-center px-6 py-20 sm:px-10 md:px-16 lg:px-20">
-        <Link href="/" className="absolute top-6 left-6 sm:top-8 sm:left-8">
-          <Image
-            src="/images/navbarLogo.png"
-            alt="Logo"
-            width={90}
-            height={90}
-            className="w-14 h-14 md:w-22.5 md:h-22.5"
-          />
-        </Link>
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 md:left-8 md:translate-x-0 md:top-6 z-50">
+          <Link href="/">
+            <Image
+              src="/images/navbarLogo.png"
+              alt="Logo"
+              width={90}
+              height={90}
+              className="w-14 h-14 md:w-20 md:h-20 hover:opacity-90 transition-opacity"
+            />
+          </Link>
+        </div>
 
         <div className="w-full max-w-md">
           <p className="uppercase text-xs tracking-widest mb-4 opacity-80">Start your journey</p>
