@@ -888,12 +888,14 @@ export default function ArtistOnboardingForm() {
   const [token, setToken] = useState<string | null>(null);
   const [hydrated, setHydrated] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [abnVerified, setAbnVerified] = useState(false);
   const [resumeInfo, setResumeInfo] = useState<{
     step?: number;
     stepName?: string;
   } | null>(null);
   const [resumeOtp, setResumeOtp] = useState("");
+  const [abnValidated, setAbnValidated] = useState(false);
+  const [abnValidating, setAbnValidating] = useState(false);
+  const [abnInfo, setAbnInfo] = useState<{ entityName: string; businessName: string; gst: string } | null>(null);
   const totalSteps = 6;
 
   const [formData, setFormData] = useState<FormData>({
@@ -1312,9 +1314,9 @@ export default function ArtistOnboardingForm() {
     }
     setStripeLoading(true);
     try {
-      const res = await fetch(
-        `${baseURL}/api/seller-onboarding/stripe/oauth-url`,
-        {
+      const abnParam = formData.abn?.replace(/\s/g, "").trim();
+      const url = `${baseURL}/api/seller-onboarding/stripe/oauth-url${abnParam ? `?abn=${encodeURIComponent(abnParam)}` : ""}`;
+      const res = await fetch(url, {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         },
@@ -1343,6 +1345,43 @@ export default function ArtistOnboardingForm() {
     setCurrentStep(4);
   };
 
+  // ─── ABN VALIDATE ────────────────────────────────────────────────────────
+  const handleValidateAbn = async () => {
+    const clean = formData.abn?.replace(/\s/g, "").trim();
+    if (!clean) { setError("abn", "Please enter an ABN to validate"); return; }
+    if (clean.length !== 11) { setError("abn", "ABN must be 11 digits"); return; }
+    setAbnValidating(true);
+    setAbnValidated(false);
+    setAbnInfo(null);
+    setErrors((p) => ({ ...p, abn: "" }));
+    try {
+      const res = await fetch(`${baseURL}/api/sellers/validate-abn-public`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ abn: clean }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        setError("abn", data.message || "Invalid ABN. Please check and try again.");
+        return;
+      }
+      // Valid — auto-fill state & postcode from ABR data
+      const info = data.abnValidation?.data;
+      setAbnValidated(true);
+      setAbnInfo({
+        entityName: info?.entityName || "",
+        businessName: info?.businessName || "",
+        gst: info?.gst || "",
+      });
+      if (info?.address?.state)    setFormData((p) => ({ ...p, state: info.address.state }));
+      if (info?.address?.postcode) setFormData((p) => ({ ...p, postcode: info.address.postcode }));
+    } catch {
+      setError("abn", "Could not reach ABN lookup service. Please try again.");
+    } finally {
+      setAbnValidating(false);
+    }
+  };
+
   // ─── STEP 5 — submit onboarding ───────────────────────────────────────────
   const handleStep5Submit = async () => {
     const newErrors: Record<string, string> = {};
@@ -1350,11 +1389,24 @@ export default function ArtistOnboardingForm() {
       newErrors.storeName = "Store name is required";
     if (!formData.storeBio?.trim())
       newErrors.storeBio = "Store bio is required";
+    if (!formData.abn?.trim())
+      newErrors.abn = "ABN is required";
+    if (!formData.street?.trim())
+      newErrors.street = "Street address is required";
+    if (!formData.city?.trim())
+      newErrors.city = "City is required";
+    if (!formData.state?.trim())
+      newErrors.state = "State is required";
+    if (!formData.postcode?.trim())
+      newErrors.postcode = "Postcode is required";
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-    setLoading(true);
+    if (!abnValidated) {
+      setError("abn", "Please validate your ABN before continuing.");
+      return;
+    }
     try {
       const fd = new FormData();
       fd.append("email", formData.email);
@@ -1370,16 +1422,16 @@ export default function ArtistOnboardingForm() {
       fd.append("storeDescription", formData.storeBio);
       if (formData.storeLogo) fd.append("storeLogo", formData.storeLogo);
       fd.append("businessName", formData.storeName);
-      fd.append("abn", "N/A");
+      fd.append("abn", formData.abn.replace(/\s/g, ""));
       fd.append("businessType", "individual");
       fd.append(
         "businessAddress",
         JSON.stringify({
-          street: "",
-          city: "",
-          state: "",
-          postcode: "",
-          country: "",
+          street: formData.street,
+          city: formData.city,
+          state: formData.state,
+          postcode: formData.postcode,
+          country: formData.country || "Australia",
         }),
       );
       const res = await fetch(`${baseURL}/api/sellers/submit-onboarding`, {
@@ -2362,7 +2414,7 @@ export default function ArtistOnboardingForm() {
                   )}
                 </div>
                 <div>
-                  <label className={labelCls}>Store Logo *</label>
+                  <label className={labelCls}>Store Logo <span className="text-[#5A1E12]/40 font-normal">(optional)</span></label>
                   <input
                     type="file"
                     accept="image/*"
@@ -2390,7 +2442,7 @@ export default function ArtistOnboardingForm() {
                     name="storeBio"
                     value={formData.storeBio}
                     onChange={handleInputChange}
-                    rows={6}
+                    rows={4}
                     placeholder="Tell customers about your art…"
                     className={`w-full px-4 py-2.5 border rounded-xl focus:outline-none focus:ring-2 focus:ring-[#5A1E12]/40 bg-white text-[#5A1E12] placeholder-[#5A1E12]/40 resize-none transition-all ${errors.storeBio ? "border-red-400" : "border-[#5A1E12]/20"}`}
                   />
@@ -2400,6 +2452,133 @@ export default function ArtistOnboardingForm() {
                     </p>
                   )}
                 </div>
+
+                {/* ABN */}
+                <div>
+                  <label className={labelCls}>Australian Business Number (ABN) *</label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      name="abn"
+                      value={formData.abn}
+                      onChange={(e) => {
+                        handleInputChange(e);
+                        setAbnValidated(false);
+                        setAbnInfo(null);
+                        setErrors((p) => ({ ...p, abn: "" }));
+                      }}
+                      placeholder="e.g. 51 824 753 556"
+                      maxLength={14}
+                      className={`${inputCls("abn")} flex-1`}
+                    />
+                    {abnValidated ? (
+                      <div className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold bg-green-100 text-green-700 border border-green-300 whitespace-nowrap">
+                        <svg className="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Validated
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleValidateAbn}
+                        disabled={abnValidating || !formData.abn?.trim()}
+                        className="px-4 py-2 rounded-lg text-sm font-semibold bg-[#5A1E12] text-white disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                      >
+                        {abnValidating ? "Checking…" : "Validate"}
+                      </button>
+                    )}
+                  </div>
+                  {errors.abn && (
+                    <p className="mt-1 text-xs text-red-600">{errors.abn}</p>
+                  )}
+                  {abnValidated && abnInfo && (
+                    <div className="mt-2 p-3 rounded-lg bg-green-50 border border-green-200 flex items-start gap-2">
+                      <svg className="w-4 h-4 text-green-600 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <div className="text-xs text-green-800 space-y-0.5">
+                        <p className="font-semibold">ABN Verified</p>
+                        {(abnInfo.businessName || abnInfo.entityName) && (
+                          <p>{abnInfo.businessName || abnInfo.entityName}</p>
+                        )}
+                        {abnInfo.gst && <p>GST Registered: {abnInfo.gst}</p>}
+                      </div>
+                    </div>
+                  )}
+                  {!abnValidated && (
+                    <p className="mt-1 text-xs text-[#5A1E12]/50">
+                      Your ABN will be verified with the Australian Business Register and shown on tax invoices.
+                    </p>
+                  )}
+                </div>
+
+                {/* Business Address */}
+                <div>
+                  <p className="block text-sm font-semibold text-[#5A1E12] mb-2">Business Address *</p>
+                  <div className="space-y-3">
+                    <div>
+                      <input
+                        type="text"
+                        name="street"
+                        value={formData.street}
+                        onChange={handleInputChange}
+                        placeholder="Street address"
+                        className={inputCls("street")}
+                      />
+                      {errors.street && <p className="mt-1 text-xs text-red-600">{errors.street}</p>}
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <input
+                          type="text"
+                          name="city"
+                          value={formData.city}
+                          onChange={handleInputChange}
+                          placeholder="City / Suburb"
+                          className={inputCls("city")}
+                        />
+                        {errors.city && <p className="mt-1 text-xs text-red-600">{errors.city}</p>}
+                      </div>
+                      <div>
+                        <input
+                          type="text"
+                          name="state"
+                          value={formData.state}
+                          onChange={handleInputChange}
+                          placeholder="State (e.g. NT)"
+                          className={inputCls("state")}
+                        />
+                        {errors.state && <p className="mt-1 text-xs text-red-600">{errors.state}</p>}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <input
+                          type="text"
+                          name="postcode"
+                          value={formData.postcode}
+                          onChange={handleInputChange}
+                          placeholder="Postcode"
+                          maxLength={4}
+                          className={inputCls("postcode")}
+                        />
+                        {errors.postcode && <p className="mt-1 text-xs text-red-600">{errors.postcode}</p>}
+                      </div>
+                      <div>
+                        <input
+                          type="text"
+                          name="country"
+                          value={formData.country || "Australia"}
+                          onChange={handleInputChange}
+                          placeholder="Country"
+                          className={inputCls("country")}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 {errors.submit && (
                   <div className="bg-red-50 border border-red-200 rounded-xl p-3">
                     <p className="text-sm text-red-800">{errors.submit}</p>
@@ -2510,6 +2689,7 @@ export default function ArtistOnboardingForm() {
                       To receive payments from your sales, connect a Stripe account. Stripe securely handles your identity verification and debit card details. Click below to complete the setup.
                     </p>
                   </div>
+
 
                   {stripeLoading && (
                     <div className="flex items-center gap-2 p-3 bg-[#5A1E12]/5 border border-[#5A1E12]/20 rounded-xl">
