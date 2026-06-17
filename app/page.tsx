@@ -10,6 +10,7 @@ import Sponsored from "@/components/cards/Sponsored";
 const SLIDE_COUNT = 2;
 const API_BASE_URL = "https://backend.madeinarnhemland.com.au/api";
 const HERO_VIDEO_SRC = "/home-video.mp4";
+const HERO_VIDEO_TYPE = 'video/mp4; codecs="avc1.640032"';
 const HERO_VIDEO_FADE_SECONDS = 0.65;
 
 // Blog post type for homepage
@@ -166,6 +167,13 @@ const Page = () => {
       });
     };
 
+    const primeVideo = (video: HTMLVideoElement) => {
+      if (video.currentSrc) return;
+
+      video.src = HERO_VIDEO_SRC;
+      video.load();
+    };
+
     const switchVideos = async () => {
       if (heroSwitchingRef.current) return;
 
@@ -177,6 +185,7 @@ const Page = () => {
       if (!current || !next) return;
 
       heroSwitchingRef.current = true;
+      primeVideo(next);
       next.currentTime = 0;
 
       try {
@@ -211,20 +220,44 @@ const Page = () => {
     videos.forEach((video) => {
       video.muted = true;
       video.playsInline = true;
-      video.preload = "auto";
       video.addEventListener("timeupdate", handleTimeUpdate);
-      video.load();
     });
 
     showVideo(0);
     first.currentTime = 0;
     void first.play();
 
+    const warmStandbyVideo = () => {
+      window.setTimeout(() => {
+        primeVideo(second);
+      }, 1200);
+    };
+
+    if (first.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+      warmStandbyVideo();
+    } else {
+      first.addEventListener("playing", warmStandbyVideo, { once: true });
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState !== "visible") return;
+
+      const current = videos[heroActiveVideoRef.current];
+      if (current?.paused) {
+        void current.play();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     return () => {
       videos.forEach((video) => {
         video.removeEventListener("timeupdate", handleTimeUpdate);
         video.pause();
       });
+
+      first.removeEventListener("playing", warmStandbyVideo);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
 
       if (heroResetTimerRef.current !== null) {
         window.clearTimeout(heroResetTimerRef.current);
@@ -252,10 +285,9 @@ const Page = () => {
               disablePictureInPicture
               aria-hidden="true"
             >
-              <source
-                src={HERO_VIDEO_SRC}
-                type='video/mp4; codecs="avc1.640032"'
-              />
+              {index === 0 ? (
+                <source src={HERO_VIDEO_SRC} type={HERO_VIDEO_TYPE} />
+              ) : null}
             </video>
           ))}
           {/* Layered gradient overlay */}

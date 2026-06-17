@@ -783,21 +783,16 @@ export default function
             </span>
             {/* Stripe */}
             <span
-              className="bg-[#635BFF] rounded px-2 py-1 flex items-center justify-center h-7 w-14"
+              className="bg-white rounded px-2 py-1 flex items-center justify-center h-7 w-14"
               aria-label="Stripe"
             >
-              <svg viewBox="0 0 40 16" className="h-3.5 w-auto">
-                <text
-                  x="0"
-                  y="12"
-                  fontFamily="Arial"
-                  fontWeight="bold"
-                  fontSize="12"
-                  fill="white"
-                >
-                  stripe
-                </text>
-              </svg>
+                 <Image
+                src="/stripe.svg"
+                alt="Stripe"
+                width={58}
+                height={16}
+                className="h-8 w-auto"
+              />
             </span>
           </div>
           {/* Social icons */}

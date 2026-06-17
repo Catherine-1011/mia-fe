@@ -2,6 +2,8 @@
 
 import React, { useEffect, useRef } from "react";
 
+const HERO_VIDEO_SRC = "/home-video.mp4";
+const HERO_VIDEO_TYPE = 'video/mp4; codecs="avc1.640032"';
 const HERO_VIDEO_FADE_SECONDS = 0.65;
 
 interface VideoHeroSectionProps {
@@ -31,6 +33,13 @@ export default function VideoHeroSection({
       });
     };
 
+    const primeVideo = (video: HTMLVideoElement) => {
+      if (video.currentSrc) return;
+
+      video.src = HERO_VIDEO_SRC;
+      video.load();
+    };
+
     const switchVideos = async () => {
       if (isSwitchingRef.current) return;
 
@@ -42,6 +51,7 @@ export default function VideoHeroSection({
       if (!current || !next) return;
 
       isSwitchingRef.current = true;
+      primeVideo(next);
       next.currentTime = 0;
 
       try {
@@ -76,20 +86,44 @@ export default function VideoHeroSection({
     videos.forEach((video) => {
       video.muted = true;
       video.playsInline = true;
-      video.preload = "auto";
       video.addEventListener("timeupdate", handleTimeUpdate);
-      video.load();
     });
 
     showVideo(0);
     first.currentTime = 0;
     void first.play();
 
+    const warmStandbyVideo = () => {
+      window.setTimeout(() => {
+        primeVideo(second);
+      }, 1200);
+    };
+
+    if (first.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+      warmStandbyVideo();
+    } else {
+      first.addEventListener("playing", warmStandbyVideo, { once: true });
+    }
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState !== "visible") return;
+
+      const current = videos[activeVideoRef.current];
+      if (current?.paused) {
+        void current.play();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     return () => {
       videos.forEach((video) => {
         video.removeEventListener("timeupdate", handleTimeUpdate);
         video.pause();
       });
+
+      first.removeEventListener("playing", warmStandbyVideo);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
 
       if (resetTimerRef.current !== null) {
         window.clearTimeout(resetTimerRef.current);
@@ -114,7 +148,9 @@ export default function VideoHeroSection({
           disablePictureInPicture
           aria-hidden="true"
         >
-          <source src="/home-video.mp4" type='video/mp4; codecs="avc1.640032"' />
+          {index === 0 ? (
+            <source src={HERO_VIDEO_SRC} type={HERO_VIDEO_TYPE} />
+          ) : null}
         </video>
       ))}
 

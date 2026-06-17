@@ -1997,7 +1997,7 @@ export default function ArtistOnboardingForm() {
       Start your journey as a Seller
     </h2>
     <p className="text-[#5A1E12]/70 mb-1">
-      Complete all steps to sign-up & start your selling
+      Complete all steps to sign-up & start selling
     </p>
     {hydrated && currentStep === 1 && (
       <button
