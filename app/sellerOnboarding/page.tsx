@@ -2707,7 +2707,7 @@ export default function ArtistOnboardingForm() {
                       </div>
                     </div>
                   )}
-
+{/* Stripe */}
                   {!stripeLoading && stripeStatus?.connected && (!stripeStatus?.stripeOnboardingComplete || !stripeStatus?.stripeChargesEnabled) && (
                     <div className="space-y-3">
                       <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-300 rounded-xl">
