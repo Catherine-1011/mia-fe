@@ -5,7 +5,7 @@ import { useCart } from "@/context/CartContext";
 import { useSharedEnhancedCart } from "@/hooks/useSharedEnhancedCart";
 import { syncGuestCartAfterLogin } from "@/lib/guestCartUtils";
 import { motion, AnimatePresence } from "framer-motion";
-import { Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -224,6 +224,18 @@ export default function LoginPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Back to Home — circle icon on mobile, full button on desktop */}
+      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 md:top-8 md:right-8 z-50 flex items-center">
+        <Link
+          href="/"
+          aria-label="Back to home"
+          className="inline-flex items-center justify-center gap-2 w-9 h-9 rounded-full md:w-auto md:h-auto md:rounded-xl border border-white/30 bg-white/10 px-0 md:px-4 py-0 md:py-2 text-sm font-semibold text-white shadow-sm backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50"
+        >
+          <ArrowLeft className="h-4 w-4 shrink-0" />
+          <span className="hidden md:inline">Back to Home</span>
+        </Link>
+      </div>
 
       <Image
         src="/images/top2.jpg"

@@ -2520,7 +2520,7 @@ export default function Header() {
                   alt="Logo"
                   className="w-9"
                 />
-                <p className="font-bold text-white text-lg">Alpa</p>
+                <p className="font-bold text-white text-lg">Made in Arnhem Land</p>
               </div>
             )}
             <button
