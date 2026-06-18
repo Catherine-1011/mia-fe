@@ -136,6 +136,29 @@ import en from "react-phone-number-input/locale/en.json";
 import { apiClient } from "@/lib/api";
 import VideoHeroSection from "@/components/common-components/VideoHeroSection";
 
+const FAQS = [
+  {
+    question: "How soon will your team respond to my enquiry?",
+    answer: "We aim to respond as quickly as possible. For order-related enquiries, please include your Order ID and the email address used at checkout so our team can help you faster.",
+  },
+  {
+    question: "Which issue type should I choose on the contact form?",
+    answer: "Choose the option that best matches your enquiry. If you are unsure, select General Enquiry and add the details in your message.",
+  },
+  {
+    question: "Can I contact you about an order without an account?",
+    answer: "Yes. You can use the contact form for guest orders. Please include your Order ID, email address, and any relevant details about the product or seller.",
+  },
+  {
+    question: "Who should sellers contact for registration or payout help?",
+    answer: "Sellers can submit the form and select Seller Registration or General Enquiry. For payout questions, include your store name and the email address linked to your seller account.",
+  },
+  {
+    question: "Can I visit or contact Made in Arnhem Land directly?",
+    answer: "You can find our office address, phone number, and support email on this page. If you plan to discuss a specific order, seller application, or partnership, sending the form first helps us direct your enquiry to the right person.",
+  },
+];
+
 // ─── FAQ Data ────────────────────────────────────────────────────────────────
 // const FAQS = [
 //   {
@@ -567,7 +590,7 @@ export default function Page() {
       </section>
 
       {/* --- FAQ SECTION --- */}
-      {/* <section id="faq" className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
+      <section id="faq" className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-[#3b0f06] mb-4">Frequently Asked Questions</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">Find answers to some of the most common questions below.</p>
@@ -605,7 +628,15 @@ export default function Page() {
             );
           })}
         </div>
-      </section> */}
+        <div className="mt-10 flex justify-center">
+          <Link href="/faqs">
+            <button className="inline-flex items-center justify-center gap-2 rounded-full bg-[#3b0f06] px-7 py-3 text-sm font-bold text-white shadow-sm transition-all duration-300 hover:bg-[#5a1e12] hover:shadow-md cursor-pointer">
+              View More
+              <ArrowRight className="h-4 w-4" />
+            </button>
+          </Link>
+        </div>
+      </section>
 
       {/* --- EXPLORE SECTION --- */}
       <section className="pb-12 px-4 sm:px-6 lg:px-8 w-full overflow-hidden">

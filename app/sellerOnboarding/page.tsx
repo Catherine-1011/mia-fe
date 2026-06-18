@@ -845,7 +845,7 @@ const feeDetailRows = [
   {
     feeCharge: "Marketplace Commission",
     amountBasis: "10% of product sale value",
-    chargedBy: "ALPA Marketplace",
+    chargedBy: "Platform Marketplace",
     notes:
       "Currently applied to product sale value only. Shipping, GST treatment, refunds, and other applicable charges are handled separately.",
   },
@@ -908,7 +908,7 @@ const feeDetailRows = [
   {
     feeCharge: "GST",
     amountBasis: "As applicable under Australian tax rules",
-    chargedBy: "Seller / ALPA as applicable",
+    chargedBy: "Seller / Platform as applicable",
     notes:
       "Sellers are responsible for their own tax obligations. This page is not tax advice.",
   },

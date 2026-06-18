@@ -433,7 +433,7 @@ export default function FeesAndCommissionPage() {
                     [
                       "Marketplace Commission",
                       "10% of product sale value",
-                      "ALPA Marketplace",
+                      "Platform Marketplace",
                       "Currently applied to product sale value only. Shipping, GST treatment, refunds, and other applicable charges are handled separately.",
                     ],
                     [
@@ -487,7 +487,7 @@ export default function FeesAndCommissionPage() {
                     [
                       "GST",
                       "As applicable under Australian tax rules",
-                      "Seller / ALPA as applicable",
+                      "Seller / Platform as applicable",
                       "Sellers are responsible for their own tax obligations. This page is not tax advice.",
                     ],
                     [
