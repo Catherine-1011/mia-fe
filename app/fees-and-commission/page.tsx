@@ -449,6 +449,18 @@ export default function FeesAndCommissionPage() {
                       "Applies where an international card is used. Additional currency conversion or cross-border charges may apply.",
                     ],
                     [
+                      "Stripe Connect Active Account Fee",
+                      "A$2 per active seller account per month",
+                      "Stripe",
+                      "Applies only to seller accounts that process transactions and receive payouts during the month. No charge for inactive accounts.",
+                    ],
+                    [
+                      "Stripe Connect Payout Fee",
+                      "0.25% + A$0.25 per payout",
+                      "Stripe",
+                      "Charged when funds are paid out from Stripe to the seller's bank account. Not charged per product sold.",
+                    ],
+                    [
                       "Instant Payouts",
                       "Currently 1.5% of payout volume, where eligible",
                       "Stripe",
@@ -477,6 +489,18 @@ export default function FeesAndCommissionPage() {
                       "As applicable under Australian tax rules",
                       "Seller / ALPA as applicable",
                       "Sellers are responsible for their own tax obligations. This page is not tax advice.",
+                    ],
+                    [
+                      "Meeting Follow-ups",
+                      "Frontend fixes pending",
+                      "Internal team",
+                      "Some flags are broken in the number field. Email still has a color issue, Fanindra name issue, duplicate Track Order button, and button design review pending.",
+                    ],
+                    [
+                      "Live Testing Coordination",
+                      "Action required",
+                      "Internal team",
+                      "Mail Fanindra. Mail Hussain for live testing. Ritik to chat with support for live testing.",
                     ],
                   ].map(([feeType, amount, chargedBy, notes], i) => (
                     <tr

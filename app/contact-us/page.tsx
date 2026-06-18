@@ -154,10 +154,10 @@ const FAQS = [
     question: "How often do sellers receive their payouts?",
     answer: "Seller payouts are processed automatically via Stripe Connect. Once an order is delivered and the dispute window closes, funds are transferred directly to your registered bank account on a bi-weekly schedule."
   },
-  {
-    question: "Can I manage my store inventory from a mobile device?",
-    answer: "Absolutely! Our seller dashboard is fully responsive. You can add new products, track active orders, respond to customer inquiries, and view analytics directly from your smartphone or tablet."
-  }
+  // {
+  //   question: "Can I manage my store inventory from a mobile device?",
+  //   answer: "Absolutely! Our seller dashboard is fully responsive. You can add new products, track active orders, respond to customer inquiries, and view analytics directly from your smartphone or tablet."
+  // }
 ];
 
 // ─── Country phone data from react-phone-number-input ────────────────────────
