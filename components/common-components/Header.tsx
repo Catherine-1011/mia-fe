@@ -2353,7 +2353,7 @@ export default function Header() {
       ───────────────────────────────────────────────────────────────────── */}
       {/* Wrapper: handles layout-only transitions (top, horizontal padding) */}
       <div
-        className="hidden lg:block fixed z-60 left-0 right-0"
+        className="macbook-nav-shell hidden lg:block fixed z-60 left-0 right-0"
         style={{
           top: isSticky ? '0px' : '24px',
           paddingLeft: isSticky ? '0px' : '48px',
@@ -2364,7 +2364,7 @@ export default function Header() {
         {/* Inner header: overflow-visible so dropdowns are not clipped.
             A background pseudo-layer handles the animated border-radius visuals. */}
         <header
-          className="relative flex items-center overflow-visible"
+          className="macbook-nav-inner relative flex items-center overflow-visible"
           style={{
             paddingLeft: isSticky ? '48px' : '32px',
             paddingRight: isSticky ? '48px' : '32px',
@@ -2390,19 +2390,19 @@ export default function Header() {
            />
         {/* Logo */}
         <Link href="/" className="relative z-10 font-bold transition-transform hover:scale-105 active:scale-95 shrink-0">
-          <Image src="/images/navbarLogo.png" width={500} height={500} alt="Logo" className="w-11 md:w-16" priority />
+          <Image src="/images/navbarLogo.png" width={500} height={500} alt="Logo" className="macbook-nav-logo w-11 md:w-16" priority />
         </Link>
 
         {/* Spacer */}
         <div className="relative z-10 flex-1" />
 
         {/* Centered nav */}
-        <nav className="absolute z-10 flex gap-4 lg:gap-6 left-1/2 -translate-x-1/2">
+        <nav className="macbook-nav-links absolute z-10 flex gap-4 lg:gap-6 left-1/2 -translate-x-1/2">
           {NAV_LINKS.map(({ label, href }) => (
             <Link
               key={href}
               href={href}
-              className={`group relative px-2 py-1 text-sm lg:text-base font-medium transition-all duration-300
+              className={`macbook-nav-link group relative px-2 py-1 text-sm lg:text-base font-medium transition-all duration-300
                 ${isActive(href) ? "text-[#5A1E12]" : "text-gray-700 hover:text-[#5A1E12]"}
               `}
             >
@@ -2418,7 +2418,7 @@ export default function Header() {
         </nav>
 
         {/* Right side actions */}
-        <div className="relative z-10 flex items-center gap-2 justify-end">
+        <div className="macbook-nav-actions relative z-10 flex items-center gap-2 justify-end">
           {/* Search */}
           <button
             onClick={() => setIsSearchModalOpen(true)}

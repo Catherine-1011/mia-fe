@@ -199,8 +199,8 @@ export default function Page() {
       {/* ══════════════════════════════════════════════════
           HERO
       ══════════════════════════════════════════════════ */}
-      <VideoHeroSection className="h-[65vh] sm:h-[70vh] md:h-[75vh] lg:h-[85vh] xl:h-[93vh] flex items-center justify-center">
-        <div className="relative mt-8 sm:mt-12 md:mt-16 lg:mt-12 z-10 text-white text-center px-4 max-w-[1100px] mx-auto flex flex-col items-center justify-center h-full">
+      <VideoHeroSection className="macbook-about-hero h-[65vh] sm:h-[70vh] md:h-[75vh] lg:h-[75vh] xl:h-[93vh] flex items-center justify-center">
+        <div className="macbook-about-hero-content relative mt-8 sm:mt-12 md:mt-16 z-10 text-white text-center px-4 max-w-275 mx-auto">
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -220,11 +220,8 @@ export default function Page() {
                 ease: [0.22, 1, 0.36, 1],
               }}
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight"
-            >
-              Real makers.<span className="text-[#e5d3b3]">Real Country.</span>
-            </motion.h1>
-          </div>
-          <div className="overflow-hidden mb-4 sm:mb-6">
+            ></motion.h1>
+              Real makers <span className="text-[#e5d3b3]">Real Country.</span>
             <motion.h1
               initial={{ y: 60, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}

@@ -833,7 +833,7 @@ const feeSummaryRows = [
   },
   {
     title: "Stripe Fees",
-    description: "Domestic Cards, International Cards, Instant Payouts, Disputes",
+    description: "Domestic Cards, International Cards, Connect account fees, Payouts, Instant Payouts, Disputes",
   },
   {
     title: "Important Notes",
@@ -862,6 +862,20 @@ const feeDetailRows = [
     chargedBy: "Stripe",
     notes:
       "Applies where an international card is used. Additional currency conversion or cross-border charges may apply.",
+  },
+  {
+    feeCharge: "Stripe Connect Active Account Fee",
+    amountBasis: "A$2 per active seller account per month",
+    chargedBy: "Stripe",
+    notes:
+      "Applies only to seller accounts that process transactions and receive payouts during the month. No charge for inactive accounts.",
+  },
+  {
+    feeCharge: "Stripe Connect Payout Fee",
+    amountBasis: "0.25% + A$0.25 per payout",
+    chargedBy: "Stripe",
+    notes:
+      "Charged when funds are paid out from Stripe to the seller's bank account. Not charged per product sold.",
   },
   {
     feeCharge: "Instant Payouts",
@@ -897,6 +911,20 @@ const feeDetailRows = [
     chargedBy: "Seller / ALPA as applicable",
     notes:
       "Sellers are responsible for their own tax obligations. This page is not tax advice.",
+  },
+  {
+    feeCharge: "Meeting Follow-ups",
+    amountBasis: "Frontend fixes pending",
+    chargedBy: "Internal team",
+    notes:
+      "Some flags are broken in the number field. Email still has a color issue, Fanindra name issue, duplicate Track Order button, and button design review pending.",
+  },
+  {
+    feeCharge: "Live Testing Coordination",
+    amountBasis: "Action required",
+    chargedBy: "Internal team",
+    notes:
+      "Mail Fanindra. Mail Hussain for live testing. Ritik to chat with support for live testing.",
   },
 ];
 

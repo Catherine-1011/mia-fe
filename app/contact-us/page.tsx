@@ -137,28 +137,28 @@ import { apiClient } from "@/lib/api";
 import VideoHeroSection from "@/components/common-components/VideoHeroSection";
 
 // ─── FAQ Data ────────────────────────────────────────────────────────────────
-const FAQS = [
-  {
-    question: "How do I become a verified seller on the marketplace?",
-    answer: "Becoming a seller is easy! Click on 'Seller Onboarding' at the bottom of the page, fill out your business profile, verify your identity, and set up your storefront. Once approved, you can start listing products immediately."
-  },
-  {
-    question: "How are shipping and commissions handled?",
-    answer: "Our platform takes a small flat commission on every successful sale. Sellers have the freedom to set their own shipping rates or use our integrated logistics partners for standardized global delivery."
-  },
-  {
-    question: "What happens if a buyer requests a refund?",
-    answer: "If a buyer is unsatisfied, they can initiate a return within our 30-day buyer protection window. The dispute is first handled directly between the buyer and seller. If unresolved, our support team steps in to mediate based on marketplace policies."
-  },
-  {
-    question: "How often do sellers receive their payouts?",
-    answer: "Seller payouts are processed automatically via Stripe Connect. Once an order is delivered and the dispute window closes, funds are transferred directly to your registered bank account on a bi-weekly schedule."
-  },
-  {
-    question: "Can I manage my store inventory from a mobile device?",
-    answer: "Absolutely! Our seller dashboard is fully responsive. You can add new products, track active orders, respond to customer inquiries, and view analytics directly from your smartphone or tablet."
-  }
-];
+// const FAQS = [
+//   {
+//     question: "How do I become a verified seller on the marketplace?",
+//     answer: "Becoming a seller is easy! Click on 'Seller Onboarding' at the bottom of the page, fill out your business profile, verify your identity, and set up your storefront. Once approved, you can start listing products immediately."
+//   },
+//   {
+//     question: "How are shipping and commissions handled?",
+//     answer: "Our platform takes a small flat commission on every successful sale. Sellers have the freedom to set their own shipping rates or use our integrated logistics partners for standardized global delivery."
+//   },
+//   {
+//     question: "What happens if a buyer requests a refund?",
+//     answer: "If a buyer is unsatisfied, they can initiate a return within our 30-day buyer protection window. The dispute is first handled directly between the buyer and seller. If unresolved, our support team steps in to mediate based on marketplace policies."
+//   },
+//   {
+//     question: "How often do sellers receive their payouts?",
+//     answer: "Seller payouts are processed automatically via Stripe Connect. Once an order is delivered and the dispute window closes, funds are transferred directly to your registered bank account on a bi-weekly schedule."
+//   },
+//   {
+//     question: "Can I manage my store inventory from a mobile device?",
+//     answer: "Absolutely! Our seller dashboard is fully responsive. You can add new products, track active orders, respond to customer inquiries, and view analytics directly from your smartphone or tablet."
+//   }
+// ];
 
 // ─── Country phone data from react-phone-number-input ────────────────────────
 const countryCodeList = getCountries();

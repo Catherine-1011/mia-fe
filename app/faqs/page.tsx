@@ -100,11 +100,11 @@ const SECTIONS = [
         answer:
           "Sellers are responsible for managing their own fulfilment and shipping. Products can be shipped via Australia Post, and charges are based on the standard pricing table available on their website.\n\nWe recommend providing tracking information wherever possible and communicating proactively with buyers about dispatch status. For full guidance, see our Shipping Policy and Seller Guidelines.",
       },
-      {
-        question: "B9. Can I manage my store inventory from a mobile device?",
-        answer:
-          "Our seller dashboard is designed to be mobile-responsive, allowing you to manage your store from a smartphone or tablet. You can add and update product listings, track active orders, and review customer enquiries on the go.",
-      },
+      // {
+      //   question: "B9. Can I manage my store inventory from a mobile device?",
+      //   answer:
+      //     "Our seller dashboard is designed to be mobile-responsive, allowing you to manage your store from a smartphone or tablet. You can add and update product listings, track active orders, and review customer enquiries on the go.",
+      // },
     ],
   },
   {

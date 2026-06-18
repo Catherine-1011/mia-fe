@@ -191,7 +191,7 @@ export default function LoginPage() {
   };
 
   return (
-    <main className="relative min-h-screen w-full overflow-hidden text-white min-[1360px]:bg-[#440C03]">
+    <main className="macbook-auth-page relative min-h-screen w-full overflow-hidden text-white min-[1360px]:bg-[#440C03]">
       <AnimatePresence>
         {showModal && (
           <motion.div
@@ -226,7 +226,7 @@ export default function LoginPage() {
       </AnimatePresence>
 
       {/* Back to Home — top left */}
-     <div className="absolute top-4 left-4 md:top-8 md:left-auto md:right-8 z-50 flex items-center">
+     <div className="macbook-auth-back absolute top-4 left-4 md:top-8 md:left-auto md:right-8 z-50 flex items-center">
         <Link
           href="/"
           aria-label="Back to home"
@@ -248,8 +248,8 @@ export default function LoginPage() {
       <div className="absolute inset-0 bg-[#440C03] lg:hidden" />
       <div className="absolute inset-0 hidden lg:block bg-[linear-gradient(90deg,#440C03_0%,#440C03_44%,rgba(68,12,3,0.55)_68%,rgba(68,12,3,0)_100%)]" />
 
-      <section className="relative z-10 flex min-h-screen w-full items-center px-6 py-20 sm:px-10 md:px-16 lg:px-20">
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 md:left-8 md:translate-x-0 md:top-6 z-50">
+      <section className="macbook-auth-section relative z-10 flex min-h-screen w-full items-center px-6 py-20 sm:px-10 md:px-16 lg:px-20">
+        <div className="macbook-auth-logo absolute top-4 left-1/2 -translate-x-1/2 md:left-8 md:translate-x-0 md:top-6 z-50">
           <Link href="/">
             <Image
               src="/images/navbarLogo.png"
@@ -261,16 +261,16 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        <div className="w-full max-w-md">
-          <p className="uppercase text-xs tracking-widest mb-4 opacity-80">Start your journey</p>
-          <h1 className="text-3xl sm:text-4xl font-bold mb-2">
+        <div className="macbook-auth-panel w-full max-w-md">
+          <p className="macbook-auth-eyebrow uppercase text-xs tracking-widest mb-4 opacity-80">Start your journey</p>
+          <h1 className="macbook-auth-title text-3xl sm:text-4xl font-bold mb-2">
             {authStep === "login" && "Log into your account"}
             {authStep === "forgot" && "Forgot Password"}
             {authStep === "reset" && "Reset Password"}
           </h1>
 
           {authStep === "login" && (
-            <div className="flex items-center gap-3 mb-10">
+            <div className="macbook-auth-switch flex items-center gap-3 mb-10">
               <p className="text-md opacity-80">New here?</p>
               <Link href="/signup" className="px-5 py-1.5 border border-white/30 rounded-full text-sm font-semibold hover:bg-white hover:text-[#440C03] transition-all">
                 Sign up
@@ -279,11 +279,11 @@ export default function LoginPage() {
           )}
 
           {authStep === "forgot" && (
-            <p className="text-sm mb-10 opacity-80">Enter your email to receive an OTP for password reset.</p>
+            <p className="macbook-auth-switch text-sm mb-10 opacity-80">Enter your email to receive an OTP for password reset.</p>
           )}
 
           {authStep === "reset" && (
-            <p className="text-sm mb-10 opacity-80">Enter the OTP sent to {forgotEmail} and your new password.</p>
+            <p className="macbook-auth-switch text-sm mb-10 opacity-80">Enter the OTP sent to {forgotEmail} and your new password.</p>
           )}
 
           {authStep === "login" && (
