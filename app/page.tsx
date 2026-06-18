@@ -269,7 +269,7 @@ const Page = () => {
     <main className="min-h-screen bg-[#EAD7B7]">
       {/* ================= HERO ================= */}
       <section>
-        <div className="relative min-h-[75vh] md:min-h-screen h-[75vh] md:h-screen overflow-hidden bg-black">
+        <div className="macbook-home-hero relative min-h-[75vh] md:min-h-screen h-[75vh] md:h-screen overflow-hidden bg-black">
           {[0, 1].map((index) => (
             <video
               key={index}
@@ -327,7 +327,7 @@ const Page = () => {
           </svg> */}
 
           {/* Hero content */}
-          <div className="relative z-10 flex flex-col justify-end md:justify-center min-h-[75vh] md:min-h-screen text-white px-6 sm:px-10 lg:px-24 pt-16 sm:pt-32 lg:pt-48 pb-10 sm:pb-12 lg:pb-20">
+          <div className="macbook-home-hero-content relative z-10 flex flex-col justify-end md:justify-center min-h-[75vh] md:min-h-screen text-white px-6 sm:px-10 lg:px-24 pt-16 sm:pt-32 lg:pt-48 pb-10 sm:pb-12 lg:pb-20">
             {/* Animated badge */}
             {/* <motion.div
               initial={{ opacity: 0, y: 24 }}
@@ -351,7 +351,7 @@ const Page = () => {
                   delay: 0.2,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                className="text-[2.25rem] leading-[1.1] sm:text-5xl md:text-6xl lg:text-7xl font-bold md:leading-[1.08] tracking-tight"
+                className="macbook-home-hero-title text-[2.25rem] leading-[1.1] sm:text-5xl md:text-6xl lg:text-7xl font-bold md:leading-[1.08] tracking-tight"
               >
                 Discover the Spirit of
               </motion.h1>
@@ -365,7 +365,7 @@ const Page = () => {
                   delay: 0.38,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                className="text-[2.25rem] leading-[1.1] sm:text-5xl md:text-6xl lg:text-7xl font-bold md:leading-[1.08] tracking-tight text-[#ead7b7]"
+                className="macbook-home-hero-title text-[2.25rem] leading-[1.1] sm:text-5xl md:text-6xl lg:text-7xl font-bold md:leading-[1.08] tracking-tight text-[#ead7b7]"
               >
                 Arnhem Land
               </motion.h1>
@@ -376,7 +376,7 @@ const Page = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.65, delay: 0.58, ease: "easeOut" }}
-              className="text-sm sm:text-base lg:text-lg max-w-lg mb-10 leading-relaxed text-white/75"
+              className="macbook-home-hero-copy text-sm sm:text-base lg:text-lg max-w-lg mb-10 leading-relaxed text-white/75"
             >
               Uncover authentic products and experiences that carry stories
               passed down through generations
@@ -387,7 +387,7 @@ const Page = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.74, ease: "easeOut" }}
-              className="flex flex-col sm:flex-row items-stretch sm:items-center w-full sm:w-auto gap-4 mb-4 md:mb-20"
+              className="macbook-home-hero-actions flex flex-col sm:flex-row items-stretch sm:items-center w-full sm:w-auto gap-4 mb-4 md:mb-20"
             >
               <Link
                 href="/about-us"

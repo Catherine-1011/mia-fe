@@ -199,8 +199,8 @@ export default function Page() {
       {/* ══════════════════════════════════════════════════
           HERO
       ══════════════════════════════════════════════════ */}
-      <VideoHeroSection className="h-[65vh] sm:h-[70vh] md:h-[75vh] lg:h-[75vh] xl:h-[93vh] flex items-center justify-center">
-        <div className="relative mt-8 sm:mt-12 md:mt-16 z-10 text-white text-center px-4 max-w-[1100px] mx-auto">
+      <VideoHeroSection className="macbook-about-hero h-[65vh] sm:h-[70vh] md:h-[75vh] lg:h-[75vh] xl:h-[93vh] flex items-center justify-center">
+        <div className="macbook-about-hero-content relative mt-8 sm:mt-12 md:mt-16 z-10 text-white text-center px-4 max-w-[1100px] mx-auto">
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -219,7 +219,7 @@ export default function Page() {
                 delay: 0.2,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl leading-tight"
+              className="macbook-about-hero-title text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl leading-tight"
             >
               Real makers.<span className="text-[#e5d3b3]">Real Country.</span>
             </motion.h1>
@@ -233,7 +233,7 @@ export default function Page() {
                 delay: 0.38,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold leading-tight"
+              className="macbook-about-hero-title text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold leading-tight"
             >
               One Marketplace.
             </motion.h1>
@@ -243,7 +243,7 @@ export default function Page() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.58, ease: "easeOut" }}
-            className="text-sm sm:text-base md:text-lg text-white/75 max-w-xl mx-auto leading-relaxed"
+            className="macbook-about-hero-copy text-sm sm:text-base md:text-lg text-white/75 max-w-xl mx-auto leading-relaxed"
           >
             Made in Arnhem Land brings the art and craft of Arnhem Land’s First
             Nations makers to the global platform. Sold directly by the people
@@ -254,7 +254,7 @@ export default function Page() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.74, ease: "easeOut" }}
-            className="mt-6 sm:mt-8 md:mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4"
+            className="macbook-about-hero-actions mt-6 sm:mt-8 md:mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4"
           >
             <Link
               href="/shop"

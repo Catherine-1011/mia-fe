@@ -319,7 +319,7 @@ export default function SignupPage() {
   };
 
   return (
-    <main className="relative min-h-screen w-full overflow-hidden text-white">
+    <main className="macbook-auth-page relative min-h-screen w-full overflow-hidden text-white">
       <Image
         src="/images/top2.jpg"
         alt="Auth Visual"
@@ -332,7 +332,7 @@ export default function SignupPage() {
 
       {/* Back to Home — circle icon on mobile, full button on desktop */}
       {/* Back to Home — top left */}
-      <div className="absolute top-4 left-4 md:top-8 md:left-auto md:right-8 z-50 flex items-center">
+      <div className="macbook-auth-back absolute top-4 left-4 md:top-8 md:left-auto md:right-8 z-50 flex items-center">
         <Link
     href="/"
     aria-label="Back to home"
@@ -343,9 +343,9 @@ export default function SignupPage() {
   </Link>
       </div>
 
-      <section className="relative z-10 flex min-h-screen w-full items-start px-6 pt-24 md:pt-20 pb-12 sm:px-10 md:px-16 lg:px-20">
-        <div className="w-full max-w-lg md:pl-20">
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 md:left-8 md:translate-x-0 md:top-6 z-50">
+      <section className="macbook-auth-section macbook-signup-section relative z-10 flex min-h-screen w-full items-start px-6 pt-24 md:pt-20 pb-12 sm:px-10 md:px-16 lg:px-20">
+        <div className="macbook-auth-panel macbook-signup-panel w-full max-w-lg md:pl-20">
+          <div className="macbook-auth-logo absolute top-4 left-1/2 -translate-x-1/2 md:left-8 md:translate-x-0 md:top-6 z-50">
             <Link href="/">
               <Image
                 src="/images/navbarLogo.png"
@@ -358,10 +358,10 @@ export default function SignupPage() {
           </div>
 
           <div className="w-full">
-            <h1 className="text-2xl md:text-3xl font-bold text-white mb-4">
+            <h1 className="macbook-auth-title text-2xl md:text-3xl font-bold text-white mb-4">
               Create new Account
             </h1>
-            <div className="pt-3 border-t border-white/10 flex items-center gap-3">
+            <div className="macbook-auth-switch pt-3 border-t border-white/10 flex items-center gap-3">
               <p className="text-sm opacity-80">Already have an account?</p>
               <Link
                 href="/login"
@@ -371,7 +371,7 @@ export default function SignupPage() {
               </Link>
             </div>
 
-            <form className="space-y-4 mt-8" onSubmit={handleSubmit}>
+            <form className="macbook-signup-form space-y-4 mt-8" onSubmit={handleSubmit}>
               {/* Name */}
               <div className="space-y-1">
                 <p className="text-white/90 text-sm font-medium">Name</p>
@@ -461,7 +461,7 @@ export default function SignupPage() {
                     </button>
 
                     {showCountryDropdown && (
-                      <div className="absolute top-full left-0 z-50 mt-1 w-64 bg-white border border-[#d6b896] rounded-xl shadow-xl overflow-hidden">
+                      <div className="macbook-country-dropdown absolute top-full left-0 z-50 mt-1 w-64 bg-white border border-[#d6b896] rounded-xl shadow-xl overflow-hidden">
                         <div className="p-2 border-b border-[#e8d5bc]">
                           <input
                             type="text"

@@ -126,8 +126,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import Testimonials from "@/components/cards/Testimonials";
 import { MapPin, Phone, Mail, Send, ArrowRight, ChevronDown } from "lucide-react";
 import { getCountries, getCountryCallingCode } from "react-phone-number-input/input";
+import { isValidPhoneNumber } from "react-phone-number-input";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 import type { CountryCode } from "libphonenumber-js";
 import en from "react-phone-number-input/locale/en.json";
@@ -135,33 +137,28 @@ import { apiClient } from "@/lib/api";
 import VideoHeroSection from "@/components/common-components/VideoHeroSection";
 
 // ─── FAQ Data ────────────────────────────────────────────────────────────────
-const FAQS = [
-  {
-    question: "A1. What is the Made in Arnhem Land Marketplace?",
-    answer:
-      "The Made in Arnhem Land Marketplace is an online platform that connects buyers with authentic products made by Aboriginal artists, artisans, and businesses from Arnhem Land in the Northern Territory of Australia.\n\nEvery product on the platform has been reviewed to ensure it meets our standards for authenticity, cultural integrity, and quality. When you shop with us, you are buying directly from the communities, families, and creators behind each piece, and your purchase contributes directly to the economic and cultural wellbeing of Arnhem Land.",
-  },
-  {
-    question: "A2. Are all products authentic?",
-    answer:
-      "Yes. Authenticity is the foundation of this marketplace. All sellers are vetted before their accounts are approved, and every product listing is reviewed by our team before it becomes visible on the platform.\n\nSellers who have completed our certification process are permitted to display the 100% Made in Arnhem Land certification logo. This mark is your guarantee that the product was created by Indigenous artists or businesses under proper cultural authority. For more information, visit our Certification page.",
-  },
-  {
-    question: "A3. What payment methods do you accept?",
-    answer:
-      "We accept all major credit and debit cards including Visa and Mastercard, processed securely through Stripe. No card details are stored on our platform, and all payment processing is handled by Stripe's secure infrastructure.",
-  },
-  {
-    question: "A4. How long will my order take to arrive?",
-    answer:
-      "Delivery timeframes depend on the individual seller, the product type, and your delivery location. Sellers set their own processing timeframes.\n\nAs a general guide, orders within Australia typically arrive within 5 to 10 business days. Remote or regional locations, including parts of the Northern Territory, may take longer. International orders are subject to customs processing and Australia Post schedules.\n\nPlease note that some products, particularly hand-crafted artworks, may have longer processing times as they are made to order. This will be stated in the product listing.",
-  },
-  {
-    question: "A5. Can I track my order?",
-    answer:
-      "Yes. Once your order has been dispatched, your seller will provide tracking information through the platform where available. You can use the Track My Order tool on our website - just enter your Order ID and the email address used for placing the order.\n\nIf you have an account, you can also view your order status by logging in and navigating to your Orders page under your account.",
-  },
-];
+// const FAQS = [
+//   {
+//     question: "How do I become a verified seller on the marketplace?",
+//     answer: "Becoming a seller is easy! Click on 'Seller Onboarding' at the bottom of the page, fill out your business profile, verify your identity, and set up your storefront. Once approved, you can start listing products immediately."
+//   },
+//   {
+//     question: "How are shipping and commissions handled?",
+//     answer: "Our platform takes a small flat commission on every successful sale. Sellers have the freedom to set their own shipping rates or use our integrated logistics partners for standardized global delivery."
+//   },
+//   {
+//     question: "What happens if a buyer requests a refund?",
+//     answer: "If a buyer is unsatisfied, they can initiate a return within our 30-day buyer protection window. The dispute is first handled directly between the buyer and seller. If unresolved, our support team steps in to mediate based on marketplace policies."
+//   },
+//   {
+//     question: "How often do sellers receive their payouts?",
+//     answer: "Seller payouts are processed automatically via Stripe Connect. Once an order is delivered and the dispute window closes, funds are transferred directly to your registered bank account on a bi-weekly schedule."
+//   },
+//   {
+//     question: "Can I manage my store inventory from a mobile device?",
+//     answer: "Absolutely! Our seller dashboard is fully responsive. You can add new products, track active orders, respond to customer inquiries, and view analytics directly from your smartphone or tablet."
+//   }
+// ];
 
 // ─── Country phone data from react-phone-number-input ────────────────────────
 const countryCodeList = getCountries();
@@ -202,13 +199,13 @@ function validatePhone(digits: string, country: Country): string | null {
   }
 
   try {
-    const phoneNumber = parsePhoneNumberFromString(cleaned, country.code as CountryCode);
+    const phoneNumber = parsePhoneNumberFromString(cleaned, country.code as any);
     if (!phoneNumber) return 'Invalid phone number format.';
     
     if (!phoneNumber.isValid()) return `Invalid ${country.name} phone number.`;
     
     return null;
-  } catch {
+  } catch (error) {
     return 'Invalid phone number format.';
   }
 }
@@ -290,9 +287,8 @@ export default function Page() {
       
       setSubmitted(true);
       setFields({ issueType: "", name: "", phone: "", email: "", message: "" });
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Failed to submit form. Please try again later.";
-      setErrors({ form: message });
+    } catch (error: any) {
+      setErrors({ form: error.message || "Failed to submit form. Please try again later." });
     } finally {
       setIsSubmitting(false);
     }
@@ -309,11 +305,11 @@ export default function Page() {
       <VideoHeroSection className="h-[80vh]">
         <div className="relative z-10 flex flex-col items-center justify-center h-full text-white text-center px-4 max-w-full box-border">
           <span className="mb-4 max-w-[calc(100vw-2rem)] whitespace-normal px-4 py-1.5 rounded-full border border-white/20 bg-white/10 text-sm font-medium backdrop-blur-md">
-             We&apos;d love to hear from you
+             We'd love to hear from you
           </span>
           <h1 className="text-[2.25rem] sm:text-4xl md:text-6xl font-bold mb-2 md:mb-6 tracking-tight">Contact Us</h1>
           <p className="text-sm sm:text-base text-gray-200 max-w-full sm:max-w-2xl leading-relaxed">
-            Have a question or need assistance? Reach out to our team and we&apos;ll get back to you.
+            Have a question or need assistance? Reach out to our team and we'll get back to you.
           </p>
         </div>
       </VideoHeroSection>
@@ -333,7 +329,7 @@ export default function Page() {
               {submitted && (
                 <div className="flex items-start sm:items-center gap-3 px-4 sm:px-5 py-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm font-medium">
                   <svg className="w-5 h-5 shrink-0 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                  Message sent! We&apos;ll get back to you within 24 hours.
+                  Message sent! We'll get back to you within 24 hours.
                 </div>
               )}
 
@@ -518,7 +514,7 @@ export default function Page() {
                               className="text-sm text-white/70 leading-relaxed mt-1 inline-block hover:text-white underline-offset-2 hover:underline break-words transition-colors"
                               aria-label="Open address in Google Maps"
                             >
-                              70 O&apos;Sullivan Circuit East Arm<br />
+                              70 O'Sullivan Circuit East Arm<br />
                               NT 0822
                             </a>
                         </div>
@@ -546,7 +542,7 @@ export default function Page() {
                         <div className="min-w-0">
                             <p className="font-semibold text-white">Email Address</p>
                             <a
-                              href="mailto:support@madeinarnhemland.com.au"
+                              href="support@madeinarnhemland.com.au"
                               className="text-sm text-white/70 mt-1 inline-block hover:text-white underline-offset-2 hover:underline break-all transition-colors"
                             >
                             support@madeinarnhemland.com.au
@@ -571,7 +567,7 @@ export default function Page() {
       </section>
 
       {/* --- FAQ SECTION --- */}
-      <section id="faq" className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
+      {/* <section id="faq" className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 mb-20">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-[#3b0f06] mb-4">Frequently Asked Questions</h2>
           <p className="text-gray-600 max-w-2xl mx-auto">Find answers to some of the most common questions below.</p>
@@ -600,27 +596,16 @@ export default function Page() {
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <div className="px-6 pb-6 text-gray-600 text-sm leading-relaxed space-y-3">
-                      {faq.answer.split("\n\n").map((para, i) => (
-                        <p key={i} className="whitespace-pre-line">{para}</p>
-                      ))}
-                    </div>
+                    <p className="px-6 pb-6 text-gray-600 text-sm leading-relaxed">
+                      {faq.answer}
+                    </p>
                   </div>
                 </div>
               </div>
             );
           })}
         </div>
-        <div className="mt-8 flex justify-center">
-          <Link
-            href="/faqs"
-            className="inline-flex items-center justify-center gap-2 rounded-full bg-[#3b0f06] px-6 py-3 text-sm font-bold text-white shadow-lg transition-all duration-300 hover:bg-[#582419] hover:shadow-xl"
-          >
-            View more FAQs
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      </section>
+      </section> */}
 
       {/* --- EXPLORE SECTION --- */}
       <section className="pb-12 px-4 sm:px-6 lg:px-8 w-full overflow-hidden">

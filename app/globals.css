@@ -364,3 +364,168 @@ html {
   height: 0;
   padding: 0;
 }
+
+/* Targeted MacBook/Retina viewport fixes. Keep existing desktop/tablet/mobile breakpoints untouched. */
+@media screen and (min-width: 1280px) and (max-width: 1512px) and (min-height: 800px) and (max-height: 982px) {
+  .macbook-home-hero {
+    height: clamp(760px, 88vh, 880px) !important;
+    min-height: clamp(760px, 88vh, 880px) !important;
+  }
+
+  .macbook-home-hero-content {
+    min-height: clamp(760px, 88vh, 880px) !important;
+    padding-top: clamp(112px, 14vh, 136px) !important;
+    padding-bottom: clamp(56px, 7vh, 72px) !important;
+    padding-left: clamp(64px, 6vw, 88px) !important;
+    padding-right: clamp(64px, 6vw, 88px) !important;
+  }
+
+  .macbook-home-hero-title {
+    font-size: clamp(3.75rem, 5vw, 4.5rem) !important;
+    line-height: 1.06 !important;
+  }
+
+  .macbook-home-hero-copy {
+    font-size: clamp(0.95rem, 1.15vw, 1.05rem) !important;
+    margin-bottom: clamp(1.75rem, 4vh, 2.5rem) !important;
+    max-width: 32rem !important;
+  }
+
+  .macbook-home-hero-actions {
+    gap: 0.875rem !important;
+    margin-bottom: clamp(2.25rem, 6vh, 4.5rem) !important;
+  }
+
+  .macbook-about-hero {
+    height: clamp(700px, 82vh, 805px) !important;
+    min-height: clamp(700px, 82vh, 805px) !important;
+  }
+
+  .macbook-about-hero-content {
+    margin-top: clamp(2.25rem, 5vh, 3.25rem) !important;
+    max-width: 960px !important;
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+  }
+
+  .macbook-about-hero-title {
+    font-size: clamp(3rem, 4.25vw, 4rem) !important;
+    line-height: 1.08 !important;
+  }
+
+  .macbook-about-hero-copy {
+    font-size: clamp(0.95rem, 1.1vw, 1.05rem) !important;
+    max-width: 34rem !important;
+  }
+
+  .macbook-about-hero-actions {
+    margin-top: clamp(1.5rem, 3.5vh, 2.25rem) !important;
+    gap: 0.75rem !important;
+  }
+
+  .macbook-nav-shell {
+    top: 16px !important;
+    padding-left: 32px !important;
+    padding-right: 32px !important;
+  }
+
+  .macbook-nav-inner {
+    padding: 6px 28px !important;
+  }
+
+  .macbook-nav-logo {
+    width: clamp(3rem, 4vw, 3.6rem) !important;
+  }
+
+  .macbook-nav-links {
+    gap: clamp(1rem, 1.6vw, 1.35rem) !important;
+  }
+
+  .macbook-nav-link {
+    font-size: clamp(0.875rem, 1vw, 0.95rem) !important;
+    padding-left: 0.35rem !important;
+    padding-right: 0.35rem !important;
+  }
+
+  .macbook-nav-actions {
+    gap: 0.25rem !important;
+  }
+
+  .macbook-auth-page {
+    min-height: 100dvh !important;
+    overflow-y: auto !important;
+  }
+
+  .macbook-auth-section {
+    min-height: 100dvh !important;
+    align-items: center !important;
+    padding-top: clamp(5.5rem, 10vh, 6.5rem) !important;
+    padding-bottom: clamp(2rem, 4vh, 3rem) !important;
+    padding-left: clamp(4rem, 6vw, 5rem) !important;
+  }
+
+  .macbook-auth-panel {
+    max-width: 25.5rem !important;
+  }
+
+  .macbook-auth-logo {
+    top: 1rem !important;
+  }
+
+  .macbook-auth-logo img {
+    width: 4.25rem !important;
+    height: 4.25rem !important;
+  }
+
+  .macbook-auth-back {
+    top: 1.35rem !important;
+    right: 1.5rem !important;
+  }
+
+  .macbook-auth-eyebrow {
+    margin-bottom: 0.75rem !important;
+  }
+
+  .macbook-auth-title {
+    font-size: clamp(1.7rem, 2.25vw, 2.1rem) !important;
+    line-height: 1.12 !important;
+  }
+
+  .macbook-auth-switch {
+    margin-bottom: clamp(1.5rem, 3vh, 2.25rem) !important;
+  }
+
+  .macbook-signup-section {
+    align-items: flex-start !important;
+    padding-top: clamp(5.25rem, 8.5vh, 5.75rem) !important;
+    padding-bottom: clamp(1.25rem, 3vh, 2rem) !important;
+  }
+
+  .macbook-signup-panel {
+    max-width: 27rem !important;
+  }
+
+  .macbook-signup-form {
+    margin-top: 1.35rem !important;
+    gap: 0 !important;
+  }
+
+  .macbook-signup-form > * + * {
+    margin-top: 0.75rem !important;
+  }
+
+  .macbook-signup-form input {
+    padding-top: 0.65rem !important;
+    padding-bottom: 0.65rem !important;
+  }
+
+  .macbook-signup-form button[type="submit"] {
+    padding-top: 0.7rem !important;
+    padding-bottom: 0.7rem !important;
+    margin-top: 0.85rem !important;
+  }
+
+  .macbook-country-dropdown ul {
+    max-height: 11rem !important;
+  }
+}
