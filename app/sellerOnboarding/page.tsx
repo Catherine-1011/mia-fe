@@ -2856,37 +2856,37 @@ export default function ArtistOnboardingForm() {
                           </button>
                         </div>
                         <div className="overflow-y-auto p-4 sm:p-6">
-                          <div className="max-w-full overflow-x-auto rounded-xl border-2 border-[#2F2A26]">
+                          <div className="max-w-full overflow-x-auto rounded-xl border border-[#5A1E12]/20">
                             <table className="w-full min-w-180 border-collapse text-xs sm:min-w-225 sm:text-sm lg:min-w-275">
                               <thead>
-                                <tr className="bg-[#F3B400]">
-                                  <th className="border border-[#2F2A26] px-3 py-3 text-left font-bold text-black sm:px-4">
+                                <tr className="bg-[#5A1E12]">
+                                  <th className="border border-[#5A1E12]/30 px-3 py-3 text-left font-bold text-white sm:px-4">
                                     Fee / Charge
                                   </th>
-                                  <th className="border border-[#2F2A26] px-3 py-3 text-left font-bold text-black sm:px-4">
+                                  <th className="border border-[#5A1E12]/30 px-3 py-3 text-left font-bold text-white sm:px-4">
                                     Amount / Basis
                                   </th>
-                                  <th className="border border-[#2F2A26] px-3 py-3 text-left font-bold text-black sm:px-4">
+                                  <th className="border border-[#5A1E12]/30 px-3 py-3 text-left font-bold text-white sm:px-4">
                                     Charged By
                                   </th>
-                                  <th className="border border-[#2F2A26] px-3 py-3 text-left font-bold text-black sm:px-4">
+                                  <th className="border border-[#5A1E12]/30 px-3 py-3 text-left font-bold text-white sm:px-4">
                                     Notes
                                   </th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {feeDetailRows.map((row, index) => (
-                                  <tr key={index} className="align-top">
-                                    <td className="border border-[#2F2A26] px-3 py-3 text-black sm:px-4 sm:py-4">
+                                  <tr key={index} className={`align-top ${index % 2 === 0 ? "bg-white" : "bg-[#EAD7B7]/20"}`}>
+                                    <td className="border border-[#5A1E12]/15 px-3 py-3 text-[#2C1810] sm:px-4 sm:py-4">
                                       {row.feeCharge}
                                     </td>
-                                    <td className="border border-[#2F2A26] px-3 py-3 text-black sm:px-4 sm:py-4">
+                                    <td className="border border-[#5A1E12]/15 px-3 py-3 text-[#2C1810] sm:px-4 sm:py-4">
                                       {row.amountBasis}
                                     </td>
-                                    <td className="border border-[#2F2A26] px-3 py-3 text-black sm:px-4 sm:py-4">
+                                    <td className="border border-[#5A1E12]/15 px-3 py-3 text-[#2C1810] sm:px-4 sm:py-4">
                                       {row.chargedBy}
                                     </td>
-                                    <td className="border border-[#2F2A26] px-3 py-3 text-black sm:px-4 sm:py-4">
+                                    <td className="border border-[#5A1E12]/15 px-3 py-3 text-[#2C1810] sm:px-4 sm:py-4">
                                       {row.notes}
                                     </td>
                                   </tr>

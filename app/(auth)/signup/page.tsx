@@ -451,7 +451,8 @@ export default function SignupPage() {
                         width={20}
                         height={14}
                         alt={selectedCountry.name}
-                        className="rounded-sm object-cover"
+                        className="rounded-sm object-cover shrink-0"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                       />
                       <span className="text-white/80 text-xs">
                         {selectedCountry.dialCode}
@@ -492,7 +493,8 @@ export default function SignupPage() {
                                   width={20}
                                   height={14}
                                   alt={c.name}
-                                  className="w-6 h-4 rounded-sm object-cover shrink-0"
+                                  className="w-5 h-3.5 rounded-sm object-cover shrink-0"
+                                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                                 />
                                 <span className="flex-1 truncate">{c.name}</span>
                                 <span className="text-gray-400 text-xs shrink-0">
