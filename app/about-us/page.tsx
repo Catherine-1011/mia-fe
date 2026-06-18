@@ -219,7 +219,7 @@ export default function Page() {
                 delay: 0.2,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold leading-tight"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl leading-tight"
             >
               Real makers.<span className="text-[#e5d3b3]">Real Country.</span>
             </motion.h1>
@@ -233,7 +233,7 @@ export default function Page() {
                 delay: 0.38,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold leading-tight"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold leading-tight"
             >
               One Marketplace.
             </motion.h1>
