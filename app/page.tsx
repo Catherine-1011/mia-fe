@@ -351,7 +351,7 @@ const Page = () => {
                   delay: 0.2,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                className="text-[2.25rem] leading-[1.1] sm:text-5xl md:text-6xl lg:text-7xl font-bold md:leading-[1.08] tracking-tight"
+                className="text-[2.25rem] leading-[1.1] sm:text-5xl md:text-6xl lg:text-[4rem] xl:text-7xl font-bold md:leading-[1.08] tracking-tight"
               >
                 Discover the Spirit of
               </motion.h1>
@@ -365,7 +365,7 @@ const Page = () => {
                   delay: 0.38,
                   ease: [0.22, 1, 0.36, 1],
                 }}
-                className="text-[2.25rem] leading-[1.1] sm:text-5xl md:text-6xl lg:text-7xl font-bold md:leading-[1.08] tracking-tight text-[#ead7b7]"
+                className="text-[2.25rem] leading-[1.1] sm:text-5xl md:text-6xl lg:text-[4rem] xl:text-7xl font-bold md:leading-[1.08] tracking-tight text-[#ead7b7]"
               >
                 Arnhem Land
               </motion.h1>
@@ -644,7 +644,7 @@ const Page = () => {
                 Array.from({ length: 4 }).map((_, i) => (
                   <div
                     key={i}
-                    className="shrink-0 snap-start snap-always w-[calc(100%-1px)] sm:w-[calc(50%-8px)] lg:w-[calc(25%-18px)] rounded-xl border border-stone-100 shadow-sm overflow-hidden bg-white flex flex-col"
+                    className="shrink-0 snap-start snap-always w-[calc(100%-1px)] sm:w-[calc(50%-8px)] lg:w-[calc(33.333%-16px)] xl:w-[calc(25%-18px)] rounded-xl border border-stone-100 shadow-sm overflow-hidden bg-white flex flex-col"
                   >
                     {/* ── IMAGE SECTION ── */}
                     <div className="relative aspect-6/4 overflow-hidden bg-[#EAD7B7]/30">
@@ -740,7 +740,7 @@ const Page = () => {
                 limitedProducts.map((product) => (
                   <div
                     key={product.id}
-                    className="shrink-0 snap-start snap-always w-[calc(100%-1px)] sm:w-[calc(50%-8px)] lg:w-[calc(25%-18px)]"
+                    className="shrink-0 snap-start snap-always w-[calc(100%-1px)] sm:w-[calc(50%-8px)] lg:w-[calc(33.333%-16px)] xl:w-[calc(25%-18px)]"
                   >
                     <OptimisticProductCard
                       id={product.id}

@@ -133,7 +133,7 @@ const Sponsored = () => {
   if (!ready || dismissed) return null;
 
   return (
-    <div className="mx-4 sm:mx-4 lg:mx-10 mt-14 sm:-mt-12 lg:-mt-20 rounded-2xl lg:rounded-4xl overflow-hidden">
+    <div className="mx-4 sm:mx-4 lg:mx-10 mt-14 sm:-mt-12 lg:-mt-16 xl:-mt-20 rounded-2xl lg:rounded-4xl overflow-hidden">
       <section className="relative bg-[#632013] p-4 sm:p-6 lg:p-8 lg:pt-12 rounded-2xl lg:rounded-4xl">
         {/* Close button — top right */}
         <button

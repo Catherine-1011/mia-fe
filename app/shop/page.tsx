@@ -359,7 +359,7 @@ function ShopContent() {
   // Skeleton loader for products
   const SkeletonLoader = () => (
     <div
-      className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+      className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
     >
       {[...Array(PRODUCTS_PER_PAGE)].map((_, i) => (
         <div
@@ -533,7 +533,7 @@ function ShopContent() {
       </div>
 
       {/* MAIN SHOP LAYOUT */}
-      <section className="min-h-[calc(100vh-400px)] mx-auto px-4 md:px-8 lg:px-20 py-4 lg:py-10 flex flex-col lg:flex-row gap-6 lg:gap-8">
+      <section className="min-h-[calc(100vh-400px)] mx-auto px-4 md:px-8 lg:px-10 xl:px-20 py-4 lg:py-10 flex flex-col lg:flex-row gap-6 lg:gap-8">
         {/* MOBILE FILTER DRAWER */}
         {showMobileFilters && (
           <div
@@ -780,7 +780,7 @@ function ShopContent() {
 
         {/* LEFT SIDEBAR - Desktop */}
         {/* LEFT SIDEBAR - Desktop Redesigned */}
-        <aside className="hidden lg:flex lg:flex-col lg:w-72 shrink-0 lg:sticky lg:top-24 h-fit rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
+        <aside className="hidden lg:flex lg:flex-col lg:w-60 xl:w-72 shrink-0 lg:sticky lg:top-24 h-fit rounded-2xl overflow-hidden border border-gray-100 shadow-sm">
 
           {/* ── Header band ── */}
           <div className="bg-[#5A1E12] px-5 py-4 flex items-center justify-between">
@@ -1160,7 +1160,7 @@ function ShopContent() {
           ) : (
             <>
               <div
-                className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
               >
                 {paginatedProducts.map((product) => (
                   <OptimisticProductCard
@@ -1293,10 +1293,10 @@ function ShopLoading() {
       </section>
       
       {/* Main Content Placeholder */}
-      <section className="min-h-[calc(100vh-400px)] mx-auto px-4 md:px-8 lg:px-20 py-4 lg:py-10">
+      <section className="min-h-[calc(100vh-400px)] mx-auto px-4 md:px-8 lg:px-10 xl:px-20 py-4 lg:py-10">
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
           {/* ── SIDEBAR SKELETON ── */}
-          <aside className="hidden lg:flex flex-col gap-6 w-64 shrink-0">
+          <aside className="hidden lg:flex flex-col gap-6 lg:w-60 xl:w-64 shrink-0">
             {/* Search bar */}
             <div className="h-10 w-full rounded-full bg-[#EAD7B7]/60 relative overflow-hidden">
               <div className="absolute inset-0 -translate-x-full animate-[shimmer_1.6s_infinite] bg-linear-to-r from-transparent via-white/60 to-transparent" />
@@ -1334,7 +1334,7 @@ function ShopLoading() {
             </div>
 
             {/* Cards grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-5">
               {Array.from({ length: 9 }).map((_, i) => (
                 <div
                   key={i}

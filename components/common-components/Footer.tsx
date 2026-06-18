@@ -497,11 +497,11 @@ export default function
   };
 
   return (
-    <footer className="bg-[#440C03] bg-cover text-white px-4 sm:px-8 md:px-12 lg:px-20 pt-10 pb-8 md:pt-12 md:pb-10 lg:pb-8">
+    <footer className="bg-[#440C03] bg-cover text-white px-4 sm:px-8 md:px-12 lg:px-10 xl:px-20 pt-10 pb-8 md:pt-12 md:pb-10 lg:pb-8">
       {/* Top Main Section */}
-      <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 mb-4">
+      <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 xl:gap-10 mb-4">
         {/* Left Section - Navigation Links */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 lg:gap-8 flex-1 text-xs md:text-sm">
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 lg:gap-6 xl:gap-8 flex-1 text-xs md:text-sm">
           {/* Column 1 - Shop */}
           <div className="flex flex-col">
             <h2 className="mb-4 text-base md:text-lg font-semibold">Shop</h2>
@@ -618,7 +618,7 @@ export default function
         </div>
 
         {/* Right Section - Newsletter */}
-        <div className="lg:w-80">
+        <div className="lg:w-64 xl:w-80">
           <h2 className="mb-4 text-base md:text-lg font-semibold">
             Stay Connected
           </h2>

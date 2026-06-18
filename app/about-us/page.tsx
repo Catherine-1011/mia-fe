@@ -199,8 +199,8 @@ export default function Page() {
       {/* ══════════════════════════════════════════════════
           HERO
       ══════════════════════════════════════════════════ */}
-      <VideoHeroSection className="h-[65vh] sm:h-[70vh] md:h-[75vh] lg:h-[75vh] xl:h-[93vh] flex items-center justify-center">
-        <div className="relative mt-8 sm:mt-12 md:mt-16 z-10 text-white text-center px-4 max-w-[1100px] mx-auto">
+      <VideoHeroSection className="h-[65vh] sm:h-[70vh] md:h-[75vh] lg:h-[85vh] xl:h-[93vh] flex items-center justify-center">
+        <div className="relative mt-8 sm:mt-12 md:mt-16 lg:mt-12 z-10 text-white text-center px-4 max-w-[1100px] mx-auto flex flex-col items-center justify-center h-full">
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -219,7 +219,7 @@ export default function Page() {
                 delay: 0.2,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold leading-tight"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight"
             >
               Real makers.<span className="text-[#e5d3b3]">Real Country.</span>
             </motion.h1>
@@ -233,7 +233,7 @@ export default function Page() {
                 delay: 0.38,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-bold leading-tight"
+              className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight"
             >
               One Marketplace.
             </motion.h1>
@@ -243,7 +243,7 @@ export default function Page() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.65, delay: 0.58, ease: "easeOut" }}
-            className="text-sm sm:text-base md:text-lg text-white/75 max-w-xl mx-auto leading-relaxed"
+            className="text-sm sm:text-base lg:text-lg text-white/75 max-w-xl mx-auto leading-relaxed"
           >
             Made in Arnhem Land brings the art and craft of Arnhem Land’s First
             Nations makers to the global platform. Sold directly by the people
@@ -254,7 +254,7 @@ export default function Page() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.74, ease: "easeOut" }}
-            className="mt-6 sm:mt-8 md:mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4"
+            className="mt-6 sm:mt-8 lg:mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4"
           >
             <Link
               href="/shop"
@@ -475,12 +475,12 @@ export default function Page() {
           WHAT WE OFFER  (two-column challenge section)
       ══════════════════════════════════════════════════ */}
       <section className="bg-white bg-[url('/images/about-pattern1.png')] bg-cover bg-center py-20 md:py-28 px-4 text-[#1a0a06]">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-20 items-start">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-14 lg:gap-12 xl:gap-20 items-start">
           <div>
             <p className="text-xs font-bold tracking-[0.25em] uppercase text-[#5A1E12] mb-3">
               What we offer
             </p>
-            <h2 className="text-5xl md:text-6xl font-bold text-[#3a1208] leading-[1.05] mb-8">
+            <h2 className="text-4xl md:text-5xl xl:text-6xl font-bold text-[#3a1208] leading-[1.05] mb-8">
               One place.
               <br />
               Every <span className="text-[#803512]">story.</span>
@@ -554,7 +554,7 @@ export default function Page() {
               What drives us forward.
             </h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
             {VALUES.map((v) => (
               <div
                 key={v.title}
@@ -581,12 +581,12 @@ export default function Page() {
           IMAGE + COPY  (What We Offer detail row)
       ══════════════════════════════════════════════════ */}
       <section className="py-20 md:py-28 px-4 bg-gray-100 ">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-20 items-center">
           <div>
             <span className="inline-flex items-center gap-2  text-[#5A1E12] text-xs font-bold tracking-[0.2em] uppercase px-4 py-1.5 rounded-full mb-5">
               Why Choose Us
             </span>
-            <h2 className="text-4xl md:text-5xl font-black leading-[1.1] tracking-tight mb-5">
+            <h2 className="text-3xl md:text-4xl xl:text-5xl font-black leading-[1.1] tracking-tight mb-5">
               Shopping with{" "}
               <span className="relative inline-block">
                 <span className="relative z-10 text-[#5A1E12]">meaning.</span>
