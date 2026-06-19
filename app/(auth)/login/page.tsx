@@ -250,15 +250,15 @@ export default function LoginPage() {
 
       <section className="macbook-auth-section relative z-10 flex min-h-screen w-full items-center px-6 py-20 sm:px-10 md:px-16 lg:px-20">
         <div className="macbook-auth-logo absolute top-4 left-1/2 -translate-x-1/2 md:left-8 md:translate-x-0 md:top-6 z-50">
-          <Link href="/">
-            <Image
-              src="/images/navbarLogo.png"
-              alt="Logo"
-              width={90}
-              height={90}
-              className="w-14 h-14 md:w-20 md:h-20 hover:opacity-90 transition-opacity"
-            />
-          </Link>
+          <Link href="/" className="absolute top-6 left-6 sm:top-8 sm:left-8">
+          <Image
+            src="/images/navbarLogo.png"
+            alt="Logo"
+            width={90}
+            height={90}
+            className="w-14 h-14 md:w-22.5 md:h-22.5"
+          />
+        </Link>
         </div>
 
         <div className="macbook-auth-panel w-full max-w-md">
