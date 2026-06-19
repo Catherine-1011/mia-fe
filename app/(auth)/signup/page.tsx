@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import ReactCountryFlag from "react-country-flag";
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
 
 const API_URL =
@@ -446,13 +447,16 @@ export default function SignupPage() {
                       }}
                       className="flex items-center gap-1.5 px-3 h-full text-sm font-medium border-r border-white/20 hover:bg-white/10 transition rounded-l-full"
                     >
-                      <img
-                        src={`https://flagcdn.com/w20/${selectedCountry.code.toLowerCase()}.png`}
-                        srcSet={`https://flagcdn.com/w40/${selectedCountry.code.toLowerCase()}.png 2x`}
-                        width={20}
-                        height={14}
-                        alt={selectedCountry.name}
-                        className="rounded-sm object-cover"
+                      <ReactCountryFlag
+                        countryCode={selectedCountry.code}
+                        svg
+                        style={{
+                          width: "20px",
+                          height: "14px",
+                          borderRadius: "2px",
+                          objectFit: "cover",
+                        }}
+                        title={selectedCountry.name}
                       />
                       <span className="text-white/80 text-xs">
                         {selectedCountry.dialCode}
@@ -487,13 +491,16 @@ export default function SignupPage() {
                                   : "text-gray-700"
                                   }`}
                               >
-                                <img
-                                  src={`https://flagcdn.com/w20/${c.code.toLowerCase()}.png`}
-                                  srcSet={`https://flagcdn.com/w40/${c.code.toLowerCase()}.png 2x`}
-                                  width={20}
-                                  height={14}
-                                  alt={c.name}
-                                  className="w-6 h-4 rounded-sm object-cover shrink-0"
+                                <ReactCountryFlag
+                                  countryCode={c.code}
+                                  svg
+                                  style={{
+                                    width: "20px",
+                                    height: "14px",
+                                    borderRadius: "2px",
+                                    objectFit: "cover",
+                                  }}
+                                  title={c.name}
                                 />
                                 <span className="flex-1 truncate">{c.name}</span>
                                 <span className="text-gray-400 text-xs shrink-0">
