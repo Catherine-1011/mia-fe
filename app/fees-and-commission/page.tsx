@@ -506,6 +506,124 @@ export default function FeesAndCommissionPage() {
                 </tbody>
               </table>
             </div>
+            <div className="mt-10">
+              <h3 className="text-xl font-bold mb-4">
+                Stripe Connect Active Account Fee Example
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse text-sm">
+                  <thead>
+                    <tr className="bg-[#440C03] text-white">
+                      <th className="px-4 py-3 font-semibold rounded-tl-xl">
+                        Fee
+                      </th>
+                      <th className="px-4 py-3 font-semibold">When It Applies</th>
+                      <th className="px-4 py-3 font-semibold rounded-tr-xl">
+                        Example
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="bg-white/60">
+                      <td className="px-4 py-3 font-medium">
+                        A$2 per active seller account per month
+                      </td>
+                      <td className="px-4 py-3 text-gray-700">
+                        A seller account is considered active only when it
+                        processes transactions and receives payouts during the
+                        month. No fee applies to inactive seller accounts.
+                      </td>
+                      <td className="px-4 py-3 text-gray-700">
+                       Seller receives payouts monthly: an A$2 fee applies.
+                      </td>
+                    </tr>
+                    <tr className="bg-[#e8d9cb]">
+                      <td className="px-4 py-3 font-medium">
+                        No active account fee
+                      </td>
+                      <td className="px-4 py-3 text-gray-700">
+                        The seller account does not receive payouts during the
+                        month.
+                      </td>
+                      <td className="px-4 py-3 text-gray-700">
+                       If the seller receives no payouts in a month, no monthly fee applies.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div >
+              {/* <h3 className="text-xl font-bold mb-4">Seller Payout Fee</h3> */}
+              <div className="overflow-x-auto">
+                {/* <table className="w-full text-left border-collapse text-sm">
+                  <thead>
+                    <tr className="bg-[#440C03] text-white">
+                      <th className="px-4 py-3 font-semibold rounded-tl-xl">
+                        Fee
+                      </th>
+                      <th className="px-4 py-3 font-semibold">Applies To</th>
+                      <th className="px-4 py-3 font-semibold rounded-tr-xl">
+                        Notes
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="bg-white/60">
+                      <td className="px-4 py-3 font-medium">
+                        0.25% + A$0.25 per payout
+                      </td>
+                      <td className="px-4 py-3 text-gray-700">
+                        Funds paid out from Stripe to the seller&apos;s bank
+                        account.
+                      </td>
+                      <td className="px-4 py-3 text-gray-700">
+                        This fee applies when funds are paid out from Stripe to
+                        the seller&apos;s bank account. It is not charged on every
+                        product sold.
+                      </td>
+                    </tr>
+                  </tbody>
+                </table> */}
+              </div>
+              <div className=" overflow-x-auto">
+                {/* <table className="w-full text-left border-collapse text-sm">
+                  <thead>
+                    <tr className="bg-[#440C03] text-white">
+                      <th className="px-4 py-3 font-semibold rounded-tl-xl">
+                        Example
+                      </th>
+                      <th className="px-4 py-3 font-semibold rounded-tr-xl">
+                        Amount
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      ["Available payout", "A$100.00"],
+                      ["Payout fee", "A$0.50"],
+                      ["Seller receives", "A$99.50"],
+                    ].map(([label, amount], i) => (
+                      <tr
+                        key={label}
+                        className={
+                          i % 2 === 0 ? "bg-white/60" : "bg-[#e8d9cb]"
+                        }
+                      >
+                        <td className="px-4 py-3 font-medium">{label}</td>
+                        <td className="px-4 py-3">{amount}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table> */}
+              </div>
+              <p className="text-xs text-gray-500 mt-3">
+                Note: These examples illustrate Stripe Connect fees only and do
+                not include marketplace commissions, Stripe processing fees,
+                GST, shipping charges, refunds, disputes, or other applicable
+                deductions. Actual amounts may vary.
+              </p>
+            </div>
             <p className="text-xs text-gray-500 mt-3">
               Fee examples and Stripe pricing references are indicative only and
               may change over time. Sellers should review Stripe&apos;s latest

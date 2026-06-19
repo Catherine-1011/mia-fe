@@ -622,9 +622,9 @@ export default function Page() {
                 <button
                   type="button"
                   onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-                  className="w-full flex items-center justify-between p-6 text-left focus:outline-none"
+                  className="w-full flex items-center justify-between p-4 sm:p-6 text-left focus:outline-none"
                 >
-                  <h3 className={`font-bold text-lg transition-colors ${isOpen ? 'text-[#3b0f06]' : 'text-gray-800'}`}>
+                  <h3 className={`font-bold text-sm sm:text-lg transition-colors ${isOpen ? 'text-[#3b0f06]' : 'text-gray-800'}`}>
                     {faq.question}
                   </h3>
                   <ChevronDown className={`w-5 h-5 shrink-0 text-[#3b0f06] transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
@@ -635,7 +635,7 @@ export default function Page() {
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <p className="px-6 pb-6 text-gray-600 text-sm leading-relaxed">
+                    <p  className="px-4 sm:px-6 pb-4 sm:pb-6 text-gray-600 text-xs sm:text-sm leading-relaxed">
                       {faq.answer}
                     </p>
                   </div>
