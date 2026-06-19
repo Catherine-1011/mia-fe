@@ -1056,6 +1056,10 @@ export default function ArtistOnboardingForm() {
     left: 0,
     width: 0,
   });
+  const passwordValidationMessage =
+    "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one number. Special characters are not allowed.";
+  const isValidAlphanumericPassword = (password: string) =>
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password);
 
   // ─── Persist to localStorage ──────────────────────────────────────────────
   useEffect(() => {
@@ -1318,8 +1322,11 @@ export default function ArtistOnboardingForm() {
   const handleResetPassword = async () => {
     const newErrors: Record<string, string> = {};
     if (!formData.resetOtp?.trim()) newErrors.resetOtp = "OTP is required";
-    if (!formData.newPassword || formData.newPassword.length < 6)
-      newErrors.newPassword = "Password must be at least 6 characters";
+    if (!formData.newPassword?.trim()) {
+      newErrors.newPassword = "Password is required";
+    } else if (!isValidAlphanumericPassword(formData.newPassword)) {
+      newErrors.newPassword = passwordValidationMessage;
+    }
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
@@ -1382,9 +1389,11 @@ export default function ArtistOnboardingForm() {
   // ─── STEP 2 ───────────────────────────────────────────────────────────────
   const handleStep2Submit = () => {
     const newErrors: Record<string, string> = {};
-    if (!formData.password?.trim()) newErrors.password = "Password is required";
-    else if (formData.password.length < 6)
-      newErrors.password = "Password must be at least 6 characters";
+    if (!formData.password?.trim()) {
+      newErrors.password = "Password is required";
+    } else if (!isValidAlphanumericPassword(formData.password)) {
+      newErrors.password = passwordValidationMessage;
+    }
     if (!formData.confirmPassword?.trim())
       newErrors.confirmPassword = "Please confirm your password";
     else if (formData.password !== formData.confirmPassword)
@@ -1983,7 +1992,7 @@ export default function ArtistOnboardingForm() {
                       name="newPassword"
                       value={formData.newPassword}
                       onChange={handleInputChange}
-                      placeholder="Min. 6 characters"
+                      placeholder="Create an alphanumeric password"
                       className={inputCls("newPassword")}
                     />
                     {errors.newPassword && (
@@ -2426,10 +2435,15 @@ export default function ArtistOnboardingForm() {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  placeholder="Set your password (min. 6 characters)"
+                  placeholder="Set your password"
                   inputCls={inputCls("password")}
                   error={errors.password}
                 />
+
+<p className="text-xs text-[#5A1E12]/60 -mt-3 pl-1 leading-relaxed">
+  Password must contain at least 8 characters, one uppercase letter,
+  one lowercase letter, one number, and one special character.
+</p>
                 <PasswordField
                   label="Confirm Password *"
                   name="confirmPassword"

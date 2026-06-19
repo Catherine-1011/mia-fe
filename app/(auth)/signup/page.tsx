@@ -195,9 +195,10 @@ export default function SignupPage() {
   const emailError = validateEmail(formData.email);
   const phoneError = validatePhone(phoneNumber, selectedCountry);
   const passwordError =
-    formData.password.length > 0 && formData.password.length < 6
-      ? "Password must be at least 6 characters"
-      : null;
+  formData.password &&
+  !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(formData.password)
+    ? "Password must be at least 8 characters with uppercase, lowercase, and number"
+    : "";
   const confirmPwError =
     formData.confirmPassword && formData.password !== formData.confirmPassword
       ? "Passwords do not match"
@@ -538,44 +539,53 @@ export default function SignupPage() {
 
               {/* Password */}
               <div className="space-y-1">
-                <p className="text-white/90 text-sm font-medium">Password</p>
-                <div className="relative">
-                  <input
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    onBlur={() => touchField("password")}
-                    placeholder="Create a password (min 6 characters)"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    minLength={6}
-                    className={`${inputClass(touched.password, passwordError, formData.password)} pr-12`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors"
-                    tabIndex={-1}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
-                {touched.password && passwordError && (
-                  <p className="text-xs text-red-400 flex items-center gap-1 pl-2">
-                    ✕ {passwordError}
-                  </p>
-                )}
-                {touched.password && !passwordError && formData.password && (
-                  <p className="text-xs text-emerald-400 flex items-center gap-1 pl-2">
-                    ✓ Strong enough
-                  </p>
-                )}
-              </div>
+  <p className="text-white/90 text-sm font-medium">Password</p>
+
+  <div className="relative">
+    <input
+      name="password"
+      value={formData.password}
+      onChange={handleChange}
+      onBlur={() => touchField("password")}
+      placeholder="Create a strong password"
+      type={showPassword ? "text" : "password"}
+      required
+      minLength={8}
+      className={`${inputClass(touched.password, passwordError, formData.password)} pr-12`}
+    />
+
+    <button
+      type="button"
+      onClick={() => setShowPassword(!showPassword)}
+      className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors"
+      tabIndex={-1}
+      aria-label={showPassword ? "Hide password" : "Show password"}
+    >
+      {showPassword ? (
+        <EyeOff className="w-4 h-4" />
+      ) : (
+        <Eye className="w-4 h-4" />
+      )}
+    </button>
+  </div>
+
+  <p className="text-xs text-white/60 pl-2 leading-relaxed">
+    Password must contain at least 8 characters, one uppercase letter,
+    one lowercase letter, and one number.
+  </p>
+
+  {touched.password && passwordError && (
+    <p className="text-xs text-red-400 flex items-center gap-1 pl-2">
+      ✕ {passwordError}
+    </p>
+  )}
+
+  {touched.password && !passwordError && formData.password && (
+    <p className="text-xs text-emerald-400 flex items-center gap-1 pl-2">
+      ✓ Strong enough
+    </p>
+  )}
+</div>
 
               {/* Confirm Password */}
               <div className="space-y-1">
