@@ -661,7 +661,9 @@ export default function BlogPostPage() {
       )}
 
       {/* ── CTA STRIP ── */}
-      <section className="bg-[#3a1208] py-16 px-4 relative overflow-hidden">
+      <section className="bg-[#EAD7B7] py-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="relative bg-white border border-[#e8d5c0] rounded-3xl overflow-hidden shadow-sm px-8 py-14 sm:px-16">
         <svg
           aria-hidden="true"
           className="absolute inset-0 w-full h-full pointer-events-none opacity-[0.07]"
@@ -675,21 +677,23 @@ export default function BlogPostPage() {
           <rect width="100%" height="100%" fill="url(#cta-dots2)" />
         </svg>
         <div className="relative z-10 max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl sm:text-3xl font-black text-white mb-3">
-            Explore Our <span className="text-[#ead7b7]">Marketplace</span>
+          <h2 className="text-3xl sm:text-4xl font-black text-[#3a1208] leading-tight mb-4">
+            Explore Our <span className="text-[#803512]">Marketplace</span>
           </h2>
-          <p className="text-white/50 text-sm leading-relaxed mb-8 max-w-md mx-auto">
+          <p className="text-sm text-gray-500 leading-relaxed mb-8 max-w-sm mx-auto">
             Discover authentic Aboriginal art, crafts, and cultural products — each with a story directly from Arnhem Land.
           </p>
           <Link
             href="/shop"
-            className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#ead7b7] hover:bg-white text-[#3a1208] font-bold text-sm rounded-full transition-all duration-300 hover:-translate-y-0.5 shadow-lg"
+            className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#ead7b7] hover:bg-[#d4b98a] text-[#3a1208] font-bold text-sm rounded-full transition-all duration-300 hover:-translate-y-0.5 shadow-lg"
           >
             Shop Now
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
           </Link>
+        </div>
+        </div>
         </div>
       </section>
 
