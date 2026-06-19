@@ -332,20 +332,20 @@ export default function SignupPage() {
 
       {/* Back to Home — circle icon on mobile, full button on desktop */}
       {/* Back to Home — top left */}
-      <div className="macbook-auth-back absolute top-4 left-4 md:top-8 md:left-auto md:right-8 z-50 flex items-center">
+      <div className="absolute top-4 left-4 md:top-8 md:left-auto md:right-8 z-50 flex items-center">
         <Link
-    href="/"
-    aria-label="Back to home"
-    className="inline-flex items-center justify-center gap-2 w-9 h-9 rounded-full md:w-auto md:h-auto md:rounded-xl border border-[#5A1E12]/25 bg-white/70 px-0 md:px-4 py-0 md:py-2 text-sm font-semibold text-[#5A1E12] shadow-sm backdrop-blur transition-all hover:bg-white hover:border-[#5A1E12]/40 hover:shadow-md"
-  >
-    <ArrowLeft className="h-4 w-4 shrink-0" />
-    <span className="hidden md:inline">Back to Home</span>
-  </Link>
+          href="/"
+          aria-label="Back to home"
+          className="inline-flex items-center justify-center gap-2 w-9 h-9 rounded-full md:w-auto md:h-auto md:rounded-xl border border-[#5A1E12]/25 bg-white/70 px-0 md:px-4 py-0 md:py-2 text-sm font-semibold text-[#5A1E12] shadow-sm backdrop-blur transition-all hover:bg-white hover:border-[#5A1E12]/40 hover:shadow-md"
+        >
+          <ArrowLeft className="h-4 w-4 shrink-0" />
+          <span className="hidden md:inline">Back to Home</span>
+        </Link>
       </div>
 
-      <section className="macbook-auth-section macbook-signup-section relative z-10 flex min-h-screen w-full items-start px-6 pt-24 md:pt-20 pb-12 sm:px-10 md:px-16 lg:px-20">
-        <div className="macbook-auth-panel macbook-signup-panel w-full max-w-lg md:pl-20">
-          <div className="macbook-auth-logo absolute top-4 left-1/2 -translate-x-1/2 md:left-8 md:translate-x-0 md:top-6 z-50">
+      <section className="macbook-signup-section relative z-10 flex min-h-screen w-full items-start px-6 pt-24 md:pt-20 pb-12 sm:px-10 md:px-16 lg:px-20">
+        <div className="macbook-signup-panel w-full max-w-lg md:pl-20">
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 md:left-8 md:translate-x-0 md:top-6 z-50">
             <Link href="/">
               <Image
                 src="/images/navbarLogo.png"
@@ -358,10 +358,10 @@ export default function SignupPage() {
           </div>
 
           <div className="w-full">
-            <h1 className="macbook-auth-title text-2xl md:text-3xl font-bold text-white mb-4">
+            <h1 className="text-2xl md:text-3xl font-bold text-white mb-4">
               Create new Account
             </h1>
-            <div className="macbook-auth-switch pt-3 border-t border-white/10 flex items-center gap-3">
+            <div className="pt-3 border-t border-white/10 flex items-center gap-3">
               <p className="text-sm opacity-80">Already have an account?</p>
               <Link
                 href="/login"
@@ -429,10 +429,10 @@ export default function SignupPage() {
                 <p className="text-white/90 text-sm font-medium">Mobile No</p>
                 <div
                   className={`flex items-stretch rounded-full overflow-visible border transition-all ${touched.phone && phoneError
-                      ? "border-red-400"
-                      : touched.phone && !phoneError && phoneNumber.trim()
-                        ? "border-emerald-400/70"
-                        : "border-white/10 focus-within:border-white/30"
+                    ? "border-red-400"
+                    : touched.phone && !phoneError && phoneNumber.trim()
+                      ? "border-emerald-400/70"
+                      : "border-white/10 focus-within:border-white/30"
                     } bg-[#873007]`}
                 >
                   {/* Country picker button */}
@@ -451,8 +451,7 @@ export default function SignupPage() {
                         width={20}
                         height={14}
                         alt={selectedCountry.name}
-                        className="rounded-sm object-cover shrink-0"
-                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                        className="rounded-sm object-cover"
                       />
                       <span className="text-white/80 text-xs">
                         {selectedCountry.dialCode}
@@ -461,7 +460,7 @@ export default function SignupPage() {
                     </button>
 
                     {showCountryDropdown && (
-                      <div className="macbook-country-dropdown absolute top-full left-0 z-50 mt-1 w-64 bg-white border border-[#d6b896] rounded-xl shadow-xl overflow-hidden">
+                      <div className="absolute top-full left-0 z-50 mt-1 w-64 bg-white border border-[#d6b896] rounded-xl shadow-xl overflow-hidden">
                         <div className="p-2 border-b border-[#e8d5bc]">
                           <input
                             type="text"
@@ -483,8 +482,8 @@ export default function SignupPage() {
                                   setCountrySearch("");
                                 }}
                                 className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm hover:bg-[#5A1E12]/5 text-left transition ${c.code === selectedCountry.code
-                                    ? "bg-[#5A1E12]/10 font-medium text-[#5A1E12]"
-                                    : "text-gray-700"
+                                  ? "bg-[#5A1E12]/10 font-medium text-[#5A1E12]"
+                                  : "text-gray-700"
                                   }`}
                               >
                                 <img
@@ -493,8 +492,7 @@ export default function SignupPage() {
                                   width={20}
                                   height={14}
                                   alt={c.name}
-                                  className="w-5 h-3.5 rounded-sm object-cover shrink-0"
-                                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                                  className="w-6 h-4 rounded-sm object-cover shrink-0"
                                 />
                                 <span className="flex-1 truncate">{c.name}</span>
                                 <span className="text-gray-400 text-xs shrink-0">

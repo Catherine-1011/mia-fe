@@ -912,20 +912,6 @@ const feeDetailRows = [
     notes:
       "Sellers are responsible for their own tax obligations. This page is not tax advice.",
   },
-  {
-    feeCharge: "Meeting Follow-ups",
-    amountBasis: "Frontend fixes pending",
-    chargedBy: "Internal team",
-    notes:
-      "Some flags are broken in the number field. Email still has a color issue, Fanindra name issue, duplicate Track Order button, and button design review pending.",
-  },
-  {
-    feeCharge: "Live Testing Coordination",
-    amountBasis: "Action required",
-    chargedBy: "Internal team",
-    notes:
-      "Mail Fanindra. Mail Hussain for live testing. Ritik to chat with support for live testing.",
-  },
 ];
 
 const feeDetailFootnote =

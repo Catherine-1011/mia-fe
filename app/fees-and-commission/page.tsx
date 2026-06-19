@@ -490,18 +490,6 @@ export default function FeesAndCommissionPage() {
                       "Seller / Platform as applicable",
                       "Sellers are responsible for their own tax obligations. This page is not tax advice.",
                     ],
-                    [
-                      "Meeting Follow-ups",
-                      "Frontend fixes pending",
-                      "Internal team",
-                      "Some flags are broken in the number field. Email still has a color issue, Fanindra name issue, duplicate Track Order button, and button design review pending.",
-                    ],
-                    [
-                      "Live Testing Coordination",
-                      "Action required",
-                      "Internal team",
-                      "Mail Fanindra. Mail Hussain for live testing. Ritik to chat with support for live testing.",
-                    ],
                   ].map(([feeType, amount, chargedBy, notes], i) => (
                     <tr
                       key={i}
