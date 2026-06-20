@@ -110,6 +110,9 @@ const COUNTRIES: Country[] = getCountries()
   }))
   .sort((a, b) => a.name.localeCompare(b.name));
 
+const DEFAULT_PHONE_COUNTRY =
+  COUNTRIES.find((country) => country.code === "AU") ?? COUNTRIES[0];
+
 function validatePhone(digits: string, country: Country): string | null {
   const clean = digits.replace(/\D/g, "");
   if (!clean) return null;
@@ -388,7 +391,8 @@ export default function ArtistOnboardingForm() {
   const [showFeeDetails, setShowFeeDetails] = useState(false);
 
   // ─── Phone picker — Step 1 ────────────────────────────────────────────────
-  const [phoneCountry, setPhoneCountry] = useState<Country>(COUNTRIES[0]);
+  const [phoneCountry, setPhoneCountry] =
+    useState<Country>(DEFAULT_PHONE_COUNTRY);
   const [phoneSearch, setPhoneSearch] = useState("");
   const [showPhoneDropdown, setShowPhoneDropdown] = useState(false);
   const [phoneTouched, setPhoneTouched] = useState(false);
