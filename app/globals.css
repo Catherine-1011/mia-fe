@@ -529,3 +529,209 @@ html {
     max-height: 11rem !important;
   }
 }
+
+/* Compact home hero for short laptop viewports (≤650px height, desktop only) */
+@media screen and (max-height: 650px) and (min-width: 1024px) {
+  .macbook-home-hero {
+    min-height: 100vh !important;
+    height: 100vh !important;
+  }
+
+  .macbook-home-hero-content {
+    min-height: 100vh !important;
+    padding-top: 5.5rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+
+  .macbook-home-hero-content h1 {
+    font-size: clamp(2.5rem, 5.5vw, 3.25rem) !important;
+    line-height: 1.08 !important;
+  }
+
+  .macbook-home-hero-content .overflow-hidden {
+    margin-bottom: 0.15rem !important;
+  }
+
+  .macbook-home-hero-copy {
+    font-size: 0.875rem !important;
+    line-height: 1.4 !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .macbook-home-hero-actions {
+    gap: 0.625rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .macbook-home-hero-actions a {
+    padding-top: 0.6rem !important;
+    padding-bottom: 0.6rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  /* Compact navbar */
+  .macbook-nav-shell {
+    top: 12px !important;
+    padding-left: 36px !important;
+    padding-right: 36px !important;
+  }
+
+  .macbook-nav-inner {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+
+  .macbook-nav-logo {
+    width: 2.5rem !important;
+  }
+
+  .macbook-nav-links {
+    gap: 0.875rem !important;
+  }
+
+  .macbook-nav-link {
+    font-size: 0.8rem !important;
+    padding-top: 0.15rem !important;
+    padding-bottom: 0.15rem !important;
+  }
+
+  .macbook-nav-actions {
+    gap: 0.15rem !important;
+  }
+
+  .macbook-nav-actions button {
+    padding: 0.3rem !important;
+  }
+
+  .macbook-nav-actions svg {
+    width: 1.1rem !important;
+    height: 1.1rem !important;
+  }
+
+  /* Compact auth pages (login) */
+  .macbook-auth-page {
+    min-height: 100vh !important;
+    overflow-y: auto !important;
+  }
+
+  .macbook-auth-section {
+    min-height: 100vh !important;
+    padding-top: 4.5rem !important;
+    padding-bottom: 1.5rem !important;
+    align-items: center !important;
+  }
+
+  .macbook-auth-logo {
+    top: 0.5rem !important;
+  }
+
+  .macbook-auth-logo img {
+    width: 3.5rem !important;
+    height: 3.5rem !important;
+  }
+
+  .macbook-auth-back {
+    top: 0.75rem !important;
+  }
+
+  .macbook-auth-title {
+    font-size: 1.4rem !important;
+    line-height: 1.15 !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .macbook-auth-eyebrow {
+    margin-bottom: 0.35rem !important;
+    font-size: 0.65rem !important;
+  }
+
+  .macbook-auth-switch {
+    font-size: 0.82rem !important;
+    margin-bottom: 1.25rem !important;
+  }
+
+  .macbook-auth-switch a,
+  .macbook-auth-section form button:not([type="submit"]),
+  .macbook-auth-section form p {
+    font-size: 0.8rem !important;
+  }
+
+  .macbook-auth-section form {
+    gap: 0 !important;
+  }
+
+  .macbook-auth-section form > .space-y-4 > * + * {
+    margin-top: 0.65rem !important;
+  }
+
+  .macbook-auth-section form input {
+    padding-top: 0.55rem !important;
+    padding-bottom: 0.55rem !important;
+    font-size: 0.825rem !important;
+  }
+
+  .macbook-auth-section form button[type="submit"] {
+    padding-top: 0.6rem !important;
+    padding-bottom: 0.6rem !important;
+    margin-top: 0.5rem !important;
+    font-size: 0.825rem !important;
+  }
+
+  /* Compact auth pages (signup) */
+  .macbook-signup-section {
+    min-height: 100vh !important;
+    padding-top: 4rem !important;
+    padding-bottom: 1rem !important;
+    align-items: flex-start !important;
+  }
+
+  .macbook-signup-panel h1 {
+    font-size: 1.35rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
+  .macbook-signup-form {
+    margin-top: 1rem !important;
+  }
+
+  .macbook-signup-form > * + * {
+    margin-top: 0.5rem !important;
+  }
+
+  .macbook-signup-form .space-y-1 > * + * {
+    margin-top: 0.1rem !important;
+  }
+
+  .macbook-signup-form input {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+    font-size: 0.8rem !important;
+  }
+
+  .macbook-signup-form p.text-sm {
+    font-size: 0.75rem !important;
+  }
+
+  .macbook-signup-form button[type="submit"] {
+    padding-top: 0.55rem !important;
+    padding-bottom: 0.55rem !important;
+    margin-top: 0.35rem !important;
+    font-size: 0.8rem !important;
+  }
+}
+
+@media screen and (max-height: 650px) and (min-width: 1024px) and (max-width: 1100px) {
+  .macbook-auth-section {
+    padding-top: 5.75rem !important;
+    padding-bottom: 0.75rem !important;
+  }
+}
+
+@media screen and (max-height: 650px) and (min-width: 769px) and (max-width: 1015px) {
+  .macbook-auth-section {
+    padding-top: 6rem !important;
+    padding-bottom: 1rem !important;
+  }
+}

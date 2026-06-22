@@ -241,7 +241,7 @@ export default function LoginPage() {
         src="/images/top2.jpg"
         alt="Auth Visual"
         fill
-        className="hidden object-cover object-right-center lg:block"
+        className="hidden object-contain object-[130%_center] lg:block"
         priority
       />
 

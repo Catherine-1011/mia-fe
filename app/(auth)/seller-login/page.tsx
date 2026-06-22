@@ -191,7 +191,7 @@ export default function SellerLoginPage() {
   };
 
   return (
-    <main className="relative min-h-screen w-full overflow-hidden text-white min-[1360px]:bg-[#440C03]">
+    <main className="macbook-auth-page relative min-h-screen w-full overflow-hidden text-white min-[1360px]:bg-[#440C03]">
       <AnimatePresence>
         {showModal && (
           <motion.div
@@ -226,11 +226,11 @@ export default function SellerLoginPage() {
       </AnimatePresence>
 
       {/* Back to Home — circle icon on mobile, full button on desktop */}
-      <div className="absolute top-4 right-4 sm:top-6 sm:right-6 md:top-8 md:right-8 z-50 flex items-center">
+      <div className="macbook-auth-back absolute top-4 left-4 md:top-8 md:left-auto md:right-8 z-50 flex items-center">
         <Link
           href="/"
           aria-label="Back to home"
-          className="inline-flex items-center justify-center gap-2 w-9 h-9 rounded-full md:w-auto md:h-auto md:rounded-xl border border-white/30 bg-white/10 px-0 md:px-4 py-0 md:py-2 text-sm font-semibold text-white shadow-sm backdrop-blur-sm transition-all hover:bg-white/20 hover:border-white/50"
+          className="inline-flex items-center justify-center gap-2 w-9 h-9 rounded-full md:w-auto md:h-auto md:rounded-xl border border-[#5A1E12]/25 bg-white/70 px-0 md:px-4 py-0 md:py-2 text-sm font-semibold text-[#5A1E12] shadow-sm backdrop-blur transition-all hover:bg-white hover:border-[#5A1E12]/40 hover:shadow-md"
         >
           <ArrowLeft className="h-4 w-4 shrink-0" />
           <span className="hidden md:inline">Back to Home</span>
@@ -248,8 +248,8 @@ export default function SellerLoginPage() {
       <div className="absolute inset-0 bg-[#440C03] lg:hidden" />
       <div className="absolute inset-0 hidden lg:block bg-[linear-gradient(90deg,#440C03_0%,#440C03_44%,rgba(68,12,3,0.55)_68%,rgba(68,12,3,0)_100%)]" />
 
-      <section className="relative z-10 flex min-h-screen w-full items-center px-6 py-20 sm:px-10 md:px-16 lg:px-20">
-        <Link href="/" className="absolute top-6 left-6 sm:top-8 sm:left-8">
+      <section className="macbook-auth-section relative z-10 flex min-h-screen w-full items-center px-6 py-20 sm:px-10 md:px-16 lg:px-20">
+        <Link href="/" className="macbook-auth-logo absolute top-6 left-6 sm:top-8 sm:left-8">
           <Image
             src="/images/navbarLogo.png"
             alt="Logo"
@@ -259,16 +259,16 @@ export default function SellerLoginPage() {
           />
         </Link>
 
-        <div className="w-full max-w-md">
-          <p className="uppercase text-xs tracking-widest mb-4 opacity-80">Start your seller journey</p>
-          <h1 className="text-3xl sm:text-4xl font-bold mb-2">
+        <div className="macbook-auth-panel w-full max-w-md">
+          <p className="macbook-auth-eyebrow uppercase text-xs tracking-widest mb-4 opacity-80">Start your seller journey</p>
+          <h1 className="macbook-auth-title text-3xl sm:text-4xl font-bold mb-2">
             {authStep === "login" && "Log into your account"}
             {authStep === "forgot" && "Forgot Password"}
             {authStep === "reset" && "Reset Password"}
           </h1>
 
           {authStep === "login" && (
-            <div className="flex items-center gap-3 mb-10">
+            <div className="macbook-auth-switch flex items-center gap-3 mb-10">
               <p className="text-md opacity-80">New here?</p>
               <Link href="/sellerOnboarding" className="px-5 py-1.5 border border-white/30 rounded-full text-sm font-semibold hover:bg-white hover:text-[#440C03] transition-all">
                 Create seller account
@@ -277,11 +277,11 @@ export default function SellerLoginPage() {
           )}
 
           {authStep === "forgot" && (
-            <p className="text-sm mb-10 opacity-80">Enter your email to receive an OTP for password reset.</p>
+            <p className="macbook-auth-switch text-sm mb-10 opacity-80">Enter your email to receive an OTP for password reset.</p>
           )}
 
           {authStep === "reset" && (
-            <p className="text-sm mb-10 opacity-80">Enter the OTP sent to {forgotEmail} and your new password.</p>
+            <p className="macbook-auth-switch text-sm mb-10 opacity-80">Enter the OTP sent to {forgotEmail} and your new password.</p>
           )}
 
           {authStep === "login" && (

@@ -128,6 +128,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Testimonials from "@/components/cards/Testimonials";
 import { MapPin, Phone, Mail, Send, ArrowRight, ChevronDown } from "lucide-react";
+import ReactCountryFlag from "react-country-flag";
 import { getCountries, getCountryCallingCode } from "react-phone-number-input/input";
 import { isValidPhoneNumber } from "react-phone-number-input";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
@@ -186,14 +187,9 @@ const FAQS = [
 // ─── Country phone data from react-phone-number-input ────────────────────────
 const countryCodeList = getCountries();
 
-// Get flag image URL from flagcdn.com (works on all platforms including Windows)
-const getFlagUrl = (isoCode: string): string =>
-  `https://flagcdn.com/24x18/${isoCode.toLowerCase()}.png`;
-
 // Build COUNTRIES array — all countries from react-phone-number-input with CDN flag images
 const COUNTRIES = countryCodeList.map((code) => ({
   code,
-  flagUrl: getFlagUrl(code),
   name: (en as Record<string, string>)[code] || code,
   dialCode: `+${getCountryCallingCode(code as CountryCode)}`,
 })).sort((a, b) => a.name.localeCompare(b.name));
@@ -412,7 +408,17 @@ export default function Page() {
                           onClick={() => { setShowPhoneDropdown(v => !v); setPhoneSearch(''); }}
                           className="flex items-center gap-1.5 px-2.5 sm:px-3 py-4 text-sm font-medium border-r border-gray-200 hover:bg-gray-100 transition rounded-l-xl shrink-0"
                         >
-                          <img src={phoneCountry.flagUrl} alt={phoneCountry.name} width={24} height={18} className="rounded-sm shrink-0" />
+                          <ReactCountryFlag
+                            countryCode={phoneCountry.code}
+                            svg
+                            style={{
+                              width: "20px",
+                              height: "14px",
+                              borderRadius: "2px",
+                              objectFit: "cover",
+                            }}
+                            title={phoneCountry.name}
+                          />
                           <span className="text-gray-700 text-xs font-semibold">{phoneCountry.dialCode}</span>
                           <span className="text-gray-400 text-xs">▾</span>
                         </button>
@@ -462,7 +468,17 @@ export default function Page() {
                                       c.code === phoneCountry.code ? 'bg-[#3b0f06]/8 font-medium text-[#3b0f06]' : 'text-gray-700'
                                     }`}
                                   >
-                                    <img src={c.flagUrl} alt={c.name} width={24} height={18} className="rounded-sm shrink-0" />
+                                    <ReactCountryFlag
+                                      countryCode={c.code}
+                                      svg
+                                      style={{
+                                        width: "20px",
+                                        height: "14px",
+                                        borderRadius: "2px",
+                                        objectFit: "cover",
+                                      }}
+                                      title={c.name}
+                                    />
                                     <span className="flex-1 truncate">{c.name}</span>
                                     <span className="text-gray-400 text-xs shrink-0">{c.dialCode}</span>
                                   </button>
@@ -606,9 +622,9 @@ export default function Page() {
                 <button
                   type="button"
                   onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-                  className="w-full flex items-center justify-between p-6 text-left focus:outline-none"
+                  className="w-full flex items-center justify-between p-4 sm:p-6 text-left focus:outline-none"
                 >
-                  <h3 className={`font-bold text-lg transition-colors ${isOpen ? 'text-[#3b0f06]' : 'text-gray-800'}`}>
+                  <h3 className={`font-bold text-sm sm:text-lg transition-colors ${isOpen ? 'text-[#3b0f06]' : 'text-gray-800'}`}>
                     {faq.question}
                   </h3>
                   <ChevronDown className={`w-5 h-5 shrink-0 text-[#3b0f06] transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
@@ -619,7 +635,7 @@ export default function Page() {
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <p className="px-6 pb-6 text-gray-600 text-sm leading-relaxed">
+                    <p  className="px-4 sm:px-6 pb-4 sm:pb-6 text-gray-600 text-xs sm:text-sm leading-relaxed">
                       {faq.answer}
                     </p>
                   </div>

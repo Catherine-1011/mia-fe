@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
+import ReactCountryFlag from "react-country-flag";
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
 
 const API_URL =
@@ -195,9 +196,10 @@ export default function SignupPage() {
   const emailError = validateEmail(formData.email);
   const phoneError = validatePhone(phoneNumber, selectedCountry);
   const passwordError =
-    formData.password.length > 0 && formData.password.length < 6
-      ? "Password must be at least 6 characters"
-      : null;
+  formData.password &&
+  !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(formData.password)
+    ? "Password must be at least 8 characters with uppercase, lowercase, and number"
+    : "";
   const confirmPwError =
     formData.confirmPassword && formData.password !== formData.confirmPassword
       ? "Passwords do not match"
@@ -324,7 +326,7 @@ export default function SignupPage() {
         src="/images/top2.jpg"
         alt="Auth Visual"
         fill
-        className="hidden object-cover object-right-center lg:block"
+        className="hidden object-contain object-[130%_center] lg:block"
         priority
       />
       <div className="absolute inset-0 bg-[#440C03] lg:hidden" />
@@ -332,20 +334,20 @@ export default function SignupPage() {
 
       {/* Back to Home — circle icon on mobile, full button on desktop */}
       {/* Back to Home — top left */}
-      <div className="macbook-auth-back absolute top-4 left-4 md:top-8 md:left-auto md:right-8 z-50 flex items-center">
+      <div className="absolute top-4 left-4 md:top-8 md:left-auto md:right-8 z-50 flex items-center">
         <Link
-    href="/"
-    aria-label="Back to home"
-    className="inline-flex items-center justify-center gap-2 w-9 h-9 rounded-full md:w-auto md:h-auto md:rounded-xl border border-[#5A1E12]/25 bg-white/70 px-0 md:px-4 py-0 md:py-2 text-sm font-semibold text-[#5A1E12] shadow-sm backdrop-blur transition-all hover:bg-white hover:border-[#5A1E12]/40 hover:shadow-md"
-  >
-    <ArrowLeft className="h-4 w-4 shrink-0" />
-    <span className="hidden md:inline">Back to Home</span>
-  </Link>
+          href="/"
+          aria-label="Back to home"
+          className="inline-flex items-center justify-center gap-2 w-9 h-9 rounded-full md:w-auto md:h-auto md:rounded-xl border border-[#5A1E12]/25 bg-white/70 px-0 md:px-4 py-0 md:py-2 text-sm font-semibold text-[#5A1E12] shadow-sm backdrop-blur transition-all hover:bg-white hover:border-[#5A1E12]/40 hover:shadow-md"
+        >
+          <ArrowLeft className="h-4 w-4 shrink-0" />
+          <span className="hidden md:inline">Back to Home</span>
+        </Link>
       </div>
 
-      <section className="macbook-auth-section macbook-signup-section relative z-10 flex min-h-screen w-full items-start px-6 pt-24 md:pt-20 pb-12 sm:px-10 md:px-16 lg:px-20">
-        <div className="macbook-auth-panel macbook-signup-panel w-full max-w-lg md:pl-20">
-          <div className="macbook-auth-logo absolute top-4 left-1/2 -translate-x-1/2 md:left-8 md:translate-x-0 md:top-6 z-50">
+      <section className="macbook-signup-section relative z-10 flex min-h-screen w-full items-start px-6 pt-24 md:pt-20 pb-12 sm:px-10 md:px-16 lg:px-20">
+        <div className="macbook-signup-panel w-full max-w-lg md:pl-20">
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 md:left-8 md:translate-x-0 md:top-6 z-50">
             <Link href="/">
               <Image
                 src="/images/navbarLogo.png"
@@ -358,10 +360,10 @@ export default function SignupPage() {
           </div>
 
           <div className="w-full">
-            <h1 className="macbook-auth-title text-2xl md:text-3xl font-bold text-white mb-4">
+            <h1 className="text-2xl md:text-3xl font-bold text-white mb-4">
               Create new Account
             </h1>
-            <div className="macbook-auth-switch pt-3 border-t border-white/10 flex items-center gap-3">
+            <div className="pt-3 border-t border-white/10 flex items-center gap-3">
               <p className="text-sm opacity-80">Already have an account?</p>
               <Link
                 href="/login"
@@ -429,10 +431,10 @@ export default function SignupPage() {
                 <p className="text-white/90 text-sm font-medium">Mobile No</p>
                 <div
                   className={`flex items-stretch rounded-full overflow-visible border transition-all ${touched.phone && phoneError
-                      ? "border-red-400"
-                      : touched.phone && !phoneError && phoneNumber.trim()
-                        ? "border-emerald-400/70"
-                        : "border-white/10 focus-within:border-white/30"
+                    ? "border-red-400"
+                    : touched.phone && !phoneError && phoneNumber.trim()
+                      ? "border-emerald-400/70"
+                      : "border-white/10 focus-within:border-white/30"
                     } bg-[#873007]`}
                 >
                   {/* Country picker button */}
@@ -445,14 +447,16 @@ export default function SignupPage() {
                       }}
                       className="flex items-center gap-1.5 px-3 h-full text-sm font-medium border-r border-white/20 hover:bg-white/10 transition rounded-l-full"
                     >
-                      <img
-                        src={`https://flagcdn.com/w20/${selectedCountry.code.toLowerCase()}.png`}
-                        srcSet={`https://flagcdn.com/w40/${selectedCountry.code.toLowerCase()}.png 2x`}
-                        width={20}
-                        height={14}
-                        alt={selectedCountry.name}
-                        className="rounded-sm object-cover shrink-0"
-                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                      <ReactCountryFlag
+                        countryCode={selectedCountry.code}
+                        svg
+                        style={{
+                          width: "20px",
+                          height: "14px",
+                          borderRadius: "2px",
+                          objectFit: "cover",
+                        }}
+                        title={selectedCountry.name}
                       />
                       <span className="text-white/80 text-xs">
                         {selectedCountry.dialCode}
@@ -461,7 +465,7 @@ export default function SignupPage() {
                     </button>
 
                     {showCountryDropdown && (
-                      <div className="macbook-country-dropdown absolute top-full left-0 z-50 mt-1 w-64 bg-white border border-[#d6b896] rounded-xl shadow-xl overflow-hidden">
+                      <div className="absolute top-full left-0 z-50 mt-1 w-64 bg-white border border-[#d6b896] rounded-xl shadow-xl overflow-hidden">
                         <div className="p-2 border-b border-[#e8d5bc]">
                           <input
                             type="text"
@@ -483,18 +487,20 @@ export default function SignupPage() {
                                   setCountrySearch("");
                                 }}
                                 className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm hover:bg-[#5A1E12]/5 text-left transition ${c.code === selectedCountry.code
-                                    ? "bg-[#5A1E12]/10 font-medium text-[#5A1E12]"
-                                    : "text-gray-700"
+                                  ? "bg-[#5A1E12]/10 font-medium text-[#5A1E12]"
+                                  : "text-gray-700"
                                   }`}
                               >
-                                <img
-                                  src={`https://flagcdn.com/w20/${c.code.toLowerCase()}.png`}
-                                  srcSet={`https://flagcdn.com/w40/${c.code.toLowerCase()}.png 2x`}
-                                  width={20}
-                                  height={14}
-                                  alt={c.name}
-                                  className="w-5 h-3.5 rounded-sm object-cover shrink-0"
-                                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                                <ReactCountryFlag
+                                  countryCode={c.code}
+                                  svg
+                                  style={{
+                                    width: "20px",
+                                    height: "14px",
+                                    borderRadius: "2px",
+                                    objectFit: "cover",
+                                  }}
+                                  title={c.name}
                                 />
                                 <span className="flex-1 truncate">{c.name}</span>
                                 <span className="text-gray-400 text-xs shrink-0">
@@ -540,44 +546,53 @@ export default function SignupPage() {
 
               {/* Password */}
               <div className="space-y-1">
-                <p className="text-white/90 text-sm font-medium">Password</p>
-                <div className="relative">
-                  <input
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    onBlur={() => touchField("password")}
-                    placeholder="Create a password (min 6 characters)"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    minLength={6}
-                    className={`${inputClass(touched.password, passwordError, formData.password)} pr-12`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors"
-                    tabIndex={-1}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
-                {touched.password && passwordError && (
-                  <p className="text-xs text-red-400 flex items-center gap-1 pl-2">
-                    ✕ {passwordError}
-                  </p>
-                )}
-                {touched.password && !passwordError && formData.password && (
-                  <p className="text-xs text-emerald-400 flex items-center gap-1 pl-2">
-                    ✓ Strong enough
-                  </p>
-                )}
-              </div>
+  <p className="text-white/90 text-sm font-medium">Password</p>
+
+  <div className="relative">
+    <input
+      name="password"
+      value={formData.password}
+      onChange={handleChange}
+      onBlur={() => touchField("password")}
+      placeholder="Create a strong password"
+      type={showPassword ? "text" : "password"}
+      required
+      minLength={8}
+      className={`${inputClass(touched.password, passwordError, formData.password)} pr-12`}
+    />
+
+    <button
+      type="button"
+      onClick={() => setShowPassword(!showPassword)}
+      className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors"
+      tabIndex={-1}
+      aria-label={showPassword ? "Hide password" : "Show password"}
+    >
+      {showPassword ? (
+        <EyeOff className="w-4 h-4" />
+      ) : (
+        <Eye className="w-4 h-4" />
+      )}
+    </button>
+  </div>
+
+  <p className="text-xs text-white/60 pl-2 leading-relaxed">
+    Password must contain at least 8 characters, one uppercase letter,
+    one lowercase letter, and one number.
+  </p>
+
+  {touched.password && passwordError && (
+    <p className="text-xs text-red-400 flex items-center gap-1 pl-2">
+      ✕ {passwordError}
+    </p>
+  )}
+
+  {touched.password && !passwordError && formData.password && (
+    <p className="text-xs text-emerald-400 flex items-center gap-1 pl-2">
+      ✓ Strong enough
+    </p>
+  )}
+</div>
 
               {/* Confirm Password */}
               <div className="space-y-1">

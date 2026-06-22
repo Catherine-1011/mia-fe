@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import { Loader2, Tag, X, CheckCircle, ChevronRight, ChevronDown } from "lucide-react";
+import ReactCountryFlag from "react-country-flag";
 import { useSharedEnhancedCart } from "@/hooks/useSharedEnhancedCart";
 import { sellerCouponsApi, AppliedSellerCoupon } from "@/lib/api";
 import { guestCartUtils } from "@/lib/guestCartUtils";
@@ -65,11 +66,6 @@ const addressTerminology: Record<string, { state: string; city: string; postcode
 // ─── Country data from react-phone-number-input ───────────────────────────
 const countryCodeList = getCountries();
 
-// Return a flagcdn.com PNG URL for any ISO 3166-1 alpha-2 code.
-// Renders correctly on all platforms (Windows, Android, etc.) unlike emoji.
-const getFlagUrl = (iso2: string): string =>
-  `https://flagcdn.com/20x15/${iso2.toLowerCase()}.png`;
-
 // Use Intl.DisplayNames for localised country names (available in all modern runtimes).
 const _regionNames = typeof Intl !== "undefined" && Intl.DisplayNames
   ? new Intl.DisplayNames(["en"], { type: "region" })
@@ -80,7 +76,6 @@ const getCountryName = (iso2: string): string =>
 // Build COUNTRIES array — all countries supported by react-phone-number-input
 const COUNTRIES_RAW = countryCodeList.map(code => ({
   code,
-  flag: getFlagUrl(code),
   name: getCountryName(code),
   dialCode: `+${getCountryCallingCode(code as CountryCode)}`,
 }));
@@ -93,29 +88,18 @@ const COUNTRIES = auIndex !== -1
 
 type Country = typeof COUNTRIES[number];
 
-// Renders a country flag image with a graceful fallback (two-letter code badge)
-// for territories like Ascension Island (AC) that flagcdn.com doesn't cover.
 function FlagImage({ code, name }: { code: string; name: string }) {
-  const [failed, setFailed] = useState(false);
-  if (failed) {
-    return (
-      <span
-        className="inline-flex items-center justify-center bg-gray-200 text-gray-600 font-bold rounded-sm shrink-0 text-[8px] leading-none"
-        style={{ width: 20, height: 15 }}
-        title={name}
-      >
-        {code.slice(0, 2)}
-      </span>
-    );
-  }
   return (
-    <img
-      src={`https://flagcdn.com/20x15/${code.toLowerCase()}.png`}
-      alt={name}
-      width={20}
-      height={15}
-      className="rounded-sm shrink-0"
-      onError={() => setFailed(true)}
+    <ReactCountryFlag
+      countryCode={code}
+      svg
+      style={{
+        width: "20px",
+        height: "14px",
+        borderRadius: "2px",
+        objectFit: "cover",
+      }}
+      title={name}
     />
   );
 }

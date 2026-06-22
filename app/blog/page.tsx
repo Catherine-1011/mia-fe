@@ -1,7 +1,8 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { X } from "lucide-react";
 
 // Skeleton Components
 const SkeletonBox = ({ className }: { className: string }) => (
@@ -386,6 +387,7 @@ export default function BlogPage() {
 
   // Newsletter subscription state
   const [newsletterEmail, setNewsletterEmail] = useState("");
+  const newsletterInputRef = useRef<HTMLInputElement>(null);
   const [newsletterState, setNewsletterState] = useState<
     "idle" | "loading" | "success" | "error"
   >("idle");
@@ -925,15 +927,31 @@ export default function BlogPage() {
           onSubmit={handleNewsletterSubscribe}
           className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto"
         >
-          <input
-            type="email"
-            placeholder="Your email address"
-            aria-label="Email address"
-            value={newsletterEmail}
-            onChange={(e) => setNewsletterEmail(e.target.value)}
-            disabled={newsletterState === "loading"}
-           className="flex-1 px-5 py-3.5 rounded-full bg-[#F4E9DC] border border-[#e8d5c0] text-[#3a1208] placeholder-[#3a1208]/40 text-sm focus:outline-none focus:border-[#803512]/50 focus:ring-2 focus:ring-[#803512]/15 transition-all disabled:opacity-60"
-          />
+          <div className="relative flex-1">
+            <input
+              ref={newsletterInputRef}
+              type="email"
+              placeholder="Your email address"
+              aria-label="Email address"
+              value={newsletterEmail}
+              onChange={(e) => setNewsletterEmail(e.target.value)}
+              disabled={newsletterState === "loading"}
+              className="w-full px-5 py-3.5 pr-11 rounded-full bg-[#F4E9DC] border border-[#e8d5c0] text-[#3a1208] placeholder-[#3a1208]/40 text-sm focus:outline-none focus:border-[#803512]/50 focus:ring-2 focus:ring-[#803512]/15 transition-all disabled:opacity-60"
+            />
+            {newsletterEmail && newsletterState !== "loading" && (
+              <button
+                type="button"
+                aria-label="Clear email address"
+                onClick={() => {
+                  setNewsletterEmail("");
+                  newsletterInputRef.current?.focus();
+                }}
+                className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex h-7 w-7 items-center justify-center rounded-full text-[#803512]/60 transition-colors hover:bg-[#803512]/10 hover:text-[#803512] focus:outline-none focus:ring-2 focus:ring-[#803512]/20"
+              >
+                <X className="h-4 w-4" aria-hidden="true" />
+              </button>
+            )}
+          </div>
           <button
             type="submit"
             disabled={newsletterState === "loading"}
