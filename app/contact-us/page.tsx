@@ -344,7 +344,7 @@ export default function Page() {
           {/* LEFT: THE FORM (Takes up 2 cols) */}
           <div className="lg:col-span-2 w-full min-w-0 max-w-full bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-12 shadow-2xl shadow-[#3b0f06]/5 box-border">
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-[#3b0f06] mb-2">Send us a message</h2>
-            <p className="text-sm sm:text-base text-gray-500 mb-2 break-words">Fill out the form below and our team will get back to you.</p>
+            <p className="text-sm sm:text-base text-gray-500 mb-2 wrap-break-word">Fill out the form below and our team will get back to you.</p>
             <p className="text-xs text-gray-400 mb-8"><span className="text-red-500 font-bold">*</span> Required fields</p>
             
             <form className="space-y-6" noValidate onSubmit={handleSubmit}>
@@ -534,7 +534,7 @@ export default function Page() {
                               href={CONTACT_MAP_URL}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-sm text-white/70 leading-relaxed mt-1 inline-block hover:text-white underline-offset-2 hover:underline break-words transition-colors"
+                              className="text-sm text-white/70 leading-relaxed mt-1 inline-block hover:text-white underline-offset-2 hover:underline wrap-break-word transition-colors"
                               aria-label="Open address in Google Maps"
                             >
                               70 O'Sullivan Circuit East Arm<br />

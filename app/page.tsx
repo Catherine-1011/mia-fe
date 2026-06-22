@@ -995,7 +995,7 @@ const Page = () => {
             Journey through the heart of{" "}
             <span className="relative inline-block">
               <span className="relative z-10 text-[#803512]">Arnhem Land.</span>
-              <span className="absolute left-0 bottom-1 w-full h-1.5 bg-[#803512]/15 rounded-full z-0" />
+              <span className="absolute left-0 bottom-0 w-full h-1.5 bg-[#803512]/15 rounded-full z-0" />
             </span>
           </h2>
           <p className="text-sm text-[#803512]/55 max-w-xl mb-10 leading-relaxed">
