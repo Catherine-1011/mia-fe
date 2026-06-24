@@ -8,6 +8,10 @@ import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
 import { toast } from "react-toastify";
+import {
+  SIGNUP_PASSWORD_MESSAGE,
+  isValidSignupPassword,
+} from "@/lib/passwordValidation";
 
 const baseURL = "https://backend.madeinarnhemland.com.au";
 
@@ -405,11 +409,6 @@ export default function ArtistOnboardingForm() {
     left: 0,
     width: 0,
   });
-  const passwordValidationMessage =
-    "Password must contain at least 8 characters, one uppercase letter, one lowercase letter, and one number. Special characters are not allowed.";
-  const isValidAlphanumericPassword = (password: string) =>
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(password);
-
   // ─── Persist to localStorage ──────────────────────────────────────────────
   useEffect(() => {
     const savedStep = localStorage.getItem("sellerOnboardingStep");
@@ -673,8 +672,8 @@ export default function ArtistOnboardingForm() {
     if (!formData.resetOtp?.trim()) newErrors.resetOtp = "OTP is required";
     if (!formData.newPassword?.trim()) {
       newErrors.newPassword = "Password is required";
-    } else if (!isValidAlphanumericPassword(formData.newPassword)) {
-      newErrors.newPassword = passwordValidationMessage;
+    } else if (!isValidSignupPassword(formData.newPassword)) {
+      newErrors.newPassword = SIGNUP_PASSWORD_MESSAGE;
     }
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -740,8 +739,8 @@ export default function ArtistOnboardingForm() {
     const newErrors: Record<string, string> = {};
     if (!formData.password?.trim()) {
       newErrors.password = "Password is required";
-    } else if (!isValidAlphanumericPassword(formData.password)) {
-      newErrors.password = passwordValidationMessage;
+    } else if (!isValidSignupPassword(formData.password)) {
+      newErrors.password = SIGNUP_PASSWORD_MESSAGE;
     }
     if (!formData.confirmPassword?.trim())
       newErrors.confirmPassword = "Please confirm your password";

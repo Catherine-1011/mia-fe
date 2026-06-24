@@ -29,6 +29,46 @@ html {
   scroll-behavior: smooth;
 }
 
+.macbook-auth-page {
+  min-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto !important;
+}
+
+.macbook-auth-reset-section {
+  min-height: 100dvh;
+  align-items: flex-start !important;
+  padding-top: clamp(7rem, 14vh, 8.5rem) !important;
+  padding-bottom: clamp(2rem, 6vh, 3rem) !important;
+}
+
+.macbook-auth-reset-panel {
+  max-width: min(100%, 26rem) !important;
+}
+
+.macbook-auth-reset-form {
+  width: 100%;
+}
+
+@media screen and (min-width: 1024px) and (min-height: 741px) {
+  .macbook-auth-reset-section {
+    align-items: center !important;
+    padding-top: clamp(6rem, 11vh, 7rem) !important;
+    padding-bottom: clamp(2rem, 5vh, 3rem) !important;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .macbook-auth-reset-section {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+
+  .macbook-auth-reset-panel {
+    max-width: min(100%, 23rem) !important;
+  }
+}
+
 @keyframes shimmer {
   100% {
     transform: translateX(100%);
@@ -733,6 +773,33 @@ html {
   .macbook-auth-section {
     padding-top: 6rem !important;
     padding-bottom: 1rem !important;
+  }
+}
+
+@media screen and (max-height: 740px) {
+  .macbook-auth-reset-section {
+    align-items: flex-start !important;
+    padding-top: 6.75rem !important;
+    padding-bottom: 1.75rem !important;
+  }
+
+  .macbook-auth-reset-panel {
+    max-width: min(100%, 25rem) !important;
+  }
+
+  .macbook-auth-reset-form > * + * {
+    margin-top: 0.85rem !important;
+  }
+}
+
+@media screen and (max-height: 650px) {
+  .macbook-auth-reset-section {
+    padding-top: 6.25rem !important;
+    padding-bottom: 1.25rem !important;
+  }
+
+  .macbook-auth-reset-form > * + * {
+    margin-top: 0.65rem !important;
   }
 }
 
