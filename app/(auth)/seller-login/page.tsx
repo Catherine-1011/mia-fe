@@ -83,7 +83,7 @@ export default function SellerLoginPage() {
         return;
       }
 
-      console.log("LOGIN RESPONSE:", data);
+     
       setError("Unexpected login response");
     } catch (err) {
       setError("Something went wrong");
@@ -114,11 +114,11 @@ export default function SellerLoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.message || "Failed to send OTP");
+        setError(data.message || "Failed to send One-time code");
         return;
       }
 
-      setSuccess("OTP sent to your email. Enter OTP and your new password.");
+      setSuccess("One-time code sent to your email. Enter One-time code and your new password.");
       setResetOtp("");
       setNewPassword("");
       setConfirmNewPassword("");
@@ -139,7 +139,7 @@ export default function SellerLoginPage() {
     e.preventDefault();
 
     if (!resetOtp.trim()) {
-      setError("OTP is required");
+      setError("One-time code is required");
       return;
     }
 
@@ -277,11 +277,11 @@ export default function SellerLoginPage() {
           )}
 
           {authStep === "forgot" && (
-            <p className="macbook-auth-switch text-sm mb-10 opacity-80">Enter your email to receive an OTP for password reset.</p>
+            <p className="macbook-auth-switch text-sm mb-10 opacity-80">Enter your email to receive an One-time code for password reset.</p>
           )}
 
           {authStep === "reset" && (
-            <p className="macbook-auth-switch text-sm mb-10 opacity-80">Enter the OTP sent to {forgotEmail} and your new password.</p>
+            <p className="macbook-auth-switch text-sm mb-10 opacity-80">Enter the One-time code sent to {forgotEmail} and your new password.</p>
           )}
 
           {authStep === "login" && (
@@ -361,7 +361,7 @@ export default function SellerLoginPage() {
                 disabled={loading}
                 className="w-full mt-6 bg-white text-[#7A2F12] font-semibold rounded-full py-3 flex items-center justify-center gap-2"
               >
-                {loading ? "Sending OTP..." : "Send OTP \u2192"}
+                {loading ? "Sending One-time code..." : "Send One-time code \u2192"}
               </button>
 
               <button
@@ -381,7 +381,7 @@ export default function SellerLoginPage() {
             <form className="space-y-4" onSubmit={handleResetPassword}>
               <input
                 type="text"
-                placeholder="OTP"
+                placeholder="One-time code"
                 value={resetOtp}
                 className="w-full rounded-3xl px-5 py-3 bg-[#873007] placeholder-white/70 outline-none"
                 onChange={(e) => setResetOtp(e.target.value)}
@@ -447,7 +447,7 @@ export default function SellerLoginPage() {
                 disabled={loading}
                 className="w-full text-sm text-white/80 hover:text-white underline disabled:opacity-60"
               >
-                Resend OTP
+                Resend One-time code
               </button>
 
               <button

@@ -735,3 +735,148 @@ html {
     padding-bottom: 1rem !important;
   }
 }
+
+/* OTP verification needs extra header clearance because the form is taller than login. */
+.macbook-otp-page {
+  min-height: 100dvh;
+  overflow-y: auto;
+}
+
+.macbook-otp-section {
+  min-height: 100dvh;
+  align-items: flex-start;
+  padding-top: clamp(8rem, 16vh, 10rem) !important;
+  padding-bottom: clamp(2.5rem, 7vh, 4rem) !important;
+}
+
+.macbook-otp-panel {
+  max-width: min(100%, 28rem);
+}
+
+.macbook-otp-grid {
+  width: 100%;
+  max-width: 100%;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+}
+
+.macbook-otp-input {
+  min-width: 0;
+  min-height: 2.5rem;
+  max-height: 3.5rem;
+}
+
+@media screen and (min-width: 1024px) {
+  .macbook-otp-section {
+    align-items: center !important;
+    padding-top: clamp(7rem, 13vh, 8.75rem) !important;
+    padding-bottom: clamp(2.5rem, 6vh, 4rem) !important;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  .macbook-otp-panel {
+    max-width: min(100%, 22rem) !important;
+  }
+
+  .macbook-otp-grid {
+    gap: 0.4rem !important;
+  }
+
+  .macbook-otp-input {
+    min-height: 0;
+    height: clamp(2.65rem, 11vw, 3.25rem) !important;
+    max-height: 3.25rem !important;
+  }
+}
+
+@media screen and (max-width: 420px) {
+  .macbook-otp-section {
+    padding-left: 1.25rem !important;
+    padding-right: 1.25rem !important;
+  }
+
+  .macbook-otp-email {
+    padding: 0.875rem !important;
+  }
+
+  .macbook-otp-grid {
+    gap: 0.35rem !important;
+  }
+
+  .macbook-otp-input {
+    min-height: 0;
+    height: clamp(2.75rem, 13vw, 3.25rem) !important;
+    max-height: 3.25rem !important;
+    font-size: 1rem !important;
+  }
+}
+
+@media screen and (max-width: 360px) {
+  .macbook-otp-grid {
+    gap: 0.25rem !important;
+  }
+
+  .macbook-otp-input {
+    height: clamp(2.35rem, 12vw, 2.75rem) !important;
+    max-height: 2.75rem !important;
+  }
+}
+
+@media screen and (max-height: 740px) {
+  .macbook-otp-page {
+    overflow-y: auto !important;
+  }
+
+  .macbook-otp-section {
+    align-items: flex-start !important;
+    padding-top: 7.75rem !important;
+    padding-bottom: 2rem !important;
+  }
+
+  .macbook-otp-panel {
+    max-width: min(100%, 26rem) !important;
+  }
+
+  .macbook-otp-form {
+    gap: 0 !important;
+  }
+
+  .macbook-otp-form > * + * {
+    margin-top: 1rem !important;
+  }
+
+  .macbook-otp-email {
+    margin-bottom: 1rem !important;
+  }
+
+  .macbook-otp-help {
+    margin-top: 1.25rem !important;
+    padding-top: 1rem !important;
+  }
+}
+
+@media screen and (max-height: 650px) and (min-width: 1024px) {
+  .macbook-otp-section {
+    padding-top: 6.75rem !important;
+    padding-bottom: 1.25rem !important;
+  }
+
+  .macbook-otp-panel {
+    max-width: 24.5rem !important;
+  }
+
+  .macbook-otp-email {
+    padding: 0.75rem !important;
+  }
+
+  .macbook-otp-input {
+    max-height: 2.75rem !important;
+  }
+}
+
+@media screen and (max-height: 560px) {
+  .macbook-otp-section {
+    padding-top: 6.25rem !important;
+    padding-bottom: 1rem !important;
+  }
+}

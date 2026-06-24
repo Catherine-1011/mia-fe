@@ -569,7 +569,7 @@ export default function ArtistOnboardingForm() {
   // ─── RESUME OTP VERIFY ───────────────────────────────────────────────────
   const handleResumeVerifyOtp = async () => {
     if (!resumeOtp.trim()) {
-      setError("resumeOtp", "Please enter the OTP sent to your email");
+      setError("resumeOtp", "Please enter the One-time code sent to your email");
       return;
     }
     setLoading(true);
@@ -581,7 +581,7 @@ export default function ArtistOnboardingForm() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError("resumeOtp", data.message || "Invalid or expired OTP");
+        setError("resumeOtp", data.message || "Invalid or expired One-time code");
         return;
       }
       setToken(data.token);
@@ -657,7 +657,7 @@ export default function ArtistOnboardingForm() {
         setError("submit", data.message || "Failed to send OTP");
         return;
       }
-      setSuccessMessage("OTP sent to your email");
+      setSuccessMessage("One-time code sent to your email");
       setMode("reset-password");
       setErrors({});
     } catch {
@@ -1372,7 +1372,7 @@ export default function ArtistOnboardingForm() {
                     disabled={loading}
                     className="w-full py-2 text-sm text-[#5A1E12] hover:underline"
                   >
-                    Resend OTP
+                    Resend One-time code
                   </button>
                 </div>
                 <div className="mt-4 text-center">

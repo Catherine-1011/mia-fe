@@ -169,10 +169,10 @@ const handleSubmit = async (e: React.FormEvent) => {
     const data = await res.json();
 
     // Log backend response for debugging
-    console.log("VERIFY OTP RESPONSE:", data);
+
 
     if (!res.ok) {
-      setError(data.message || "Invalid OTP");
+      setError(data.message || "Invalid One-time code");
       return;
     }
 
@@ -197,7 +197,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       router.push("/");
     }, 1000);
   } catch (err) {
-    setError("OTP verification failed");
+    setError("One-time code verification failed");
   } finally {
     setLoading(false);
   }
@@ -232,7 +232,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         return;
       }
 
-      setSuccess("New OTP has been sent to your email!");
+      setSuccess("New One-time code has been sent to your email!");
 
       // Restart 60-second countdown
       setCountdown(60);
@@ -242,50 +242,67 @@ const handleSubmit = async (e: React.FormEvent) => {
       setOtp(["", "", "", "", "", ""]);
       otpRefs.current[0]?.focus();
     } catch (err) {
-      setError("Failed to resend OTP. Please try again.");
+      setError("Failed to resend One-time code. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="min-h-screen w-full flex flex-col lg:flex-row overflow-hidden bg-[#7A2F12]">
-      {/* LEFT PANEL */}
-      <section className="relative min-h-screen w-full lg:w-1/2 flex flex-col justify-center px-6 md:px-12 lg:px-16 text-white bg-linear-to-r from-[#7A2F12] via-[#8E3A18] to-[#9B3F1A]">
-        {/* Logo */}
-        <div className="relative mt-3 mb-3 w-fit md:absolute md:top-6 md:left-6 md:mt-0 md:mb-0">
+    <main className="macbook-auth-page macbook-otp-page relative min-h-screen w-full overflow-hidden text-white min-[1360px]:bg-[#440C03]">
+      <div className="macbook-auth-back absolute top-4 left-4 md:top-8 md:left-auto md:right-8 z-50 flex items-center">
+        <Link
+          href="/login"
+          aria-label="Back to login"
+          className="inline-flex items-center justify-center gap-2 w-9 h-9 rounded-full md:w-auto md:h-auto md:rounded-xl border border-[#5A1E12]/25 bg-white/70 px-0 md:px-4 py-0 md:py-2 text-sm font-semibold text-[#5A1E12] shadow-sm backdrop-blur transition-all hover:bg-white hover:border-[#5A1E12]/40 hover:shadow-md"
+        >
+          <ArrowLeft className="h-4 w-4 shrink-0" />
+          <span className="hidden md:inline">Back to Login</span>
+        </Link>
+      </div>
+
+      <Image
+        src="/images/top2.jpg"
+        alt="Security verification"
+        fill
+        className="hidden object-contain object-[130%_center] lg:block"
+        priority
+      />
+
+      <div className="absolute inset-0 bg-[#440C03] lg:hidden" />
+      <div className="absolute inset-0 hidden lg:block bg-[linear-gradient(90deg,#440C03_0%,#440C03_44%,rgba(68,12,3,0.55)_68%,rgba(68,12,3,0)_100%)]" />
+
+      <section className="macbook-auth-section macbook-otp-section relative z-10 flex min-h-screen w-full items-start px-5 pb-10 pt-32 sm:px-10 sm:pt-36 md:px-16 md:pt-32 lg:items-center lg:px-20 lg:pt-28">
+        <div className="macbook-auth-logo absolute top-4 left-1/2 -translate-x-1/2 md:left-8 md:translate-x-0 md:top-6 z-50">
           <Link href="/">
             <Image
               src="/images/navbarLogo.png"
               alt="Logo"
-              width={70}
-              height={70}
-              className="w-14 h-14 md:w-17.5 md:h-17.5 hover:scale-105 transition-transform"
+              width={90}
+              height={90}
+              className="w-14 h-14 md:w-20 md:h-20 hover:opacity-90 transition-opacity"
               priority
             />
           </Link>
         </div>
 
-        {/* Back button */}
-        <div className="absolute top-6 right-6">
-          <Link
-            href="/login"
-            className="flex items-center gap-2 text-white/80 hover:text-white transition-colors text-sm"
-          >
-            <ArrowLeft size={16} />
-            <span>Back to Login</span>
-          </Link>
-        </div>
+        <div className="macbook-auth-panel macbook-otp-panel w-full max-w-md">
+          <p className="macbook-auth-eyebrow uppercase text-xs tracking-widest mb-4 opacity-80">
+            Account security
+          </p>
+          <h1 className="macbook-auth-title text-3xl sm:text-4xl font-bold mb-2">
+            Verify your login
+          </h1>
+          <p className="macbook-auth-switch text-sm mb-8 opacity-80">
+            Enter the 6-digit code sent to your email.
+          </p>
 
-        {/* Content */}
-        <div className="max-w-md mx-auto w-full py-4 md:py-12">
-          {/* Email Display */}
-          <div className="mb-8 p-4 bg-white/10 rounded-2xl border border-white/20">
+          <div className="macbook-otp-email mb-6 p-4 bg-white/10 rounded-2xl border border-white/20">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-white/20 rounded-full">
-                <Mail size={18} />
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/20">
+                <Mail size={18} aria-hidden="true" />
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm text-white/70">
                   Verification code sent to
                 </p>
@@ -299,7 +316,7 @@ const handleSubmit = async (e: React.FormEvent) => {
           {/* Success Message */}
           {success && (
             <div className="mb-6 p-3 bg-green-500/20 border border-green-500/30 rounded-xl flex items-center gap-3">
-              <CheckCircle className="text-green-400" size={18} />
+              <CheckCircle className="text-green-400 shrink-0" size={18} />
               <span className="text-green-100 text-sm">{success}</span>
             </div>
           )}
@@ -307,19 +324,17 @@ const handleSubmit = async (e: React.FormEvent) => {
           {/* Error Message */}
           {error && (
             <div className="mb-6 p-3 bg-red-500/20 border border-red-500/30 rounded-xl flex items-center gap-3">
-              <AlertCircle className="text-red-400" size={18} />
+              <AlertCircle className="text-red-400 shrink-0" size={18} />
               <span className="text-red-100 text-sm">{error}</span>
             </div>
           )}
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* OTP Input */}
+          <form onSubmit={handleSubmit} className="macbook-otp-form space-y-6">
             <div>
               <label className="block text-sm mb-3 text-white/90">
                 6-Digit Verification Code
               </label>
-              <div className="flex gap-2 md:gap-3 justify-center">
+              <div className="macbook-otp-grid grid grid-cols-6 gap-1.5 sm:gap-2 md:gap-3">
                 {otp.map((digit, index) => (
                   <input
                     key={index}
@@ -334,9 +349,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                     onChange={(e) => handleOtpChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
                     onPaste={index === 0 ? handlePaste : undefined}
-                    className="w-12 h-12 md:w-14 md:h-14 text-center text-xl md:text-2xl font-bold rounded-lg md:rounded-xl 
-                      bg-white/10 border border-white/20 focus:border-white focus:bg-white/20 
-                      outline-none transition-all backdrop-blur-sm"
+                    className="macbook-otp-input aspect-square w-full min-w-0 rounded-lg border border-white/20 bg-white/10 text-center text-lg font-bold outline-none backdrop-blur-sm transition-all focus:border-white focus:bg-white/20 sm:text-xl md:rounded-xl md:text-2xl"
                     disabled={loading}
                     autoFocus={index === 0}
                   />
@@ -348,7 +361,6 @@ const handleSubmit = async (e: React.FormEvent) => {
               </p>
             </div>
 
-            {/* Resend OTP */}
             <div className="text-center">
               <button
                 type="button"
@@ -369,7 +381,6 @@ const handleSubmit = async (e: React.FormEvent) => {
               </button>
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={loading}
@@ -395,7 +406,6 @@ const handleSubmit = async (e: React.FormEvent) => {
             </button>
           </form>
 
-          {/* Change Email */}
           {email && (
             <div className="mt-6 text-center">
               <button
@@ -408,46 +418,12 @@ const handleSubmit = async (e: React.FormEvent) => {
             </div>
           )}
 
-          {/* Additional Info */}
-          <div className="mt-8 pt-6 border-t border-white/20">
+          <div className="macbook-otp-help mt-8 pt-6 border-t border-white/20">
             <div className="space-y-2 text-xs md:text-sm text-white/70">
               <p>Check your inbox and spam folder</p>
-              <p>OTP expires in 10 minutes</p>
+              <p>One-time code expires in 10 minutes</p>
               <p>Secure and encrypted verification</p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* RIGHT IMAGE PANEL */}
-      <section className="relative w-full lg:w-1/2 hidden lg:block">
-        <div className="relative w-full h-full">
-          <Image
-            src="/images/top2.jpg"
-            alt="Security Verification"
-            fill
-            className="object-cover"
-            priority
-            sizes="50vw"
-          />
-        </div>
-
-        {/* Gradient blend */}
-        <div className="absolute inset-0 bg-linear-to-r from-[#9B3F1A] via-[#9B3F1A]/40 to-transparent"></div>
-
-        {/* Overlay Content */}
-        <div className="absolute bottom-12 left-12 right-12 text-white">
-          <div className="max-w-md">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 bg-white/20 rounded-full">
-                <Lock size={24} />
-              </div>
-              <h3 className="text-2xl font-bold">Two-Factor Authentication</h3>
-            </div>
-            <p className="text-white/90 leading-relaxed">
-              We've sent a secure one-time password to your email. This extra
-              security layer ensures that only you can access your account.
-            </p>
           </div>
         </div>
       </section>
@@ -458,7 +434,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 // Loading fallback component
 function OTPLoadingFallback() {
   return (
-    <main className="min-h-screen w-full flex items-center justify-center bg-linear-to-r from-[#7A2F12] via-[#8E3A18] to-[#9B3F1A]">
+    <main className="min-h-screen w-full flex items-center justify-center bg-[#440C03]">
       <div className="text-white text-center">
         <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
         <p>Loading verification page...</p>
