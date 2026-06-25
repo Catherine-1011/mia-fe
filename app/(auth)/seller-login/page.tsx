@@ -4,6 +4,10 @@ import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { useSharedEnhancedCart } from "@/hooks/useSharedEnhancedCart";
 import { syncGuestCartAfterLogin } from "@/lib/guestCartUtils";
+import {
+  SIGNUP_PASSWORD_MESSAGE,
+  isValidSignupPassword,
+} from "@/lib/passwordValidation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
@@ -83,7 +87,7 @@ export default function SellerLoginPage() {
         return;
       }
 
-      console.log("LOGIN RESPONSE:", data);
+     
       setError("Unexpected login response");
     } catch (err) {
       setError("Something went wrong");
@@ -114,11 +118,11 @@ export default function SellerLoginPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.message || "Failed to send OTP");
+        setError(data.message || "Failed to send One-time code");
         return;
       }
 
-      setSuccess("OTP sent to your email. Enter OTP and your new password.");
+      setSuccess("One-time code sent to your email. Enter One-time code and your new password.");
       setResetOtp("");
       setNewPassword("");
       setConfirmNewPassword("");
@@ -139,12 +143,12 @@ export default function SellerLoginPage() {
     e.preventDefault();
 
     if (!resetOtp.trim()) {
-      setError("OTP is required");
+      setError("One-time code is required");
       return;
     }
 
-    if (!newPassword || newPassword.length < 6) {
-      setError("New password must be at least 6 characters");
+    if (!newPassword || !isValidSignupPassword(newPassword)) {
+      setError(SIGNUP_PASSWORD_MESSAGE);
       return;
     }
 
@@ -248,18 +252,20 @@ export default function SellerLoginPage() {
       <div className="absolute inset-0 bg-[#440C03] lg:hidden" />
       <div className="absolute inset-0 hidden lg:block bg-[linear-gradient(90deg,#440C03_0%,#440C03_44%,rgba(68,12,3,0.55)_68%,rgba(68,12,3,0)_100%)]" />
 
-      <section className="macbook-auth-section relative z-10 flex min-h-screen w-full items-center px-6 py-20 sm:px-10 md:px-16 lg:px-20">
-        <Link href="/" className="macbook-auth-logo absolute top-6 left-6 sm:top-8 sm:left-8">
-          <Image
-            src="/images/navbarLogo.png"
-            alt="Logo"
-            width={90}
-            height={90}
-            className="w-14 h-14 md:w-22.5 md:h-22.5"
-          />
-        </Link>
+      <section className={`macbook-auth-section ${authStep === "reset" ? "macbook-auth-reset-section" : ""} relative z-10 flex min-h-screen w-full items-center px-6 py-20 sm:px-10 md:px-16 lg:px-20`}>
+        <div className="macbook-auth-logo absolute top-4 left-1/2 -translate-x-1/2 md:left-8 md:translate-x-0 md:top-6 z-50">
+          <Link href="/">
+            <Image
+              src="/images/navbarLogo.png"
+              alt="Logo"
+              width={90}
+              height={90}
+              className="w-14 h-14 md:w-20 md:h-20 hover:opacity-90 transition-opacity"
+            />
+          </Link>
+        </div>
 
-        <div className="macbook-auth-panel w-full max-w-md">
+        <div className={`macbook-auth-panel ${authStep === "reset" ? "macbook-auth-reset-panel" : ""} w-full max-w-md`}>
           <p className="macbook-auth-eyebrow uppercase text-xs tracking-widest mb-4 opacity-80">Start your seller journey</p>
           <h1 className="macbook-auth-title text-3xl sm:text-4xl font-bold mb-2">
             {authStep === "login" && "Log into your account"}
@@ -277,11 +283,11 @@ export default function SellerLoginPage() {
           )}
 
           {authStep === "forgot" && (
-            <p className="macbook-auth-switch text-sm mb-10 opacity-80">Enter your email to receive an OTP for password reset.</p>
+            <p className="macbook-auth-switch text-sm mb-10 opacity-80">Enter your email to receive an One-time code for password reset.</p>
           )}
 
           {authStep === "reset" && (
-            <p className="macbook-auth-switch text-sm mb-10 opacity-80">Enter the OTP sent to {forgotEmail} and your new password.</p>
+            <p className="macbook-auth-switch text-sm mb-10 opacity-80">Enter the One-time code sent to {forgotEmail} and your new password.</p>
           )}
 
           {authStep === "login" && (
@@ -361,7 +367,7 @@ export default function SellerLoginPage() {
                 disabled={loading}
                 className="w-full mt-6 bg-white text-[#7A2F12] font-semibold rounded-full py-3 flex items-center justify-center gap-2"
               >
-                {loading ? "Sending OTP..." : "Send OTP \u2192"}
+                {loading ? "Sending One-time code..." : "Send One-time code \u2192"}
               </button>
 
               <button
@@ -378,10 +384,10 @@ export default function SellerLoginPage() {
           )}
 
           {authStep === "reset" && (
-            <form className="space-y-4" onSubmit={handleResetPassword}>
+            <form className="macbook-auth-reset-form space-y-4" onSubmit={handleResetPassword}>
               <input
                 type="text"
-                placeholder="OTP"
+                placeholder="One-time code"
                 value={resetOtp}
                 className="w-full rounded-3xl px-5 py-3 bg-[#873007] placeholder-white/70 outline-none"
                 onChange={(e) => setResetOtp(e.target.value)}
@@ -393,7 +399,7 @@ export default function SellerLoginPage() {
                   type={showNewPassword ? "text" : "password"}
                   value={newPassword}
                   placeholder="New password"
-                  className="w-full rounded-3xl px-5 py-3 bg-[#873007] placeholder-white/70 outline-none"
+                  className="w-full rounded-3xl px-5 py-3 pr-12 bg-[#873007] placeholder-white/70 outline-none"
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
                 />
@@ -413,7 +419,7 @@ export default function SellerLoginPage() {
                   type={showConfirmNewPassword ? "text" : "password"}
                   value={confirmNewPassword}
                   placeholder="Confirm new password"
-                  className="w-full rounded-3xl px-5 py-3 bg-[#873007] placeholder-white/70 outline-none"
+                  className="w-full rounded-3xl px-5 py-3 pr-12 bg-[#873007] placeholder-white/70 outline-none"
                   onChange={(e) => setConfirmNewPassword(e.target.value)}
                   required
                 />
@@ -447,7 +453,7 @@ export default function SellerLoginPage() {
                 disabled={loading}
                 className="w-full text-sm text-white/80 hover:text-white underline disabled:opacity-60"
               >
-                Resend OTP
+                Resend One-time code
               </button>
 
               <button

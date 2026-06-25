@@ -118,7 +118,7 @@ export default function LoginPage() {
         return;
       }
 
-      setSuccess("OTP sent to your email. Enter OTP and your new password.");
+      setSuccess("One-time code sent to your email. Enter One-time code and your new password.");
       setResetOtp("");
       setNewPassword("");
       setConfirmNewPassword("");
@@ -139,7 +139,7 @@ export default function LoginPage() {
     e.preventDefault();
 
     if (!resetOtp.trim()) {
-      setError("OTP is required");
+      setError("One-time code is required");
       return;
     }
 
@@ -363,7 +363,7 @@ export default function LoginPage() {
                 disabled={loading}
                 className="w-full mt-6 bg-white text-[#7A2F12] font-semibold rounded-full py-3 flex items-center justify-center gap-2"
               >
-                {loading ? "Sending OTP..." : "Send OTP \u2192"}
+                {loading ? "Sending One-time code..." : "Send One-time code \u2192"}
               </button>
 
               <button
@@ -383,7 +383,7 @@ export default function LoginPage() {
             <form className="space-y-4" onSubmit={handleResetPassword}>
               <input
                 type="text"
-                placeholder="OTP"
+                placeholder="One-time code"
                 value={resetOtp}
                 className="w-full rounded-3xl px-5 py-3 bg-[#873007] placeholder-white/70 outline-none"
                 onChange={(e) => setResetOtp(e.target.value)}
@@ -449,7 +449,7 @@ export default function LoginPage() {
                 disabled={loading}
                 className="w-full text-sm text-white/80 hover:text-white underline disabled:opacity-60"
               >
-                Resend OTP
+                Resend One-time code
               </button>
 
               <button

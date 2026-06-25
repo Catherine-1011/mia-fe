@@ -7,6 +7,10 @@ import { useState, useRef, useEffect } from "react";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
+import {
+  SIGNUP_PASSWORD_MESSAGE,
+  isValidSignupPassword,
+} from "@/lib/passwordValidation";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "https://backend.madeinarnhemland.com.au";
@@ -196,10 +200,9 @@ export default function SignupPage() {
   const emailError = validateEmail(formData.email);
   const phoneError = validatePhone(phoneNumber, selectedCountry);
   const passwordError =
-  formData.password &&
-  !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(formData.password)
-    ? "Password must be at least 8 characters with uppercase, lowercase, and number"
-    : "";
+    formData.password && !isValidSignupPassword(formData.password)
+      ? SIGNUP_PASSWORD_MESSAGE
+      : "";
   const confirmPwError =
     formData.confirmPassword && formData.password !== formData.confirmPassword
       ? "Passwords do not match"
