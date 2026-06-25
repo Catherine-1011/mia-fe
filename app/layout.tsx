@@ -16,11 +16,11 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://madeinarnhemland.com.au"),
   title: {
     default:
-      "Authentic Aboriginal Art, Bush Foods & Crafts | Made in Arnhem Land",
+      "Made in Arnhem Land",
     template: "%s | Made in Arnhem Land",
   },
   description:
-    "Shop authentic Aboriginal art, bush foods and handmade crafts direct from Arnhem Land artists. 100% certified, ethically sourced, community-supported.",
+    "Shop authentic art, bush foods and handmade crafts direct from Arnhem Land artists. 100% certified, ethically sourced, community-supported.",
   openGraph: {
     siteName: "Made in Arnhem Land",
     locale: "en_AU",

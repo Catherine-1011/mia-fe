@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Shop Authentic Aboriginal Products",
+  title: "Shop Authentic Products",
   description:
-    "Browse and buy authentic Aboriginal art, bush foods, apparel and handmade crafts direct from Arnhem Land artists and communities.",
+    "Browse and buy authentic art, bush foods, apparel and handmade crafts direct from Arnhem Land artists and communities.",
   alternates: { canonical: "/shop" },
 };
 

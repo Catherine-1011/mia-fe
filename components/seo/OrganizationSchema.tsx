@@ -6,7 +6,7 @@ export function OrganizationSchema() {
     url: "https://madeinarnhemland.com.au",
     logo: "https://madeinarnhemland.com.au/images/navbarLogo.png",
     description:
-      "Authentic Aboriginal art, bush foods and handmade crafts direct from Arnhem Land artists. 100% certified, ethically sourced, community-supported.",
+      "Authentic art, bush foods and handmade crafts direct from Arnhem Land artists. 100% certified, ethically sourced, community-supported.",
     address: {
       "@type": "PostalAddress",
       streetAddress: "70 O'Sullivan Circuit",

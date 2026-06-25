@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = product.title || "Product";
   const description = product.description
     ? product.description.slice(0, 155)
-    : `Shop ${title} — authentic Aboriginal product from Arnhem Land.`;
+    : `Shop ${title} — authentic product from Arnhem Land.`;
   const image = product.featuredImage || product.images?.[0];
 
   return {

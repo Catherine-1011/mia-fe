@@ -6,7 +6,7 @@ import VideoHeroSection from "@/components/common-components/VideoHeroSection";
 export const metadata: Metadata = {
   title: "100% Made in Arnhem Land Certification",
   description:
-    "Learn about our certification process ensuring every product is authentically made by Aboriginal artists and businesses from Arnhem Land.",
+    "Learn about our certification process ensuring every product is authentically made by artists and businesses from Arnhem Land.",
   alternates: { canonical: "/certification" },
 };
 
