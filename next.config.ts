@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig: NextConfig = {
+  trailingSlash: false,
   images: {
     remotePatterns: [
       {
@@ -13,12 +13,10 @@ const nextConfig = {
         hostname: "images.unsplash.com",
       },
       {
-        // Allow any HTTPS host (S3, CloudFront, other CDNs, etc.)
         protocol: "https",
         hostname: "**",
       },
       {
-        // Allow any HTTP host for local/dev environments
         protocol: "http",
         hostname: "**",
       },
@@ -28,12 +26,12 @@ const nextConfig = {
   async headers() {
     return [
       {
-        // Allow the Dashboard to load this page in a hidden iframe for cross-domain logout
         source: "/logout-callback",
         headers: [
           {
             key: "Content-Security-Policy",
-            value: "frame-ancestors 'self' http://dashboard.madeinarnhemland.com.au",
+            value:
+              "frame-ancestors 'self' http://dashboard.madeinarnhemland.com.au",
           },
           {
             key: "X-Frame-Options",
@@ -44,10 +42,5 @@ const nextConfig = {
     ];
   },
 };
-
-module.exports = nextConfig;
-
-
-
 
 export default nextConfig;

@@ -1,6 +1,14 @@
 import React from "react";
+import type { Metadata } from "next";
 import { FaFileSignature } from "react-icons/fa";
 import VideoHeroSection from "@/components/common-components/VideoHeroSection";
+
+export const metadata: Metadata = {
+  title: "Terms & Conditions",
+  description:
+    "Terms and conditions for using the Made in Arnhem Land marketplace including purchase terms, user responsibilities and policies.",
+  alternates: { canonical: "/term-and-conditions" },
+};
 
 export default function Page() {
   return (

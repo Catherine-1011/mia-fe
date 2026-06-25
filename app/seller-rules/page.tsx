@@ -1,6 +1,14 @@
 import React from "react";
+import type { Metadata } from "next";
 import { FaListAlt } from "react-icons/fa";
 import VideoHeroSection from "@/components/common-components/VideoHeroSection";
+
+export const metadata: Metadata = {
+  title: "Seller Rules & Guidelines",
+  description:
+    "Rules and guidelines for sellers on the Made in Arnhem Land marketplace including listing standards and seller obligations.",
+  alternates: { canonical: "/seller-rules" },
+};
 
 export default function SellerRulesPage() {
   return (

@@ -1,6 +1,14 @@
 import React from "react";
+import type { Metadata } from "next";
 import { FaFileSignature } from "react-icons/fa";
 import VideoHeroSection from "@/components/common-components/VideoHeroSection";
+
+export const metadata: Metadata = {
+  title: "Shipping Policy",
+  description:
+    "Shipping information for Made in Arnhem Land orders including delivery times, costs and tracking for Australia-wide shipping.",
+  alternates: { canonical: "/shipping-policy" },
+};
 
 const sections = [
   { id: "order-processing", label: "Order Processing" },

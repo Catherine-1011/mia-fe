@@ -1,10 +1,13 @@
 import React from "react";
+import type { Metadata } from "next";
 import { FaUniversalAccess } from "react-icons/fa";
 import VideoHeroSection from "@/components/common-components/VideoHeroSection";
-import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Accessibility | Made in Arnhem Land Marketplace",
+  title: "Accessibility",
+  description:
+    "Accessibility information for the Made in Arnhem Land marketplace. We are committed to making our platform usable for everyone.",
+  alternates: { canonical: "/accessibility" },
 };
 
 export default function AccessibilityPage() {

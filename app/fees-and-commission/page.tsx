@@ -1,10 +1,13 @@
 import React from "react";
+import type { Metadata } from "next";
 import { FaFileInvoiceDollar } from "react-icons/fa";
 import VideoHeroSection from "@/components/common-components/VideoHeroSection";
-import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Fees & Commission | Made in Arnhem Land Marketplace",
+  title: "Fees & Commission",
+  description:
+    "Understand the fees and commission structure for selling on the Made in Arnhem Land marketplace.",
+  alternates: { canonical: "/fees-and-commission" },
 };
 
 export default function FeesAndCommissionPage() {

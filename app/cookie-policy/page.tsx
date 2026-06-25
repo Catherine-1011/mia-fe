@@ -1,10 +1,13 @@
 import React from "react";
+import type { Metadata } from "next";
 import { FaCookie } from "react-icons/fa";
 import VideoHeroSection from "@/components/common-components/VideoHeroSection";
-import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Cookie Policy | Made in Arnhem Land Marketplace",
+  title: "Cookie Policy",
+  description:
+    "How Made in Arnhem Land uses cookies and similar technologies on our website.",
+  alternates: { canonical: "/cookie-policy" },
 };
 
 export default function CookiePolicyPage() {
