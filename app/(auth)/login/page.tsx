@@ -244,14 +244,14 @@ export default function LoginPage() {
         src="/images/top2.jpg"
         alt="Auth Visual"
         fill
-        className="hidden object-cover object-right-center lg:block"
+        className="hidden object-contain object-[130%_center] lg:block"
         priority
       />
 
       <div className="absolute inset-0 bg-[#440C03] lg:hidden" />
       <div className="absolute inset-0 hidden lg:block bg-[linear-gradient(90deg,#440C03_0%,#440C03_44%,rgba(68,12,3,0.55)_68%,rgba(68,12,3,0)_100%)]" />
 
-      <section className="macbook-auth-section relative z-10 flex min-h-screen w-full items-center px-6 py-20 sm:px-10 md:px-16 lg:px-20">
+      <section className={`macbook-auth-section ${authStep === "reset" ? "macbook-auth-reset-section" : ""} relative z-10 flex min-h-screen w-full items-center px-6 py-20 sm:px-10 md:px-16 lg:px-20`}>
         <div className="macbook-auth-logo absolute top-4 left-1/2 -translate-x-1/2 md:left-8 md:translate-x-0 md:top-6 z-50">
           <Link href="/">
             <Image
@@ -264,7 +264,7 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        <div className="macbook-auth-panel w-full max-w-md">
+        <div className={`macbook-auth-panel ${authStep === "reset" ? "macbook-auth-reset-panel" : ""} w-full max-w-md`}>
           <p className="macbook-auth-eyebrow uppercase text-xs tracking-widest mb-4 opacity-80">Start your journey</p>
           <h1 className="macbook-auth-title text-3xl sm:text-4xl font-bold mb-2">
             {authStep === "login" && "Log into your account"}
@@ -383,7 +383,7 @@ export default function LoginPage() {
           )}
 
           {authStep === "reset" && (
-            <form className="space-y-4" onSubmit={handleResetPassword}>
+            <form className="macbook-auth-reset-form space-y-4" onSubmit={handleResetPassword}>
               <input
                 type="text"
                 placeholder="OTP"
@@ -398,7 +398,7 @@ export default function LoginPage() {
                   type={showNewPassword ? "text" : "password"}
                   value={newPassword}
                   placeholder="New password"
-                  className="w-full rounded-3xl px-5 py-3 bg-[#873007] placeholder-white/70 outline-none"
+                  className="w-full rounded-3xl px-5 py-3 pr-12 bg-[#873007] placeholder-white/70 outline-none"
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
                 />
@@ -413,14 +413,16 @@ export default function LoginPage() {
                 </button>
               </div>
 
-              <PasswordStrengthIndicator password={newPassword} />
+              <div className="password-strength-space">
+                <PasswordStrengthIndicator password={newPassword} />
+              </div>
 
               <div className="relative">
                 <input
                   type={showConfirmNewPassword ? "text" : "password"}
                   value={confirmNewPassword}
                   placeholder="Confirm new password"
-                  className="w-full rounded-3xl px-5 py-3 bg-[#873007] placeholder-white/70 outline-none"
+                  className="w-full rounded-3xl px-5 py-3 pr-12 bg-[#873007] placeholder-white/70 outline-none"
                   onChange={(e) => setConfirmNewPassword(e.target.value)}
                   required
                 />

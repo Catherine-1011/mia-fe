@@ -18,13 +18,13 @@ export default function PasswordStrengthIndicator({
   const light = variant === "light";
 
   return (
-    <ul className="mt-2 space-y-1 px-1">
+    <ul className="password-strength-indicator mt-2 grid gap-1 px-1">
       {PASSWORD_RULES.map((rule) => {
         const passed = results[rule.key];
         return (
           <li
             key={rule.key}
-            className={`flex items-center gap-2 text-xs transition-colors ${
+            className={`flex min-w-0 items-center gap-2 text-xs leading-snug transition-colors ${
               passed
                 ? light ? "text-emerald-600" : "text-emerald-400"
                 : light ? "text-[#5A1E12]/40" : "text-white/40"
@@ -47,7 +47,7 @@ export default function PasswordStrengthIndicator({
                 />
               </svg>
             )}
-            {rule.label}
+            <span className="min-w-0">{rule.label}</span>
           </li>
         );
       })}

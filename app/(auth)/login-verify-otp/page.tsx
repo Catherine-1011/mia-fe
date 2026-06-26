@@ -272,7 +272,7 @@ const handleSubmit = async (e: React.FormEvent) => {
       <div className="absolute inset-0 bg-[#440C03] lg:hidden" />
       <div className="absolute inset-0 hidden lg:block bg-[linear-gradient(90deg,#440C03_0%,#440C03_44%,rgba(68,12,3,0.55)_68%,rgba(68,12,3,0)_100%)]" />
 
-      <section className="macbook-auth-section macbook-otp-section relative z-10 flex min-h-screen w-full items-start px-5 pb-10 pt-32 sm:px-10 sm:pt-36 md:px-16 md:pt-32 lg:items-center lg:px-20 lg:pt-28">
+      <section className="macbook-auth-section macbook-otp-section relative z-10 flex min-h-screen w-full items-center px-6 py-20 sm:px-10 md:px-16 lg:px-20">
         <div className="macbook-auth-logo absolute top-4 left-1/2 -translate-x-1/2 md:left-8 md:translate-x-0 md:top-6 z-50">
           <Link href="/">
             <Image

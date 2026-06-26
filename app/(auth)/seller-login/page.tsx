@@ -413,7 +413,9 @@ export default function SellerLoginPage() {
                 </button>
               </div>
 
-              <PasswordStrengthIndicator password={newPassword} />
+              <div className="password-strength-space">
+                <PasswordStrengthIndicator password={newPassword} />
+              </div>
 
               <div className="relative">
                 <input

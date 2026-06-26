@@ -50,6 +50,18 @@ html {
   width: 100%;
 }
 
+.password-strength-indicator {
+  grid-template-columns: 1fr;
+}
+
+.password-strength-indicator li {
+  overflow-wrap: anywhere;
+}
+
+.password-strength-space {
+  min-height: 5.25rem;
+}
+
 @media screen and (min-width: 1024px) and (min-height: 741px) {
   .macbook-auth-reset-section {
     align-items: center !important;
@@ -66,6 +78,19 @@ html {
 
   .macbook-auth-reset-panel {
     max-width: min(100%, 23rem) !important;
+  }
+
+  .password-strength-indicator {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 0.75rem !important;
+  }
+
+  .password-strength-indicator li {
+    font-size: 0.7rem !important;
+  }
+
+  .password-strength-space {
+    min-height: 3.75rem;
   }
 }
 
@@ -790,6 +815,19 @@ html {
   .macbook-auth-reset-form > * + * {
     margin-top: 0.85rem !important;
   }
+
+  .password-strength-indicator {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 0.75rem !important;
+  }
+
+  .password-strength-indicator li {
+    font-size: 0.7rem !important;
+  }
+
+  .password-strength-space {
+    min-height: 3.75rem;
+  }
 }
 
 @media screen and (max-height: 650px) {
@@ -800,6 +838,20 @@ html {
 
   .macbook-auth-reset-form > * + * {
     margin-top: 0.65rem !important;
+  }
+
+  .password-strength-indicator {
+    margin-top: 0.35rem !important;
+    row-gap: 0.2rem !important;
+  }
+
+  .password-strength-indicator svg {
+    width: 0.75rem !important;
+    height: 0.75rem !important;
+  }
+
+  .password-strength-space {
+    min-height: 3.1rem;
   }
 }
 
@@ -812,8 +864,8 @@ html {
 .macbook-otp-section {
   min-height: 100dvh;
   align-items: flex-start;
-  padding-top: clamp(8rem, 16vh, 10rem) !important;
-  padding-bottom: clamp(2.5rem, 7vh, 4rem) !important;
+  padding-top: clamp(8rem, 16vh, 9.5rem) !important;
+  padding-bottom: clamp(2.5rem, 6vh, 4rem) !important;
 }
 
 .macbook-otp-panel {
@@ -834,15 +886,21 @@ html {
 
 @media screen and (min-width: 1024px) {
   .macbook-otp-section {
+    align-items: flex-start !important;
+    padding-top: clamp(7rem, 13vh, 8.5rem) !important;
+    padding-bottom: clamp(2.5rem, 5vh, 3.5rem) !important;
+  }
+}
+
+@media screen and (min-width: 1024px) and (min-height: 860px) {
+  .macbook-otp-section {
     align-items: center !important;
-    padding-top: clamp(7rem, 13vh, 8.75rem) !important;
-    padding-bottom: clamp(2.5rem, 6vh, 4rem) !important;
   }
 }
 
 @media screen and (max-width: 767px) {
   .macbook-otp-panel {
-    max-width: min(100%, 22rem) !important;
+    max-width: calc(100vw - 3rem) !important;
   }
 
   .macbook-otp-grid {
@@ -858,8 +916,8 @@ html {
 
 @media screen and (max-width: 420px) {
   .macbook-otp-section {
-    padding-left: 1.25rem !important;
-    padding-right: 1.25rem !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
   }
 
   .macbook-otp-email {
@@ -896,8 +954,8 @@ html {
 
   .macbook-otp-section {
     align-items: flex-start !important;
-    padding-top: 7.75rem !important;
-    padding-bottom: 2rem !important;
+    padding-top: 7.25rem !important;
+    padding-bottom: 1.75rem !important;
   }
 
   .macbook-otp-panel {
@@ -924,7 +982,7 @@ html {
 
 @media screen and (max-height: 650px) and (min-width: 1024px) {
   .macbook-otp-section {
-    padding-top: 6.75rem !important;
+    padding-top: 6.5rem !important;
     padding-bottom: 1.25rem !important;
   }
 
@@ -943,7 +1001,7 @@ html {
 
 @media screen and (max-height: 560px) {
   .macbook-otp-section {
-    padding-top: 6.25rem !important;
+    padding-top: 6rem !important;
     padding-bottom: 1rem !important;
   }
 }
