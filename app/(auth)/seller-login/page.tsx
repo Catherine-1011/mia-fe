@@ -4,10 +4,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { useSharedEnhancedCart } from "@/hooks/useSharedEnhancedCart";
 import { syncGuestCartAfterLogin } from "@/lib/guestCartUtils";
-import {
-  SIGNUP_PASSWORD_MESSAGE,
-  isValidSignupPassword,
-} from "@/lib/passwordValidation";
+import { getFirstPasswordError } from "@/lib/passwordValidation";
+import PasswordStrengthIndicator from "@/components/PasswordStrengthIndicator";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
@@ -147,8 +145,9 @@ export default function SellerLoginPage() {
       return;
     }
 
-    if (!newPassword || !isValidSignupPassword(newPassword)) {
-      setError(SIGNUP_PASSWORD_MESSAGE);
+    const pwError = getFirstPasswordError(newPassword || "");
+    if (!newPassword || pwError) {
+      setError(pwError || "Password is required");
       return;
     }
 
@@ -413,6 +412,8 @@ export default function SellerLoginPage() {
                   {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
+
+              <PasswordStrengthIndicator password={newPassword} />
 
               <div className="relative">
                 <input

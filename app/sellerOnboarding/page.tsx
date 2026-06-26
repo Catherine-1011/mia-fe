@@ -8,10 +8,8 @@ import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
 import { toast } from "react-toastify";
-import {
-  SIGNUP_PASSWORD_MESSAGE,
-  isValidSignupPassword,
-} from "@/lib/passwordValidation";
+import { getFirstPasswordError } from "@/lib/passwordValidation";
+import PasswordStrengthIndicator from "@/components/PasswordStrengthIndicator";
 
 const baseURL = "https://backend.madeinarnhemland.com.au";
 
@@ -672,8 +670,9 @@ export default function ArtistOnboardingForm() {
     if (!formData.resetOtp?.trim()) newErrors.resetOtp = "OTP is required";
     if (!formData.newPassword?.trim()) {
       newErrors.newPassword = "Password is required";
-    } else if (!isValidSignupPassword(formData.newPassword)) {
-      newErrors.newPassword = SIGNUP_PASSWORD_MESSAGE;
+    } else {
+      const pwErr = getFirstPasswordError(formData.newPassword);
+      if (pwErr) newErrors.newPassword = pwErr;
     }
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -739,8 +738,9 @@ export default function ArtistOnboardingForm() {
     const newErrors: Record<string, string> = {};
     if (!formData.password?.trim()) {
       newErrors.password = "Password is required";
-    } else if (!isValidSignupPassword(formData.password)) {
-      newErrors.password = SIGNUP_PASSWORD_MESSAGE;
+    } else {
+      const pwErr = getFirstPasswordError(formData.password);
+      if (pwErr) newErrors.password = pwErr;
     }
     if (!formData.confirmPassword?.trim())
       newErrors.confirmPassword = "Please confirm your password";
@@ -1340,7 +1340,7 @@ export default function ArtistOnboardingForm() {
                       name="newPassword"
                       value={formData.newPassword}
                       onChange={handleInputChange}
-                      placeholder="Create an alphanumeric password"
+                      placeholder="Create a strong password"
                       className={inputCls("newPassword")}
                     />
                     {errors.newPassword && (
@@ -1348,6 +1348,7 @@ export default function ArtistOnboardingForm() {
                         {errors.newPassword}
                       </p>
                     )}
+                    <PasswordStrengthIndicator password={formData.newPassword} variant="light" />
                   </div>
                   {errors.submit && (
                     <div className="bg-red-50 border border-red-200 rounded-xl p-3">
@@ -1796,10 +1797,8 @@ export default function ArtistOnboardingForm() {
                   error={errors.password}
                 />
 
-<p className="text-xs text-[#5A1E12]/60 -mt-3 pl-1 leading-relaxed">
-  Password must contain at least 8 characters, one uppercase letter,
-  one lowercase letter, one number, and one special character.
-</p>
+                <PasswordStrengthIndicator password={formData.password} variant="light" />
+
                 <PasswordField
                   label="Confirm Password *"
                   name="confirmPassword"

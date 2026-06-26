@@ -4,6 +4,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { useSharedEnhancedCart } from "@/hooks/useSharedEnhancedCart";
 import { syncGuestCartAfterLogin } from "@/lib/guestCartUtils";
+import { getFirstPasswordError } from "@/lib/passwordValidation";
+import PasswordStrengthIndicator from "@/components/PasswordStrengthIndicator";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
@@ -118,7 +120,7 @@ export default function LoginPage() {
         return;
       }
 
-      setSuccess("One-time code sent to your email. Enter One-time code and your new password.");
+      setSuccess("OTP sent to your email. Enter OTP and your new password.");
       setResetOtp("");
       setNewPassword("");
       setConfirmNewPassword("");
@@ -139,12 +141,13 @@ export default function LoginPage() {
     e.preventDefault();
 
     if (!resetOtp.trim()) {
-      setError("One-time code is required");
+      setError("OTP is required");
       return;
     }
 
-    if (!newPassword || newPassword.length < 6) {
-      setError("New password must be at least 6 characters");
+    const pwError = getFirstPasswordError(newPassword || "");
+    if (!newPassword || pwError) {
+      setError(pwError || "Password is required");
       return;
     }
 
@@ -241,7 +244,7 @@ export default function LoginPage() {
         src="/images/top2.jpg"
         alt="Auth Visual"
         fill
-        className="hidden object-contain object-[130%_center] lg:block"
+        className="hidden object-cover object-right-center lg:block"
         priority
       />
 
@@ -363,7 +366,7 @@ export default function LoginPage() {
                 disabled={loading}
                 className="w-full mt-6 bg-white text-[#7A2F12] font-semibold rounded-full py-3 flex items-center justify-center gap-2"
               >
-                {loading ? "Sending One-time code..." : "Send One-time code \u2192"}
+                {loading ? "Sending OTP..." : "Send OTP \u2192"}
               </button>
 
               <button
@@ -383,7 +386,7 @@ export default function LoginPage() {
             <form className="space-y-4" onSubmit={handleResetPassword}>
               <input
                 type="text"
-                placeholder="One-time code"
+                placeholder="OTP"
                 value={resetOtp}
                 className="w-full rounded-3xl px-5 py-3 bg-[#873007] placeholder-white/70 outline-none"
                 onChange={(e) => setResetOtp(e.target.value)}
@@ -409,6 +412,8 @@ export default function LoginPage() {
                   {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
+
+              <PasswordStrengthIndicator password={newPassword} />
 
               <div className="relative">
                 <input
@@ -449,7 +454,7 @@ export default function LoginPage() {
                 disabled={loading}
                 className="w-full text-sm text-white/80 hover:text-white underline disabled:opacity-60"
               >
-                Resend One-time code
+                Resend OTP
               </button>
 
               <button

@@ -7,10 +7,8 @@ import { useState, useRef, useEffect } from "react";
 import { ArrowLeft, Eye, EyeOff } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
 import { getCountries, getCountryCallingCode } from "react-phone-number-input";
-import {
-  SIGNUP_PASSWORD_MESSAGE,
-  isValidSignupPassword,
-} from "@/lib/passwordValidation";
+import { getFirstPasswordError } from "@/lib/passwordValidation";
+import PasswordStrengthIndicator from "@/components/PasswordStrengthIndicator";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL || "https://backend.madeinarnhemland.com.au";
@@ -200,8 +198,8 @@ export default function SignupPage() {
   const emailError = validateEmail(formData.email);
   const phoneError = validatePhone(phoneNumber, selectedCountry);
   const passwordError =
-    formData.password && !isValidSignupPassword(formData.password)
-      ? SIGNUP_PASSWORD_MESSAGE
+    formData.password
+      ? getFirstPasswordError(formData.password) ?? ""
       : "";
   const confirmPwError =
     formData.confirmPassword && formData.password !== formData.confirmPassword
@@ -579,22 +577,7 @@ export default function SignupPage() {
     </button>
   </div>
 
-  <p className="text-xs text-white/60 pl-2 leading-relaxed">
-    Password must contain at least 8 characters, one uppercase letter,
-    one lowercase letter, and one number.
-  </p>
-
-  {touched.password && passwordError && (
-    <p className="text-xs text-red-400 flex items-center gap-1 pl-2">
-      ✕ {passwordError}
-    </p>
-  )}
-
-  {touched.password && !passwordError && formData.password && (
-    <p className="text-xs text-emerald-400 flex items-center gap-1 pl-2">
-      ✓ Strong enough
-    </p>
-  )}
+  <PasswordStrengthIndicator password={formData.password} />
 </div>
 
               {/* Confirm Password */}
