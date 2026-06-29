@@ -225,7 +225,7 @@ const Page = () => {
 
     showVideo(0);
     first.currentTime = 0;
-    void first.play();
+    first.play().catch(() => {});
 
     const warmStandbyVideo = () => {
       window.setTimeout(() => {
@@ -244,7 +244,7 @@ const Page = () => {
 
       const current = videos[heroActiveVideoRef.current];
       if (current?.paused) {
-        void current.play();
+        current.play().catch(() => {});
       }
     };
 

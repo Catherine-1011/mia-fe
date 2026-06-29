@@ -1318,7 +1318,7 @@ export default function GuestCheckoutForm() {
               {cartItems.map((item) => (
                 <div key={item.productId} className="flex gap-3 xs:gap-4">
                   <div className="relative w-14 h-14 xs:w-16 xs:h-16 rounded-lg overflow-hidden bg-gray-100 shrink-0">
-                    <Image src={item.product?.featuredImage || item.product?.images?.[0] || item.product?.image || "/images/placeholder.png"} alt={item.product?.title || "Product"} fill className="object-cover" />
+                    <Image src={item.product?.featuredImage || item.product?.images?.[0] || item.product?.image || "/images/placeholder.png"} alt={item.product?.title || "Product"} fill sizes="64px" className="object-cover" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium truncate text-sm xs:text-base">{item.product?.title || "Product"}</p>

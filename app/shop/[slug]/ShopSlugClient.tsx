@@ -785,7 +785,7 @@ export default function ShopSlugPage() {
                           : 'border-[#973c00]/20 opacity-60 hover:opacity-100 hover:border-[#973c00]/50'
                       }`}
                     >
-                      <Image src={img} alt={`${product.title} ${idx + 1}`} fill className="object-cover" />
+                      <Image src={img} alt={`${product.title} ${idx + 1}`} fill sizes="80px" className="object-cover" />
                       {selectedImage === idx && (
                         <div className="absolute inset-0 ring-2 ring-inset ring-[#5A1E12]/30 rounded-2xl" />
                       )}
@@ -1533,7 +1533,7 @@ export default function ShopSlugPage() {
                         : 'border-white/10 opacity-40 hover:opacity-90'
                     }`}
                   >
-                    <Image src={img} alt="thumbnail" fill className="object-cover" />
+                    <Image src={img} alt="thumbnail" fill sizes="80px" className="object-cover" />
                   </button>
                 ))}
               </div>

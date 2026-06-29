@@ -406,6 +406,7 @@ export default function BlogPostPage() {
             src={post.image}
             alt={post.title}
             fill
+            sizes="100vw"
             priority
             className="object-cover opacity-40"
           />
@@ -589,6 +590,7 @@ export default function BlogPostPage() {
                         src={relPost.image}
                         alt={relPost.title}
                         fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                       {/* Read time pill */}

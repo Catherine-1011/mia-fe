@@ -776,7 +776,7 @@ function SubmitTab({ onSuccess }: SubmitTabProps) {
                                         key={idx}
                                         className="relative w-14 h-14 rounded-lg overflow-hidden bg-gray-100 border border-gray-200 shrink-0"
                                       >
-                                        <Image src={img.previewUrl} alt="evidence" fill className="object-cover" />
+                                        <Image src={img.previewUrl} alt="evidence" fill sizes="56px" className="object-cover" />
                                         <button
                                           type="button"
                                           onClick={() => removeProductImage(pid, idx)}

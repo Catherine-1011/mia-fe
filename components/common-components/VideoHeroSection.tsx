@@ -92,7 +92,7 @@ export default function VideoHeroSection({
 
     showVideo(0);
     first.currentTime = 0;
-    void first.play();
+    first.play().catch(() => {});
 
     const warmStandbyVideo = () => {
       window.setTimeout(() => {
@@ -111,7 +111,7 @@ export default function VideoHeroSection({
 
       const current = videos[activeVideoRef.current];
       if (current?.paused) {
-        void current.play();
+        current.play().catch(() => {});
       }
     };
 
