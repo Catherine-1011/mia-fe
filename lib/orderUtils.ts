@@ -22,22 +22,20 @@ export const detectMultiSellerOrder = (order: any): boolean => {
 export const logApiResponse = (endpoint: string, response: any, orderId?: string) => {
   if (typeof window !== 'undefined') {
     console.group(`🔍 API Response: ${endpoint}`);
-    console.log('Order ID:', orderId);
-    console.log('Response:', response);
+
     
     if (response.order) {
-      console.log('Order Items Count:', response.order.items?.length || 0);
-      console.log('Is Multi-Seller:', response.order.isMultiSeller);
+
       
       if (response.order.segregatedData) {
-        console.log('Segregated Sellers:', response.order.segregatedData.sellerOrders?.length || 0);
+
       }
       
       if (response.order.items) {
         const sellerIds = response.order.items
           .map((item: any) => item.product?.sellerId)
           .filter(Boolean);
-        console.log('Detected Seller IDs:', [...new Set(sellerIds)]);
+
       }
     }
     

@@ -594,24 +594,21 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
   // API functions for addresses
   const fetchSavedAddresses = async () => {
     if (!user) {
-      console.log('No user found, skipping address fetch');
       return;
     }
     
     try {
       setLoadingSavedAddresses(true);
-      console.log('Fetching saved addresses for user:', user.id || user.email);
       
       const response = await apiClient.get<SavedAddress[] | { data?: SavedAddress[]; addresses?: SavedAddress[] }>('/users/addresses');
-      console.log('Saved addresses response:', response);
       
       // Handle both array response and object with data property
       const addressData = Array.isArray(response) ? response : (response as any)?.data || (response as any)?.addresses || [];
-      console.log('Processed address data:', addressData);
-      
+
+
       setSavedAddresses(addressData);
     } catch (error) {
-      console.error('Error fetching saved addresses:', error);
+
       console.error('Error details:', {
         message: (error as any)?.message,
         status: (error as any)?.status,
@@ -882,10 +879,6 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
     }
   }, [savedAddresses, loadingSavedAddresses]);
 
-  // Debug: Log user state changes
-  useEffect(() => {
-    console.log('User state changed:', { user: !!user, userId: user?.id || user?.email });
-  }, [user]);
 
   // Save form data to localStorage (only after initial load)
   useEffect(() => {

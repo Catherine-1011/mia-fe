@@ -59,7 +59,7 @@ export class ApiClient {
   }
 
   async post<T>(endpoint: string, data?: any, useAuth: boolean = true): Promise<T> {
-    console.log(`API POST to ${endpoint}:`, data);
+
     const hadToken = useAuth && this.hasToken();
     const response = await fetch(`${this.baseUrl}${endpoint}`, {
       method: "POST",
@@ -67,7 +67,7 @@ export class ApiClient {
       body: data ? JSON.stringify(data) : undefined,
     });
     const result = await this.handleResponse<T>(response, hadToken);
-    console.log(`API POST ${endpoint} response:`, result);
+  
     return result;
   }
 
@@ -199,7 +199,7 @@ export const wishlistApi = {
   checkWishlist: (productId: string | number): Promise<{ inWishlist: boolean }> =>
     apiClient.get(`/wishlist/check/${productId}`),
   addToWishlist: (data: { productId: string | number; variantId?: string | null }): Promise<any> => {
-    console.log("API: Trying multiple wishlist endpoints for productId:", data.productId, "variantId:", data.variantId);
+
     
     // Prepare payload with variantId if provided
     const payload: any = { productId: data.productId };
@@ -236,13 +236,11 @@ export const wishlistApi = {
       }
       
       try {
-        console.log(`Trying wishlist endpoint ${index + 1}/${attempts.length}`);
         const result = await attempts[index]();
-        console.log(`Wishlist endpoint ${index + 1} succeeded:`, result);
+ 
         return result;
       } catch (error) {
         lastError = error;
-        console.log(`Wishlist endpoint ${index + 1} failed:`, error);
         return tryEndpoint(index + 1);
       }
     };
@@ -273,7 +271,6 @@ export const wishlistApi = {
   
   // New toggle wishlist API method
   toggleWishlist: (data: { productId: string | number; variantId?: string | null }): Promise<any> => {
-    console.log("API: Trying toggle wishlist endpoints for productId:", data.productId, "variantId:", data.variantId);
     
     // Prepare payload with variantId if provided
     const payload: any = { productId: data.productId };
@@ -296,30 +293,24 @@ export const wishlistApi = {
     const tryToggleEndpoint = async (index = 0): Promise<any> => {
       if (index >= attempts.length) {
         // If no toggle endpoint works, fall back to manual check and add/remove
-        console.log("No toggle endpoint found, falling back to manual toggle");
         try {
           const checkResult = await wishlistApi.checkWishlist(data.productId);
           if (checkResult.inWishlist) {
-            console.log("Product in wishlist, removing...");
             return await wishlistApi.removeFromWishlist(data);
           } else {
-            console.log("Product not in wishlist, adding...");
             return await wishlistApi.addToWishlist(data);
           }
         } catch (fallbackError) {
-          console.error("Fallback toggle failed:", fallbackError);
           throw new Error(`Toggle wishlist failed. Neither dedicated endpoints nor fallback worked. Last error: ${fallbackError}`);
         }
       }
       
       try {
-        console.log(`Trying toggle endpoint ${index + 1}/${attempts.length}`);
+
         const result = await attempts[index]();
-        console.log(`Toggle endpoint ${index + 1} succeeded:`, result);
         return result;
       } catch (error) {
         lastError = error;
-        console.log(`Toggle endpoint ${index + 1} failed:`, error);
         return tryToggleEndpoint(index + 1);
       }
     };

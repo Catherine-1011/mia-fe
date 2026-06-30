@@ -368,7 +368,7 @@ function OrderConfirmationContent() {
         
         // Always try to fetch segregated data for this order to check if it's multi-seller
         try {
-          console.log('🔍 Checking for segregated order data...');
+       
           const segregatedRes = await fetch(
             `https://backend.madeinarnhemland.com.au/api/orders/segregated/${orderId}`,
             { headers: { Authorization: `Bearer ${currentToken}` } }
@@ -381,29 +381,22 @@ function OrderConfirmationContent() {
             if (segregatedData.success && segregatedData.order) {
               basicOrderStatus.isMultiSeller = true;
               basicOrderStatus.segregatedData = segregatedData.order;
-              console.log('✅ Multi-seller order data loaded successfully');
+            
             }
           } else if (segregatedRes.status === 404) {
-            console.log('📦 Single-seller order confirmed (no segregated data)');
+ 
           } else {
-            console.log('⚠️ Error fetching segregated data, status:', segregatedRes.status);
+           
           }
         } catch (error) {
-          console.log("❌ Error fetching segregated data:", error);
+       
         }
         
-        console.log('✅ Order confirmation data ready:', {
-          orderId: basicOrderStatus.orderId,
-          status: basicOrderStatus.status,
-          paymentStatus: basicOrderStatus.paymentStatus,
-          isMultiSeller: basicOrderStatus.isMultiSeller,
-          hasSegregatedData: !!basicOrderStatus.segregatedData,
-          sellerCount: basicOrderStatus.segregatedData?.sellerOrders?.length || 0
-        });
+    
         
         setOrderStatus(basicOrderStatus);
       } catch (error) {
-        console.log("Error in checkStatus:", error);
+       
         setOrderStatus({
           orderId,
           status: "Confirmed",

@@ -85,7 +85,7 @@ const Page = () => {
         }
 
         const responseData = await response.json();
-        console.log("API Response:", responseData); // Debug log
+      // Debug log
 
         // Handle different response structures
         let blogData: ApiBlogPost[] = [];

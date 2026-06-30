@@ -186,19 +186,12 @@ const transformApiDataToBlogPost = (apiPost: ApiBlogPost): BlogPost => {
   // Transform content string to ContentBlock array
   const contentBlocks: ContentBlock[] = [];
   
-  // Debug: Log the content received from API
-  console.log('📝 Blog Content Debug:', {
-    hasContent: !!apiPost.content,
-    contentType: typeof apiPost.content,
-    contentLength: apiPost.content?.length || 0,
-    contentPreview: apiPost.content?.substring(0, 100) + '...' || 'NO CONTENT',
-    fullPost: apiPost
-  });
+
   
   // Split content by paragraphs and create basic structure
   if (apiPost.content && typeof apiPost.content === 'string' && apiPost.content.trim()) {
     const paragraphs = apiPost.content.split('\n\n').filter(p => p.trim());
-    console.log('📝 Content Paragraphs:', paragraphs.length, paragraphs);
+   
     
     paragraphs.forEach(paragraph => {
       const trimmed = paragraph.trim();
@@ -218,7 +211,7 @@ const transformApiDataToBlogPost = (apiPost: ApiBlogPost): BlogPost => {
     });
   }
   
-  console.log('📝 Final Content Blocks:', contentBlocks);
+
 
   return {
     slug: apiPost.slug,
@@ -271,7 +264,7 @@ export default function BlogPostPage() {
       try {
         setLoading(true);
         
-        console.log('🔍 Fetching blog with slug:', slug);
+    
         
         // Step 1: Get all blogs to find the blog ID by slug
         const allBlogsResponse = await fetch(`${API_BASE_URL}/blogs`);
@@ -283,7 +276,6 @@ export default function BlogPostPage() {
         const allBlogsData = await allBlogsResponse.json();
         const blogArray = extractBlogArray(allBlogsData);
         
-        console.log('📚 All blogs fetched:', blogArray.length);
 
         // Find the blog post by slug
         const foundBlog = blogArray.find((blog: ApiBlogPost) => 
@@ -294,7 +286,7 @@ export default function BlogPostPage() {
           throw new Error('Blog post not found');
         }
         
-        console.log('🔍 Found blog by slug:', foundBlog.id, foundBlog.title);
+        
 
         // Step 2: Fetch the full blog content by ID
         const blogByIdResponse = await fetch(`${API_BASE_URL}/blogs/${foundBlog.id}`);
@@ -304,7 +296,7 @@ export default function BlogPostPage() {
         }
         
         const blogByIdData = await blogByIdResponse.json();
-        console.log('✅ Blog by ID API response:', blogByIdData);
+        
         
         let fullBlogData;
         if (blogByIdData.success && blogByIdData.blog) {
@@ -316,11 +308,7 @@ export default function BlogPostPage() {
           throw new Error('Invalid blog response format');
         }
         
-        console.log('📝 Full blog data with content:', fullBlogData);
-        console.log('📝 Content field:', fullBlogData.content);
-        console.log('📝 Content exists:', !!fullBlogData.content);
-        console.log('📝 Content type:', typeof fullBlogData.content);
-        
+
         const transformedPost = transformApiDataToBlogPost(fullBlogData);
         setPost(transformedPost);
         
@@ -341,11 +329,11 @@ export default function BlogPostPage() {
           .slice(0, 3)
           .map(transformApiDataToBlogPost);
         
-        console.log('🔗 Related posts with tags:', relatedPosts.length);
+       
         
         // If no related posts found, show recent posts instead
         if (relatedPosts.length === 0) {
-          console.log('🔗 No related posts found, showing recent posts');
+        
           const recentPosts = blogArray
             .filter((blog: ApiBlogPost) => 
               blog && blog.status === 'PUBLISHED' && blog.slug !== slug
@@ -353,7 +341,7 @@ export default function BlogPostPage() {
             .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
             .slice(0, 3)
             .map(transformApiDataToBlogPost);
-          console.log('🔗 Recent posts fallback:', recentPosts.length);
+          
           setRelated(recentPosts);
         } else {
           setRelated(relatedPosts);

@@ -307,23 +307,11 @@ function TrackOrderContent() {
       );
       const data = await res.json();
       
-      // Log the initial API response for debugging
-      console.log('🔥 FRESH API CALL - CHECKING FOR UPDATED BACKEND STRUCTURE');
-      console.log('Full API Response:', data);
-      
+
       // Debug variant data structure
       if (data.order && data.order.items) {
-        console.log('🔍 VARIANT DATA DEBUG - Checking item structures:');
         data.order.items.forEach((item: any, index: number) => {
-          console.log(`Item ${index + 1}: ${item.product?.title}`);
-          console.log('  Full item structure:', JSON.stringify(item, null, 2));
-          console.log('  selectedVariant:', item.selectedVariant);
-          console.log('  variant:', item.variant);
-          console.log('  size:', item.size);
-          console.log('  color:', item.color);
-          console.log('  attributes:', item.attributes);
-          console.log('  options:', item.options);
-          console.log('  productVariant:', item.productVariant);
+
         });
       }
       
@@ -346,33 +334,13 @@ function TrackOrderContent() {
       const hasMultipleSellers = detectMultiSellerOrder(finalOrder);
       finalOrder.isMultiSeller = hasMultipleSellers;
       
-      console.log(`🛒 Order Analysis:`, {
-        orderId: finalOrder.id,
-        isMultiSeller: hasMultipleSellers,
-        itemCount: finalOrder.items?.length || 0,
-        totalAmount: finalOrder.totalAmount,
-        hasSubOrders: !!finalOrder.subOrders,
-        subOrdersCount: finalOrder.subOrders?.length || 0
-      });
+
       
-      console.log('🔍 RAW API RESPONSE STRUCTURE (UPDATED BACKEND):', {
-        hasSubOrders: !!finalOrder.subOrders,
-        subOrdersCount: finalOrder.subOrders?.length || 0,
-        subOrdersData: finalOrder.subOrders ? finalOrder.subOrders.map((so: any) => ({
-          id: so.id,
-          status: so.status,
-          sellerId: so.sellerId,
-          sellerName: so.seller?.name,
-          hasItems: !!so.items,
-          itemsCount: so.items?.length || 0
-        })) : 'NO SUBORDERS',
-        hasItems: !!finalOrder.items,
-        itemsCount: finalOrder.items?.length || 0
-      });
+
       
       // Always check for subOrders first, regardless of multi-seller detection
       if (finalOrder.subOrders && finalOrder.subOrders.length > 0) {
-        console.log('📦 FOUND subOrders in API response - processing multi-seller data...');
+
         
         // Force multi-seller mode if subOrders exist
         finalOrder.isMultiSeller = true;
@@ -389,94 +357,51 @@ function TrackOrderContent() {
             subOrder.items || []
           );
           finalOrder.items = allItems;
-          console.log(`📋 Populated ${allItems.length} items from subOrders data`);
+      
         }
         
-        console.log(`✅ Successfully structured segregated data from ${finalOrder.subOrders.length} subOrders`);
+
+        
         
         // Debug each subOrder  
         finalOrder.subOrders.forEach((subOrder: any, index: number) => {
-          console.log(`Sub-Order ${index + 1}:`, {
-            id: subOrder.id,
-            sellerId: subOrder.sellerId,
-            sellerName: subOrder.seller?.name,
-            status: subOrder.status,
-            itemCount: subOrder.items?.length || 0,
-            subtotal: subOrder.subtotal
-          });
+         
+          
+
         });
         
       } else if (hasMultipleSellers) {
-        console.warn('⚠️ Multi-seller order detected but no subOrders found in API response');
+
         finalOrder.isMultiSeller = false; // Fallback to single seller mode
       } else {
-        console.log('📦 Single-seller order detected');
         finalOrder.isMultiSeller = false;
       }
       
       // Final validation
       const finalValidationIssues = validateOrderData(finalOrder);
       if (finalValidationIssues.length > 0) {
-        console.warn('⚠️ Final order validation issues:', finalValidationIssues);
+
       }
       
-      console.log('✅ Final order data ready:', {
-        orderId: finalOrder.id,
-        parentStatus: finalOrder.status, // This should come from API
-        isMultiSeller: finalOrder.isMultiSeller,
-        itemCount: finalOrder.items?.length || 0,
-        hasSegregatedData: !!finalOrder.segregatedData,
-        sellerCount: finalOrder.segregatedData?.subOrders?.length || 0,
-        segregatedParentStatus: finalOrder.segregatedData?.status, // Check if API provides this
-        sellersStatuses: finalOrder.segregatedData?.subOrders?.map((so: { sellerId: any; seller: { name: any; }; status: any; }) => ({
-          sellerId: so.sellerId,
-          sellerName: so.seller.name,
-          status: so.status,
-          hasStatus: !!so.status
-        })) || 'No seller data',
-        
-        // 🚨 CRITICAL DEBUG: Check if items can find their seller orders
-        itemSellerMatching: finalOrder.items?.map((item: any) => ({
-          productTitle: item.product?.title,
-          productId: item.product?.id,
-          foundSeller: finalOrder.segregatedData?.subOrders?.find((so: any) => 
-            so.items?.some((soItem: any) => soItem.product.id === item.product.id)
-          )?.seller?.name || '❌ NO MATCH'
-        })) || 'No items'
-      });
+
       
-      // Check what data we're getting from API
-      console.group('🔍 FINAL API DATA VERIFICATION - SUB-ORDER STATUS CHECK');
-      console.log('Main Order Status:', finalOrder.status);
-      console.log('Is Multi-Seller:', finalOrder.isMultiSeller);
-      console.log('Has Segregated Data:', !!finalOrder.segregatedData);
+    
       
       if (finalOrder.segregatedData && finalOrder.segregatedData.subOrders) {
-        console.log('✅ SEGREGATED DATA FOUND - Multi-seller order with sub-orders');
-        console.log('Segregated Parent Status:', finalOrder.segregatedData.status);
+
         
-        console.log('\n📦 INDIVIDUAL SUB-ORDER STATUSES FROM API:');
+
         finalOrder.segregatedData.subOrders.forEach((subOrder: any, index: number) => {
-          console.log(`\n--- Sub-Order ${index + 1}: ${subOrder.seller?.name || 'Unknown Seller'} ---`);
-          console.log('├─ Seller ID:', subOrder.sellerId);
-          console.log('├─ Sub-Order Status from API:', subOrder.status || '❌ NO STATUS');
-          console.log('├─ Sub Order ID:', subOrder.id);
-          console.log('├─ Sub Total:', subOrder.subtotal);
-          console.log('├─ Tracking Number:', subOrder.trackingNumber || 'None');
+
           
           if (subOrder.items && subOrder.items.length > 0) {
-            console.log('├─ Products in this sub-order:');
+
             subOrder.items.forEach((item: any, itemIndex: number) => {
-              console.log(`   ${itemIndex + 1}. ${item.product?.title || 'Unknown Product'}`);
-              console.log(`      Price: $${item.price} × Qty: ${item.quantity}`);
-              console.log(`      ✅ Individual Product Status: ${subOrder.status || '❌ NO STATUS'}`);
-              console.log(`      📦 Seller: ${subOrder.seller?.name}`);
-              console.log(`      🔗 Status Source: Main API (/track endpoint - subOrders)`);
             });
           } else {
-            console.log('├─ ❌ No items found for this sub-order');
+  
           }
-          console.log('└─────────────────────────────────────');
+
         });
         
         // Summary of API data
@@ -487,16 +412,12 @@ function TrackOrderContent() {
           itemCount: so.items?.length || 0
         }));
         
-        console.log('\n📊 API STATUS SUMMARY:');
-        console.table(sellerStatusSummary);
+  
         
         const hasAllStatuses = finalOrder.segregatedData.subOrders.every((so: any) => !!so.status);
-        console.log(`\n✅ All sellers have SUB-ORDER status from API: ${hasAllStatuses ? 'YES' : '❌ NO - Some sellers missing status'}`);
-        console.log(`🔝 Parent order status (shown in delivery progress): ${finalOrder.status}`);
-        console.log(`📦 Sub-order statuses (shown on individual products): ${finalOrder.segregatedData.subOrders.map((so: any) => `${so.seller?.name}: ${so.status}`).join(', ')}`);
+
         
         // Show product-level status mapping
-        console.log('\n🏷️ INDIVIDUAL PRODUCT SUB-ORDER STATUS MAPPING:');
         const productStatusMap: any[] = [];
         finalOrder.segregatedData.subOrders.forEach((subOrder: any) => {
           subOrder.items?.forEach((item: any) => {
@@ -511,75 +432,37 @@ function TrackOrderContent() {
           });
         });
         console.table(productStatusMap);
-        console.log('📝 Note: Each product shows its seller\'s SUB-ORDER status from API, NOT parent status');
+
         
         // 🚨 ITEM MATCHING DEBUG
-        console.log('\n🔍 ITEM-TO-SUB-ORDER MATCHING DEBUG:');
         if (finalOrder.items) {
           finalOrder.items.forEach((item: any, index: number) => {
-            console.log(`\nItem ${index + 1}: ${item.product?.title || 'Unknown'}`);
-            console.log(`  Product ID: ${item.product?.id || 'No ID'}`);
+
             
             const matchingSeller = finalOrder.segregatedData.subOrders.find((so: any) => 
               so.items?.some((soItem: any) => soItem.product.id === item.product.id)
             );
             
             if (matchingSeller) {
-              console.log(`  ✅ Matched to Seller: ${matchingSeller.seller?.name || 'Unknown'}`);
-              console.log(`  📊 SUB-ORDER Status: ${matchingSeller.status || '❌ NO STATUS'}`);
-              console.log(`  🆔 Sub-Order ID: ${matchingSeller.id || 'No ID'}`);
-              console.log(`  🔗 Will show SUB-ORDER status badge: YES`);
+  
             } else {
-              console.log(`  ❌ No seller match found - WILL NOT show status badge`);
-              console.log(`  🔗 Will show status badge: NO`);
-              console.log(`  🐛 Available seller items for comparison:`, finalOrder.segregatedData.subOrders.map((so: any) => ({
-                sellerName: so.seller?.name,
-                subOrderId: so.id,
-                status: so.status,
-                itemIds: so.items?.map((si: any) => si.product?.id) || []
-              })));
             }
           });
         }
         
       } else {
-        console.log('❌ NO SEGREGATED DATA - Either single seller or API not returning seller data');
-        console.log('Main order items:', finalOrder.items?.length || 0);
+
         if (finalOrder.items && finalOrder.items.length > 0) {
-          console.log('Products in main order (no individual seller statuses):');
+
           finalOrder.items.forEach((item: any, index: number) => {
-            console.log(`${index + 1}. ${item.product?.title} - Inherits parent status: ${finalOrder.status}`);
+
           });
         }
       }
       console.groupEnd();
       
       // 🚨 FINAL DEBUG: Show exactly what we're setting as the order
-      console.log('🎯 SETTING ORDER WITH THIS STRUCTURE:', {
-        id: finalOrder.id,
-        status: finalOrder.status,
-        isMultiSeller: finalOrder.isMultiSeller,
-        hasSegregatedData: !!finalOrder.segregatedData,
-        segregatedSubOrdersCount: finalOrder.segregatedData?.subOrders?.length || 0,
-        itemsCount: finalOrder.items?.length || 0,
-        finalStructure: {
-          mainOrder: {
-            id: finalOrder.id,
-            status: finalOrder.status,
-            itemsCount: finalOrder.items?.length || 0
-          },
-          segregatedData: finalOrder.segregatedData ? {
-            subOrdersCount: finalOrder.segregatedData.subOrders?.length || 0,
-            subOrders: finalOrder.segregatedData.subOrders?.map((so: any) => ({
-              id: so.id,
-              sellerName: so.seller?.name,
-              status: so.status,
-              itemsCount: so.items?.length || 0
-            })) || []
-          } : null
-        }
-      });
-      
+            
       setOrder(finalOrder);
       // Save to sessionStorage only on successful order fetch
       saveToSessionStorage(finalOrder, trimmedOrderId, trimmedEmail);
@@ -591,141 +474,7 @@ function TrackOrderContent() {
     }
   };
 
-  // Users cannot edit status - removed seller status updating
-  /*
-  const handleSellerStatusUpdate = async (sellerId: string, newStatus: string) => {
-    if (!order || !order.segregatedData) return;
-    
-    try {
-      const res = await fetch(
-        `https://backend.madeinarnhemland.com.au/api/orders/guest/seller-status`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            orderId: orderId.trim(),
-            customerEmail: email.trim(),
-            sellerId,
-            newStatus
-          })
-        }
-      );
-      
-      if (!res.ok) {
-        throw new Error('Failed to update status');
-      }
-      
-      // Get the response data - should include updated parent status from backend
-      const responseData = await res.json();
-      console.log('🔄 Seller Status Update Response:', responseData);
-      
-      // Detailed logging for individual seller status update
-      console.group('🔍 INDIVIDUAL SELLER STATUS UPDATE FROM API');
-      console.log('├─ Seller ID Updated:', sellerId);
-      console.log('├─ New Status Set:', newStatus);
-      console.log('├─ API Response Data:', responseData);
-      console.log('├─ Parent Status from API:', responseData.parentOrderStatus || 'NOT PROVIDED');
-      console.log('├─ Full Order Data from API:', responseData.order || 'NOT PROVIDED');
-      
-      if (responseData.sellerOrders) {
-        console.log('├─ Individual Seller Statuses from API:');
-        responseData.sellerOrders.forEach((seller: any, index: number) => {
-          console.log(`   ${index + 1}. ${seller.seller?.name}: ${seller.status || 'NO STATUS'}`);
-        });
-      } else if (responseData.subOrders) {
-        console.log('├─ Individual Sub-Order Statuses from API:');
-        responseData.subOrders.forEach((subOrder: any, index: number) => {
-          console.log(`   ${index + 1}. ${subOrder.seller?.name}: ${subOrder.status || 'NO STATUS'}`);
-        });
-      } else {
-        console.log('├─ ❌ No individual seller/sub-order statuses returned from API');
-      }
-      console.groupEnd();
-      
-      // Use the parent status from API response if provided
-      const updatedParentStatus = responseData.parentOrderStatus || responseData.order?.status || order.status;
-      
-      console.log(`📊 Status Update from API:`, {
-        sellerUpdated: sellerId,
-        newSellerStatus: newStatus,
-        apiParentStatus: updatedParentStatus,
-        currentParentStatus: order.status,
-        fullResponse: responseData
-      });
-      
-      // Update local state with API data
-      setOrder(prev => {
-        if (!prev?.segregatedData) return prev;
-        
-        const updatedSellerOrders = prev.segregatedData.subOrders.map((so: { sellerId: string; }) =>
-          so.sellerId === sellerId ? { ...so, status: newStatus } : so
-        );
-        
-        const updatedOrder = {
-          ...prev,
-          status: updatedParentStatus, // Use parent status from API
-          segregatedData: {
-            ...prev.segregatedData,
-            status: updatedParentStatus, // Update segregated data parent status too
-            subOrders: updatedSellerOrders
-          }
-        };
-        
-        // Show info if parent status changed
-        if (updatedParentStatus !== prev.status) {
-          toast.info(
-            `Order status updated to ${ORDER_STATUS_MAPPING[updatedParentStatus as keyof typeof ORDER_STATUS_MAPPING]?.label || updatedParentStatus}`,
-            { autoClose: 3000 }
-          );
-        }
-        
-        return updatedOrder;
-      });
-    } catch (error) {
-      console.error('❌ Error updating seller status:', error);
-      throw error;
-    }
-  };
-  */
-
-  // Users cannot edit status - removed parent status updating
-  /*
-  const handleParentStatusUpdate = async (newStatus: string, showToast: boolean = true) => {
-    if (showToast) setUpdatingParentStatus(true);
-    
-    try {
-      const res = await fetch(
-        `https://backend.madeinarnhemland.com.au/api/orders/guest/parent-status`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            orderId: orderId.trim().toUpperCase(),
-            customerEmail: email.trim(),
-            newStatus
-          })
-        }
-      );
-      
-      if (!res.ok) {
-        throw new Error('Failed to update parent order status');
-      }
-      
-      // Update local state only if this wasn't called from seller status update
-      if (showToast) {
-        setOrder(prev => prev ? { ...prev, status: newStatus } : prev);
-        toast.success("Parent order status updated successfully!");
-      }
-    } catch (error) {
-      if (showToast) {
-        toast.error("Failed to update parent order status");
-      }
-    } finally {
-      if (showToast) setUpdatingParentStatus(false);
-    }
-  };
-  */
-
+  
   const handleDownloadInvoice = async () => {
     setIsDownloading(true);
     try {
@@ -1101,7 +850,7 @@ function TrackOrderContent() {
                                            item.options?.color
                                   };
                                   
-                                  console.log(`Variant info for ${item.product?.title}:`, variantInfo);
+
                                   
                                   if (variantInfo.size || variantInfo.color) {
                                     return (
@@ -1123,32 +872,21 @@ function TrackOrderContent() {
                               </p>
                               {/* Show seller status badge for each product */}
                               {(() => {
-                                console.log(`🔍 PRODUCT STATUS BADGE CHECK for: ${item.product?.title}`);
-                                console.log(`  - Has segregatedData: ${!!order.segregatedData}`);
-                                console.log(`  - Has subOrders: ${!!order.segregatedData?.subOrders}`);
-                                console.log(`  - SubOrders count: ${order.segregatedData?.subOrders?.length || 0}`);
-                                console.log(`  - Product ID: ${item.product?.id}`);
+
                                 
                                 // ONLY show individual seller status, NOT parent status
                                 if (order.segregatedData && order.segregatedData.subOrders) {
-                                  console.log(`  - Searching for matching subOrder...`);
+          
                                   
                                   const subOrder = order.segregatedData.subOrders.find((so: { items: any[]; seller: any; status: any; }) => {
                                     const hasMatchingItem = so.items && so.items.some((soItem: any) => soItem.product.id === item.product.id);
-                                    console.log(`  - Checking seller ${so.seller?.name}: hasMatchingItem = ${hasMatchingItem}`);
                                     return hasMatchingItem;
                                   });
                                   
-                                  console.log(`  - Found matching subOrder:`, subOrder ? {
-                                    sellerId: (subOrder as any).sellerId,
-                                    sellerName: (subOrder as any).seller?.name,
-                                    status: (subOrder as any).status,
-                                    hasStatus: !!(subOrder as any).status
-                                  } : 'NO MATCH');
+                    
                                   
                                   // Only return status if we found a matching sub-order
                                   if (subOrder && (subOrder as any).status) {
-                                    console.log(`  ✅ WILL SHOW STATUS BADGE: ${(subOrder as any).status} (${(subOrder as any).seller?.name})`);
                                     const statusConfig = ORDER_STATUS_MAPPING[(subOrder as any).status as keyof typeof ORDER_STATUS_MAPPING];
                                     return (
                                       <span 
@@ -1167,10 +905,10 @@ function TrackOrderContent() {
                                       </span>
                                     );
                                   } else {
-                                    console.log(`  ❌ NO STATUS BADGE: ${subOrder ? 'subOrder found but no status or seller' : 'no matching subOrder'}`);
+
                                   }
                                 } else {
-                                  console.log(`  ❌ NO STATUS BADGE: No segregatedData or subOrders`);
+                      
                                 }
                                 
                                 // Don't show parent status as fallback - only show if it's a true single-seller order

@@ -411,13 +411,6 @@ export default function CheckOutPage() {
       const shippingMethodId = selectedShipping?.id;
       const gstId = cartData?.gst?.id;
 
-      console.log("=== ORDER PLACEMENT DEBUG ===");
-      console.log("cartData.availableShipping:", cartData?.availableShipping);
-      console.log("selectedShipping:", selectedShipping);
-      console.log("shippingMethodId:", shippingMethodId);
-      console.log("cartData.gst:", cartData?.gst);
-      console.log("gstId:", gstId);
-      console.log("showGuestForm:", showGuestForm);
 
       if (showGuestForm) {
         const guestCartItems = guestCartUtils.getGuestCart();

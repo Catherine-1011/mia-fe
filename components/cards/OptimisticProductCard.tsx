@@ -281,15 +281,7 @@ export default function OptimisticProductCard({
     e.preventDefault();
 
     // Debug: Log auth and wishlist state for troubleshooting
-    console.log('Wishlist Toggle Debug:', { 
-      token: !!token, 
-      authUser: !!authUser, 
-      isAuthenticated,
-      isWishlisted,
-      serverWishlistStatus,
-      optimisticWishlist,
-      component: 'OptimisticProductCard'
-    });
+
 
     if (!isAuthenticated) {
       toast.info("Please sign in to add items to your Wishlist", {
@@ -351,7 +343,6 @@ export default function OptimisticProductCard({
     variantPrice: string,
     variantAttributes?: Record<string, { value: string; displayValue: string; hexColor?: string | null }>
   ) => {
-    console.log('Adding variant to wishlist:', { variantId, variantPrice, variantAttributes });
 
     // Close the modal first
     setShowWishlistVariantModal(false);
@@ -459,7 +450,7 @@ export default function OptimisticProductCard({
 
         <Link
           href={`/shop/${slug}`}
-          className="w-full h-full block"
+          className="relative w-full h-full block"
         >
           <Image
             src={photo || "/images/placeholder.png"}

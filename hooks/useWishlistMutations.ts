@@ -26,12 +26,12 @@ export function useToggleWishlist() {
 
   const mutation = useMutation({
     mutationFn: async ({ productId, isCurrentlyWishlisted, variantId }: ToggleWishlistParams) => {
-      console.log("Toggling wishlist for productId:", productId, "variant:", variantId, "currently wishlisted:", isCurrentlyWishlisted);
+
       
       // Convert to number if the API expects numeric IDs
       const numericId = parseInt(productId, 10);
       const idToSend = isNaN(numericId) ? productId : numericId;
-      console.log("Sending ID for toggle:", idToSend, typeof idToSend);
+
       
       // Use the new toggle API that intelligently handles both add and remove
       // Include variantId if provided for variable products

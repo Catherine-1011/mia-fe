@@ -752,11 +752,7 @@ export default function GuestCheckoutForm() {
         ...(appliedCoupons.length > 0 && { couponCode: appliedCoupons[0].code, couponCodes: appliedCoupons.map(c => c.code) }),
       };
 
-      console.log("=== GUEST ORDER DEBUG ===");
-      console.log("Frontend calculated totals:", { subtotal, shippingCost, gstAmount, grandTotal });
-      console.log("Cart items:", cartItems);
-      console.log("Request body being sent:", body);
-
+  
       const res  = await fetch("https://backend.madeinarnhemland.com.au/api/payments/guest/create-intent", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -764,8 +760,7 @@ export default function GuestCheckoutForm() {
       });
       const data = await res.json();
 
-      console.log("Backend response:", data);
-      console.log("Backend order summary:", data.orderSummary);
+     
 
       if (!res.ok || !data.success) {
         const msg = data.message || data.error || "Failed to create payment. Please try again.";
@@ -787,7 +782,6 @@ export default function GuestCheckoutForm() {
       const backendTotal = parseFloat(data.orderSummary?.grandTotal || "0");
       const frontendTotal = parseFloat(String(grandTotal) || "0");
       if (backendTotal === 0 && frontendTotal > 0) {
-        console.error("❌ TOTAL MISMATCH: Backend returned $0 but frontend calculated $" + frontendTotal);
         toast.error(`Order total calculation error. Expected $${frontendTotal.toFixed(2)} but received $0.00. Please contact support.`);
       }
       

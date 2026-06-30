@@ -33,7 +33,7 @@ export function useDashboardSSO() {
     }
 
     setIsRedirecting(true);
-    console.log("[SSO] Step 1: Token found, calling create-ticket...");
+
 
     try {
       const res = await fetch(`${API_BASE_URL}/auth/create-ticket`, {
@@ -45,7 +45,7 @@ export function useDashboardSSO() {
         body: JSON.stringify({}),
       });
 
-      console.log("[SSO] Step 2: create-ticket response status:", res.status);
+
 
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
@@ -54,13 +54,12 @@ export function useDashboardSSO() {
       }
 
       const data = await res.json();
-      console.log("[SSO] Step 3: Raw response from backend:", data);
 
       const ticketId: string = data.ticketId ?? data.ticket ?? data.id;
-      console.log("[SSO] Step 4: Extracted ticketId:", ticketId);
+
 
       if (!ticketId) {
-        console.error("[SSO] FAILED: No ticketId found in response. Keys received:", Object.keys(data));
+
         throw new Error("No ticketId returned from server.");
       }
 
@@ -69,7 +68,6 @@ export function useDashboardSSO() {
       callbackUrl.searchParams.set("ticket", ticketId);
       callbackUrl.searchParams.set("redirectTo", redirectTo);
 
-      console.log("[SSO] Step 5: Redirecting to:", callbackUrl.toString());
       window.location.href = callbackUrl.toString();
     } catch (err) {
       console.error("[SSO] FALLBACK triggered because of error:", err);

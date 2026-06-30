@@ -85,7 +85,7 @@ export default function LoginPage() {
         return;
       }
 
-      console.log("LOGIN RESPONSE:", data);
+  
       setError("Unexpected login response");
     } catch (err) {
       setError("Something went wrong");

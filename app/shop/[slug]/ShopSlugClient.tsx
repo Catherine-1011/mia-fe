@@ -363,17 +363,7 @@ export default function ShopSlugPage() {
     if (e) e.preventDefault();
 
     // Debug: Log auth and wishlist state for troubleshooting
-    console.log('Wishlist Toggle Debug:', { 
-      token: !!token, 
-      authUser: !!authUser, 
-      isAuthenticated,
-      isWishlisted,
-      serverWishlistStatus,
-      optimisticWishlist,
-      productId: product?.id,
-      wishlistData,
-      component: 'ProductDetailPage'
-    });
+
 
     if (!isAuthenticated) {
       toast.info("Please sign in to add items to your Wishlist", {

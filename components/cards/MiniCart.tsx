@@ -51,7 +51,7 @@ export default function MiniCart({ onClose }: { onClose: () => void }) {
     const unsubscribe = subscribeToUpdates(() => {
       // Force a re-render when cart updates from other components
       setSyncTrigger(prev => prev + 1);
-      console.log('MiniCart synced with cart updates from other components');
+      
     });
 
     return unsubscribe;

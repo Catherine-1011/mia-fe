@@ -45,7 +45,7 @@ function getSocket(): Socket<ServerToClientEvents, ClientToServerEvents> {
     // updates that arrived while the connection was down.
     _socket.on("connect", () => {
       if (process.env.NODE_ENV === "development") {
-        console.log("[Socket] connected:", _socket?.id);
+    
       }
 
       // Restore product watch
@@ -69,7 +69,6 @@ function getSocket(): Socket<ServerToClientEvents, ClientToServerEvents> {
 
     _socket.on("disconnect", (reason) => {
       if (process.env.NODE_ENV === "development") {
-        console.log("[Socket] disconnected:", reason);
       }
     });
   }
