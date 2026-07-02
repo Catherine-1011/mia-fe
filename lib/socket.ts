@@ -38,7 +38,11 @@ function getSocket(): Socket<ServerToClientEvents, ClientToServerEvents> {
       reconnection: true,
       reconnectionAttempts: Infinity,
       reconnectionDelay: 2000,         // 2 s between retries (handles Render cold-starts)
-      transports: ["websocket", "polling"],
+      // Production-safe fallback: the current backend/proxy path is rejecting
+      // WebSocket upgrades, so force long-polling to preserve real-time stock
+      // updates without repeated console errors or broken reconnect loops.
+      transports: ["polling"],
+      upgrade: false,
     });
 
     // Re-subscribe to watched entities after every reconnect so we never miss
