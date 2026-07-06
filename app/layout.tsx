@@ -1,5 +1,6 @@
 // app/layout.tsx (SERVER COMPONENT)
 import type { Metadata } from "next";
+import Script from "next/script";
 import NavbarWrapper from "./NavbarWrapper";
 import FooterWrapper from "./FooterWrapper";
 import "./globals.css";
@@ -42,6 +43,26 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <Script id="inspectlet" strategy="afterInteractive">
+          {`
+            window.__insp = window.__insp || [];
+            window.__insp.push(["wid", 1771092486]);
+            (function() {
+              function ldinsp() {
+                if (typeof window.__inspld !== "undefined") return;
+                window.__inspld = 1;
+                var insp = document.createElement("script");
+                insp.type = "text/javascript";
+                insp.async = true;
+                insp.id = "inspsync";
+                insp.src = ("https:" === document.location.protocol ? "https" : "http") + "://cdn.inspectlet.com/inspectlet.js?wid=1771092486&r=" + Math.floor(new Date().getTime() / 3600000);
+                var x = document.getElementsByTagName("script")[0];
+                x.parentNode.insertBefore(insp, x);
+              }
+              setTimeout(ldinsp, 0);
+            })();
+          `}
+        </Script>
         <script dangerouslySetInnerHTML={{ __html: "history.scrollRestoration='manual';window.scrollTo(0,0);" }} />
         <OrganizationSchema />
       </head>
