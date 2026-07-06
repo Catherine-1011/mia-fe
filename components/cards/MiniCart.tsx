@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useSharedEnhancedCart } from "@/hooks/useSharedEnhancedCart";
 import { useCartStock } from "@/hooks/useCartStock";
+import { devLogger } from "@/lib/logger";
 
 export default function MiniCart({ onClose }: { onClose: () => void }) {
   const {
@@ -64,7 +65,7 @@ export default function MiniCart({ onClose }: { onClose: () => void }) {
     try {
       await updateQuantity(productId, newQuantity, variantId ?? undefined);
     } catch (error) {
-      console.error("Failed to update quantity:", error);
+      devLogger.error("Failed to update quantity:", error);
     } finally {
       setUpdatingItems(prev => {
         const newSet = new Set(prev);
@@ -81,7 +82,7 @@ export default function MiniCart({ onClose }: { onClose: () => void }) {
     try {
       await removeItem(productId, variantId ?? undefined);
     } catch (error) {
-      console.error("Failed to remove item:", error);
+      devLogger.error("Failed to remove item:", error);
     } finally {
       setUpdatingItems(prev => {
         const newSet = new Set(prev);

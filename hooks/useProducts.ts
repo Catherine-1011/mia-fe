@@ -3,6 +3,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
+import { devLogger } from "@/lib/logger";
 
 export interface Product {
   id: string;
@@ -52,7 +53,7 @@ export function useProducts() {
         
         // Validate that we got the expected data structure
         if (!data || !Array.isArray(data.products)) {
-          console.warn("Invalid products data structure:", data);
+          devLogger.warn("Invalid products data structure:", data);
           return [];
         }
 
@@ -96,7 +97,7 @@ export function useProducts() {
           };
         });
       } catch (error) {
-        console.error("Error fetching products:", error);
+        devLogger.error("Error fetching products:", error);
         // Re-throw with more context
         throw new Error(`Failed to fetch products: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }

@@ -1,4 +1,5 @@
 // app/lib/api.ts
+import { devLogger } from "@/lib/logger";
 
 const API_BASE_URL = "https://backend.madeinarnhemland.com.au/api";
 
@@ -49,11 +50,11 @@ export class ApiClient {
         headers: this.getAuthHeaders(useAuth),
       });
     } catch (networkErr) {
-      console.error(`[API GET] Network error — ${url}`, networkErr);
+      devLogger.error(`[API GET] Network error — ${url}`, networkErr);
       throw networkErr;
     }
     if (!response.ok) {
-      console.error(`[API GET] ${response.status} ${response.statusText} — ${url}`);
+      devLogger.error(`[API GET] ${response.status} ${response.statusText} — ${url}`);
     }
     return this.handleResponse<T>(response, hadToken);
   }
@@ -225,7 +226,7 @@ export const wishlistApi = {
     
     const tryEndpoint = async (index = 0): Promise<any> => {
       if (index >= attempts.length) {
-        console.error("All wishlist endpoints failed. Last error:", lastError);
+        devLogger.error("All wishlist endpoints failed. Last error:", lastError);
         let errorMsg = "";
         if (lastError && typeof lastError === "object" && "message" in lastError) {
           errorMsg = (lastError as any).message;

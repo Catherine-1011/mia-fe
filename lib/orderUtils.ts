@@ -1,4 +1,5 @@
 // lib/orderUtils.ts - Utility functions for order handling
+import { devLogger } from "@/lib/logger";
 
 export const detectMultiSellerOrder = (order: any): boolean => {
   if (!order) return false;
@@ -21,7 +22,7 @@ export const detectMultiSellerOrder = (order: any): boolean => {
 
 export const logApiResponse = (endpoint: string, response: any, orderId?: string) => {
   if (typeof window !== 'undefined') {
-    console.group(`🔍 API Response: ${endpoint}`);
+    devLogger.group(`API Response: ${endpoint}`);
 
     
     if (response.order) {
@@ -39,7 +40,7 @@ export const logApiResponse = (endpoint: string, response: any, orderId?: string
       }
     }
     
-    console.groupEnd();
+    devLogger.groupEnd();
   }
 };
 

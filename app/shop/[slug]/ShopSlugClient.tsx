@@ -3,6 +3,7 @@ import React, { useState, useEffect, useMemo, useCallback, useRef } from "react"
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { devLogger } from "@/lib/logger";
 import {
   ShoppingCart,
   Heart,
@@ -353,7 +354,7 @@ export default function ShopSlugPage() {
       
       setTimeout(() => setAddedToCart(false), 2000);
     } catch (err) {
-      console.error("Error adding to cart:", err);
+      devLogger.error("Error adding to cart:", err);
     } finally {
       setIsAddingToCart(false);
     }

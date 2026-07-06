@@ -5,6 +5,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useRef, useCallback } from "react";
 import { wishlistApi } from "@/lib/api";
 import { wishlistQueryKeys } from "./useWishlist";
+import { devLogger } from "@/lib/logger";
 
 interface WishlistItem {
   id: string;
@@ -101,7 +102,7 @@ export function useToggleWishlist() {
     },
     // If the mutation fails, use the context returned from onMutate to roll back
     onError: (err, variables, context) => {
-      console.error("Wishlist toggle failed:", err);
+      devLogger.error("Wishlist toggle failed:", err);
       if (context?.previousWishlist) {
         queryClient.setQueryData(wishlistQueryKeys.wishlist, context.previousWishlist);
       }

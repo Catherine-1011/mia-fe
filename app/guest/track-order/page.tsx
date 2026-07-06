@@ -13,6 +13,7 @@ import {
 import { toast } from "react-toastify";
 import { SegregatedOrder, SellerOrder, ORDER_STATUS_MAPPING, SELLER_ORDER_STEPS } from "@/types/seller-orders";
 import { detectMultiSellerOrder, logApiResponse, validateOrderData } from "@/lib/orderUtils";
+import { devLogger } from "@/lib/logger";
 
 interface OrderItem {
   quantity: number;
@@ -112,11 +113,11 @@ function SimplifiedSellerSection({
             <Store className="w-4 h-4 md:w-5 md:h-5 text-[#5A1E12]" />
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="text-base md:text-lg font-bold text-[#5A1E12] flex items-center gap-2 truncate">
-              <span className="truncate">{sellerOrder.seller.name}</span>
+            <h3 className="text-base md:text-lg font-bold text-[#5A1E12] flex items-center gap-2">
+              <span className="break-words">{sellerOrder.seller.name}</span>
             </h3>
-            <p className="text-xs md:text-sm text-[#5A1E12]/60 flex items-center gap-1">
-              <span className="truncate">Sub Order: #{sellerOrder.subDisplayId || sellerOrder.id?.slice(-8).toUpperCase() || 'No ID'}</span>
+            <p className="text-xs md:text-sm text-[#5A1E12]/70 flex items-center gap-1">
+              <span className="break-all">Sub Order: #{sellerOrder.subDisplayId || sellerOrder.id?.slice(-8).toUpperCase() || 'No ID'}</span>
             </p>
           </div>
         </div>
@@ -143,7 +144,7 @@ function SimplifiedSellerSection({
         <div className="flex items-center gap-3 bg-[#5A1E12]/5 border border-[#5A1E12]/10 rounded-xl px-3 md:px-4 py-2 md:py-3 mb-4">
           <Truck className="w-4 h-4 text-[#5A1E12] shrink-0" />
           <div className="min-w-0 flex-1">
-            <p className="text-xs text-[#5A1E12]/50 font-medium">Tracking Number</p>
+            <p className="text-xs text-[#5A1E12]/70 font-medium">Tracking Number</p>
             <p className="text-sm font-mono font-bold text-[#5A1E12] break-all">{sellerOrder.trackingNumber}</p>
           </div>
         </div>
@@ -169,8 +170,8 @@ function SimplifiedSellerSection({
                 />
               </div>
               <div className="flex-1 min-w-0 flex flex-col justify-center">
-                <p className="font-semibold text-sm text-[#5A1E12] truncate">{item.product?.title}</p>
-                <p className="text-xs text-[#5A1E12]/50 mt-0.5">
+                <p className="font-semibold text-sm text-[#5A1E12] break-words">{item.product?.title}</p>
+                <p className="text-xs text-[#5A1E12]/70 mt-0.5">
                   Qty {item.quantity} × ${parseFloat(item.price).toFixed(2)}
                   {(() => {
                     // Check multiple possible variant data structures
@@ -262,7 +263,7 @@ function TrackOrderContent() {
         const parsedOrder = JSON.parse(savedOrder);
         setOrder(parsedOrder);
       } catch (error) {
-        console.error("Failed to parse saved order data:", error);
+        devLogger.error("Failed to parse saved order data:", error);
         sessionStorage.removeItem("guestOrderData");
       }
     }
@@ -327,7 +328,7 @@ function TrackOrderContent() {
       // Validate the order data
       const validationIssues = validateOrderData(finalOrder);
       if (validationIssues.length > 0) {
-        console.warn('Order validation issues:', validationIssues);
+        devLogger.warn('Order validation issues:', validationIssues);
       }
       
       // Check if this is a multi-seller order
@@ -431,7 +432,7 @@ function TrackOrderContent() {
             });
           });
         });
-        console.table(productStatusMap);
+        devLogger.table(productStatusMap);
 
         
         // 🚨 ITEM MATCHING DEBUG
@@ -459,7 +460,7 @@ function TrackOrderContent() {
           });
         }
       }
-      console.groupEnd();
+      devLogger.groupEnd();
       
       // 🚨 FINAL DEBUG: Show exactly what we're setting as the order
             
@@ -467,7 +468,7 @@ function TrackOrderContent() {
       // Save to sessionStorage only on successful order fetch
       saveToSessionStorage(finalOrder, trimmedOrderId, trimmedEmail);
     } catch (error) {
-      console.error("❌ Error in handleTrack:", error);
+      devLogger.error("Error in handleTrack:", error);
       setErrorMsg("Something went wrong. Please try again.");
     } finally {
       setIsLoading(false);
@@ -549,35 +550,35 @@ function TrackOrderContent() {
             <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-[#ead7b7]/15 flex items-center justify-center">
               <Package className="w-4 h-4 md:w-5 md:h-5 text-[#ead7b7]" />
             </div>
-            <span className="text-[#ead7b7]/50 text-[10px] md:text-xs font-semibold uppercase tracking-widest">Order Tracker</span>
+            <span className="text-[#ead7b7]/80 text-xs font-semibold uppercase tracking-widest">Order Tracker</span>
           </div>
           <h1 className="text-2xl md:text-3xl font-bold text-white mt-3 leading-tight">Track Your<br/>Delivery</h1>
-          <p className="text-[#ead7b7]/60 text-sm mt-2">Enter your details below to see real-time status updates.</p>
+          <p className="text-[#ead7b7]/80 text-sm mt-2">Enter your details below to see real-time status updates.</p>
         </div>
 
         {/* Search form */}
         <div className="px-6 md:px-8 py-6 md:py-8 flex-1">
           <div className="space-y-4 md:space-y-5">
             <div>
-              <label className="block text-[10px] md:text-xs font-semibold uppercase tracking-widest text-[#ead7b7]/50 mb-2">Order ID</label>
+              <label className="block text-xs font-semibold uppercase tracking-widest text-[#ead7b7]/80 mb-2">Order ID</label>
               <input
                 type="text"
                 value={orderId}
                 onChange={(e) => setOrderId(e.target.value.toUpperCase())}
                 onKeyDown={(e) => e.key === "Enter" && handleTrack()}
                 placeholder="Enter your order ID"
-                className="w-full bg-white/10 border border-white/15 text-white placeholder:text-white/30 rounded-xl px-4 py-3 md:py-3.5 text-sm focus:outline-none focus:border-[#ead7b7]/50 focus:ring-1 focus:ring-[#ead7b7]/30 transition-all"
+                className="w-full bg-white/10 border border-white/15 text-white placeholder:text-[#ead7b7]/80 rounded-xl px-4 py-3 md:py-3.5 text-sm focus:outline-none focus:border-[#ead7b7]/50 focus:ring-1 focus:ring-[#ead7b7]/30 transition-all"
               />
             </div>
             <div>
-              <label className="block text-[10px] md:text-xs font-semibold uppercase tracking-widest text-[#ead7b7]/50 mb-2">Email Address</label>
+              <label className="block text-xs font-semibold uppercase tracking-widest text-[#ead7b7]/80 mb-2">Email Address</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleTrack()}
                 placeholder="jane@example.com"
-                className="w-full bg-white/10 border border-white/15 text-white placeholder:text-white/30 rounded-xl px-4 py-3 md:py-3.5 text-sm focus:outline-none focus:border-[#ead7b7]/50 focus:ring-1 focus:ring-[#ead7b7]/30 transition-all"
+                className="w-full bg-white/10 border border-white/15 text-white placeholder:text-[#ead7b7]/80 rounded-xl px-4 py-3 md:py-3.5 text-sm focus:outline-none focus:border-[#ead7b7]/50 focus:ring-1 focus:ring-[#ead7b7]/30 transition-all"
               />
             </div>
 
@@ -601,14 +602,14 @@ function TrackOrderContent() {
 
         {/* Bottom link */}
         <div className="px-6 md:px-8 pb-6 md:pb-8">
-          <Link href="/shop" className="text-xs text-[#ead7b7]/40 hover:text-[#ead7b7]/70 transition-colors">
+          <Link href="/shop" className="text-xs text-[#ead7b7]/80 hover:text-[#ead7b7] transition-colors">
             ← Continue Shopping
           </Link>
         </div>
       </aside>
 
       {/* ─── RIGHT PANEL ────────────────────────────────────────────── */}
-      <main className="flex-1 bg-[#FAF7F2] min-h-screen lg:min-h-0 lg:h-screen lg:overflow-y-auto">
+      <main className="flex-1 bg-[#FAF7F2] min-h-screen lg:min-h-0 lg:max-h-screen lg:overflow-y-auto">
 
         {/* Empty state */}
         {!order && !isLoading && (
@@ -617,7 +618,7 @@ function TrackOrderContent() {
               <Package className="w-7 h-7 md:w-9 md:h-9 text-[#5A1E12]/40" />
             </div>
             <h2 className="text-lg md:text-xl font-bold text-[#5A1E12] mb-2">No order loaded yet</h2>
-            <p className="text-sm text-[#5A1E12]/50 max-w-xs">Enter your Order ID and email on the left to see your delivery details here.</p>
+            <p className="text-sm text-[#5A1E12]/70 max-w-xs">Enter your Order ID and email on the left to see your delivery details here.</p>
           </div>
         )}
 
@@ -626,7 +627,7 @@ function TrackOrderContent() {
           <div className="min-h-screen lg:min-h-0 lg:h-full flex items-center justify-center px-6 md:px-8">
             <div className="text-center">
               <Loader2 className="w-8 h-8 md:w-10 md:h-10 animate-spin text-[#5A1E12]/40 mx-auto mb-4" />
-              <p className="text-sm text-[#5A1E12]/50">Fetching your order…</p>
+              <p className="text-sm text-[#5A1E12]/70">Fetching your order…</p>
             </div>
           </div>
         )}
@@ -643,14 +644,14 @@ function TrackOrderContent() {
                 </div>
                 <div>
                   <p className="text-sm font-bold text-red-700">Order Cancelled</p>
-                  <p className="text-xs text-red-500 mt-0.5">This order has been cancelled and will not be processed.</p>
+                  <p className="text-xs text-red-700 mt-0.5">This order has been cancelled and will not be processed.</p>
                 </div>
               </div>
             )}
 
             {/* Parent Order Progress - Same for both single and multi-seller */}
             <div className="bg-white rounded-2xl border border-[#5A1E12]/8 p-4 md:p-6 mb-6 md:mb-8">
-              <p className="text-xs font-semibold uppercase tracking-widest text-[#5A1E12]/40 mb-4 md:mb-6">Delivery Progress</p>
+              <p className="text-xs font-semibold uppercase tracking-widest text-[#5A1E12]/70 mb-4 md:mb-6">Delivery Progress</p>
               <div className="flex items-start">
                 {ORDER_STEPS.map((step, i) => {
                   const isCompleted = i <= currentStepIndex;
@@ -666,13 +667,13 @@ function TrackOrderContent() {
                         } ${isCurrent ? "ring-2 ring-[#5A1E12]/30 ring-offset-2 ring-offset-white" : ""}`}>
                           <StepIcon className={`w-3 h-3 md:w-4 md:h-4 ${isCompleted ? "text-[#ead7b7]" : "text-[#5A1E12]/30"}`} />
                         </div>
-                        <p className={`text-[10px] md:text-xs font-semibold text-center whitespace-nowrap px-1 ${
-                          isCurrent ? "text-[#5A1E12]" : isCompleted ? "text-[#5A1E12]/60" : "text-[#5A1E12]/25"
+                        <p className={`text-xs font-semibold text-center break-words px-1 ${
+                          isCurrent ? "text-[#5A1E12]" : isCompleted ? "text-[#5A1E12]/70" : "text-[#5A1E12]/70"
                         }`}>
                           {step.label}
                         </p>
                         {isCurrent && (
-                          <span className="text-[8px] md:text-[10px] text-[#5A1E12]/40 -mt-0.5 md:-mt-1">Now</span>
+                          <span className="text-xs text-[#5A1E12]/70 -mt-0.5 md:-mt-1">Now</span>
                         )}
                       </div>
                       {/* Connector line between steps */}
@@ -708,9 +709,9 @@ function TrackOrderContent() {
             {/* Page heading */}
             <div className="flex items-start justify-between mb-6 md:mb-8">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-widest text-[#5A1E12]/40 mb-1">Order Summary</p>
+                <p className="text-xs font-semibold uppercase tracking-widest text-[#5A1E12]/70 mb-1">Order Summary</p>
                 <h2 className="text-xl md:text-2xl font-bold text-[#5A1E12]">Hello, {order.customerName.split(" ")[0]} 👋</h2>
-                <p className="text-sm text-[#5A1E12]/50 mt-1">Here's the latest on your order.</p>
+                <p className="text-sm text-[#5A1E12]/70 mt-1">Here's the latest on your order.</p>
               </div>
               {order.status !== "DELIVERED" && order.status !== "CANCELLED" && (
                 order.status === "CONFIRMED" ? (
@@ -725,7 +726,7 @@ function TrackOrderContent() {
                   <button
                     disabled
                     title="Cancel order is only available when the order status is Confirmed."
-                    className="flex items-center gap-1.5 px-3 py-2 bg-gray-100 text-gray-400 font-semibold rounded-lg cursor-not-allowed text-xs shrink-0 mt-1"
+                    className="flex items-center gap-1.5 px-3 py-2 bg-gray-100 text-gray-600 font-semibold rounded-lg cursor-not-allowed text-xs shrink-0 mt-1"
                   >
                     <X className="w-3 h-3" />
                     Cancel Order
@@ -746,8 +747,8 @@ function TrackOrderContent() {
                   <div className="w-8 h-8 rounded-lg bg-[#5A1E12]/8 flex items-center justify-center mb-3">
                     <Icon className="w-4 h-4 text-[#5A1E12]" />
                   </div>
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-[#5A1E12]/40 mb-0.5">{label}</p>
-                  <p className="text-sm font-semibold text-[#5A1E12] truncate">{value}</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-[#5A1E12]/70 mb-0.5">{label}</p>
+                  <p className="text-sm font-semibold text-[#5A1E12] break-words">{value}</p>
                 </div>
               ))}
             </div>
@@ -757,7 +758,7 @@ function TrackOrderContent() {
               <div className="flex items-center gap-3 bg-[#5A1E12]/5 border border-[#5A1E12]/10 rounded-2xl px-4 md:px-5 py-3 md:py-4 mb-6 md:mb-8">
                 <Truck className="w-5 h-5 text-[#5A1E12] shrink-0" />
                 <div>
-                  <p className="text-xs text-[#5A1E12]/50 font-medium">Tracking Number</p>
+                  <p className="text-xs text-[#5A1E12]/70 font-medium">Tracking Number</p>
                   <p className="text-sm font-mono font-bold text-[#5A1E12] break-all">{order.trackingNumber}</p>
                 </div>
               </div>
@@ -818,9 +819,9 @@ function TrackOrderContent() {
                             />
                           </div>
                           <div className="flex-1 min-w-0 flex flex-col justify-center">
-                            <p className="font-semibold text-sm text-[#5A1E12] truncate">{item.product?.title}</p>
+                            <p className="font-semibold text-sm text-[#5A1E12] break-words">{item.product?.title}</p>
                             <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mt-0.5">
-                              <p className="text-xs text-[#5A1E12]/50">
+                              <p className="text-xs text-[#5A1E12]/70">
                                 Qty {item.quantity} × ${parseFloat(item.price).toFixed(2)}
                                 {(() => {
                                   // Check multiple possible variant data structures
@@ -890,7 +891,7 @@ function TrackOrderContent() {
                                     const statusConfig = ORDER_STATUS_MAPPING[(subOrder as any).status as keyof typeof ORDER_STATUS_MAPPING];
                                     return (
                                       <span 
-                                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[10px] font-medium border max-w-fit"
+                                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs font-medium border max-w-fit"
                                         style={{ 
                                           backgroundColor: `${statusConfig?.color || '#10b981'}15`, 
                                           color: statusConfig?.color || '#10b981',
@@ -900,7 +901,7 @@ function TrackOrderContent() {
                                       >
                                         <div className="w-1 h-1 rounded-full" style={{ backgroundColor: statusConfig?.color || '#10b981' }} />
                                         {statusConfig?.label || (subOrder as any).status}
-                                        <span className="text-[8px] opacity-70 ml-0.5 hidden sm:inline">({(subOrder as any).seller.name})</span>
+                                        <span className="text-xs opacity-90 ml-0.5 hidden sm:inline">({(subOrder as any).seller.name})</span>
                                         <span className="w-1 h-1 rounded-full bg-green-500 opacity-75 ml-0.5" title="Sub-order from API"></span>
                                       </span>
                                     );
@@ -962,7 +963,7 @@ function TrackOrderContent() {
                   <div>
                     <div className="mb-4">
                       <h4 className="text-sm font-bold text-[#5A1E12] mb-2 md:mb-3">Items by Seller</h4>
-                      <p className="text-xs text-[#5A1E12]/60 mb-3 md:mb-4">
+                      <p className="text-xs text-[#5A1E12]/70 mb-3 md:mb-4">
                         Each seller's delivery status affects the overall order progress. Status badges show real-time progress.
                       </p>
                     </div>
@@ -977,7 +978,7 @@ function TrackOrderContent() {
                   <div className="bg-white rounded-2xl border border-[#5A1E12]/8 p-4 md:p-6 text-center">
                     <Store className="w-10 h-10 md:w-12 md:h-12 mx-auto mb-3 text-[#5A1E12]/30" />
                     <h4 className="text-base md:text-lg font-bold text-[#5A1E12] mb-2">Seller Information Loading</h4>
-                    <p className="text-sm text-[#5A1E12]/60 mb-4">
+                    <p className="text-sm text-[#5A1E12]/70 mb-4">
                       This appears to be a multi-seller order, but detailed seller information is still being processed.
                     </p>
                     
@@ -997,8 +998,8 @@ function TrackOrderContent() {
                                 />
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="font-semibold text-sm text-[#5A1E12] truncate">{item.product?.title}</p>
-                                <p className="text-xs text-[#5A1E12]/50">
+                                <p className="font-semibold text-sm text-[#5A1E12] break-words">{item.product?.title}</p>
+                                <p className="text-xs text-[#5A1E12]/70">
                                   Qty {item.quantity} × ${parseFloat(item.price).toFixed(2)}
                                   {(() => {
                                     // Check multiple possible variant data structures
@@ -1091,7 +1092,7 @@ function TrackOrderContent() {
               </div>
               <button
                 onClick={() => { setShowCancelModal(false); setCancelReason(""); }}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
+                className="text-gray-600 hover:text-gray-700 transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1102,15 +1103,15 @@ function TrackOrderContent() {
               This action cannot be undone.
             </p>
             <div className="mb-5">
-              <label className="block text-xs font-semibold text-gray-500 mb-1.5">
-                Reason for Cancellation <span className="text-red-500">*</span>
+              <label className="block text-xs font-semibold text-gray-700 mb-1.5">
+                Reason for Cancellation <span className="text-red-700">*</span>
               </label>
               <textarea
                 value={cancelReason}
                 onChange={(e) => setCancelReason(e.target.value)}
                 placeholder="Please tell us why you're cancelling this order..."
                 rows={3}
-                className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-gray-400 focus:ring-2 focus:ring-gray-100 resize-none transition-all"
+                className="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm text-gray-800 placeholder:text-gray-600 focus:outline-none focus:border-gray-500 focus:ring-2 focus:ring-gray-100 resize-none transition-all"
               />
             </div>
             <div className="flex gap-3">
@@ -1123,7 +1124,7 @@ function TrackOrderContent() {
               <button
                 onClick={handleCancelOrder}
                 disabled={isCancelling || !cancelReason.trim()}
-                className="flex-1 py-2.5 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 text-sm"
+                className="flex-1 py-2.5 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 disabled:bg-gray-200 disabled:text-gray-600 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2 text-sm"
               >
                 {isCancelling ? <Loader2 className="w-4 h-4 animate-spin" /> : <X className="w-4 h-4" />}
                 {isCancelling ? "Cancelling…" : "Cancel Order"}

@@ -2,6 +2,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { devLogger } from "@/lib/logger";
 
 type User = {
   id: string;
@@ -40,7 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         try {
           return JSON.parse(storedUser);
         } catch (error) {
-          console.error("Error parsing stored user:", error);
+          devLogger.error("Error parsing stored user:", error);
           localStorage.removeItem("user");
         }
       }
@@ -61,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         setUser(JSON.parse(storedUser));
       } catch (error) {
-        console.error("Error parsing stored user:", error);
+        devLogger.error("Error parsing stored user:", error);
         localStorage.removeItem("user");
       }
     }
@@ -112,7 +113,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(userData);
       localStorage.setItem("user", JSON.stringify(userData));
     } catch (error) {
-      console.error("Error fetching user:", error);
+      devLogger.error("Error fetching user:", error);
       setUser(null);
     } finally {
       setLoading(false);
@@ -165,7 +166,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           },
         });
       } catch (error) {
-        console.error("Logout API error:", error);
+        devLogger.error("Logout API error:", error);
       }
     }
 

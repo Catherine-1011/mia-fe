@@ -29,6 +29,57 @@ html {
   scroll-behavior: smooth;
 }
 
+@layer utilities {
+  .text-gray-400 {
+    color: #4b5563 !important;
+  }
+
+  .text-gray-500 {
+    color: #4b5563 !important;
+  }
+
+  .text-red-400,
+  .text-red-500 {
+    color: #b91c1c !important;
+  }
+
+  .placeholder\:text-gray-400::placeholder {
+    color: #4b5563 !important;
+    opacity: 1;
+  }
+
+  .placeholder\:text-white\/30::placeholder {
+    color: rgb(234 215 183 / 0.8) !important;
+    opacity: 1;
+  }
+
+  [class~="text-[#5A1E12]/25"],
+  [class~="text-[#5A1E12]/30"],
+  [class~="text-[#5A1E12]/40"],
+  [class~="text-[#5A1E12]/50"],
+  [class~="text-[#5A1E12]/60"] {
+    color: rgb(90 30 18 / 0.72) !important;
+  }
+
+  [class~="text-[#ead7b7]/40"],
+  [class~="text-[#ead7b7]/50"],
+  [class~="text-[#ead7b7]/60"] {
+    color: rgb(234 215 183 / 0.82) !important;
+  }
+
+  [class~="text-white/50"],
+  [class~="text-white/60"] {
+    color: rgb(255 255 255 / 0.82) !important;
+  }
+
+  [class~="text-[8px]"],
+  [class~="text-[9px]"],
+  [class~="text-[10px]"] {
+    font-size: 0.75rem !important;
+    line-height: 1rem !important;
+  }
+}
+
 .macbook-auth-page {
   min-height: 100dvh;
   overflow-x: hidden;

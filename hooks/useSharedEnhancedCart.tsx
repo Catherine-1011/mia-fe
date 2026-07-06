@@ -3,6 +3,7 @@
 import { createContext, useContext, useCallback, useRef, useState } from 'react';
 import { useEnhancedCart } from './useEnhancedCart';
 import { guestCartUtils } from '@/lib/guestCartUtils';
+import { devLogger } from "@/lib/logger";
 
 type SharedCartContextType = ReturnType<typeof useEnhancedCart> & {
   subscribeToUpdates: (callback: () => void) => () => void;
@@ -37,7 +38,7 @@ export function EnhancedCartProvider({ children }: { children: React.ReactNode }
       try {
         callback();
       } catch (err) {
-        console.error('Error triggering cart update:', err);
+        devLogger.error('Error triggering cart update:', err);
       }
     });
   }, []);
@@ -67,7 +68,7 @@ export function EnhancedCartProvider({ children }: { children: React.ReactNode }
         category: ''
       }, 1, productData.variantId, productData.variantAttributes);
     } catch (e) {
-      console.error("Optimistic add failed", e);
+      devLogger.error("Optimistic add failed", e);
     }
 
     try {
@@ -114,7 +115,7 @@ export function EnhancedCartProvider({ children }: { children: React.ReactNode }
       triggerUpdate();
       
     } catch (error) {
-      console.error('Enhanced add to cart error:', error);
+      devLogger.error('Enhanced add to cart error:', error);
       // Revert optimistic update by force-fetching server state
       cartData.fetchCartData(true);
       throw error;
@@ -145,7 +146,7 @@ export function EnhancedCartProvider({ children }: { children: React.ReactNode }
           // Optimistic update already reflects the change — no full refetch needed
           triggerUpdate();
         } catch (error) {
-          console.error('Enhanced update quantity error:', error);
+          devLogger.error('Enhanced update quantity error:', error);
           // API failed — re-fetch server state to revert optimistic update
           cartData.fetchCartData(true);
         }
@@ -166,7 +167,7 @@ export function EnhancedCartProvider({ children }: { children: React.ReactNode }
       triggerUpdate();
       return result;
     } catch (error) {
-      console.error('Enhanced remove item error:', error);
+      devLogger.error('Enhanced remove item error:', error);
       // API failed — re-fetch server state to revert optimistic update
       cartData.fetchCartData(true);
       throw error;
@@ -184,7 +185,7 @@ export function EnhancedCartProvider({ children }: { children: React.ReactNode }
       
       return result;
     } catch (error) {
-      console.error('Enhanced fetch cart data error:', error);
+      devLogger.error('Enhanced fetch cart data error:', error);
       throw error;
     }
   }, [cartData.fetchCartData, triggerUpdate]);

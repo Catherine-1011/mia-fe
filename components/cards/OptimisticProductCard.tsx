@@ -13,6 +13,7 @@ import { useWishlistQuery } from "@/hooks/useWishlist";
 import { useAuth } from "@/context/AuthContext";
 import VariantPickerModal from "@/components/cards/VariantPickerModal";
 import { useSingleProduct } from "@/hooks/useSingleProduct";
+import { devLogger } from "@/lib/logger";
 
 // --- COLOR NAME MAP ---
 const COLOR_NAME_TO_HEX: Record<string, string> = {
@@ -247,7 +248,7 @@ export default function OptimisticProductCard({
       price: amount.toString(),
       images: [photo]
     }).catch((error) => {
-      console.error('Failed to add to cart:', error);
+      devLogger.error('Failed to add to cart:', error);
       // If it fails, we revert the UI changes silently or show a toast
       setOptimisticAdded(false);
     });
@@ -273,7 +274,7 @@ export default function OptimisticProductCard({
       variantId,
       variantAttributes,
     }).catch((error) => {
-      console.error('Failed to add variant to cart:', error);
+      devLogger.error('Failed to add variant to cart:', error);
     });
   };
 

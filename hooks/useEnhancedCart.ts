@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { guestCartUtils, getShippingMethods } from '@/lib/guestCartUtils';
+import { devLogger } from "@/lib/logger";
 
 // Custom event types dispatched by AuthContext
 declare global {
@@ -190,7 +191,7 @@ export function useEnhancedCart() {
               }
             }));
           } catch (e) {
-            console.error("Guest shipping calc failed:", e);
+            devLogger.error("Guest shipping calc failed:", e);
           }
         }
 
@@ -400,7 +401,7 @@ export function useEnhancedCart() {
           
           setCartData((prev) => prev ? { ...prev, shippingCalculations: calcMap } : prev);
         } catch (e) {
-          console.error("Failed to calculate shipping for methods:", e);
+          devLogger.error("Failed to calculate shipping for methods:", e);
         }
       } else if (data.cart.length === 0) {
         setCartData((prev) => prev ? { ...prev, shippingCalculations: {} } : prev);
@@ -409,7 +410,7 @@ export function useEnhancedCart() {
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to fetch cart data");
-      console.error("Error fetching cart data:", err);
+      devLogger.error("Error fetching cart data:", err);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -514,7 +515,7 @@ export function useEnhancedCart() {
       // Optimistic update already applied — no re-fetch on success.
       // The caller (useSharedEnhancedCart) will revert via fetchCartData on error.
     } catch (err) {
-      console.error("Error updating quantity:", err);
+      devLogger.error("Error updating quantity:", err);
       setError(err instanceof Error ? err.message : "Failed to update quantity");
       throw err; // propagate so caller can revert optimistic state
     }
@@ -543,7 +544,7 @@ export function useEnhancedCart() {
       if (!response.ok) throw new Error("Failed to remove item");
       // Optimistic update already applied — no re-fetch on success.
     } catch (err) {
-      console.error("Error removing item:", err);
+      devLogger.error("Error removing item:", err);
       setError(err instanceof Error ? err.message : "Failed to remove item");
       throw err; // propagate so caller can revert optimistic state
     }
@@ -659,7 +660,7 @@ export function useEnhancedCart() {
               });
             }
           } catch (e) {
-            console.error("Failed to fetch changed shipping calculation:", e);
+            devLogger.error("Failed to fetch changed shipping calculation:", e);
           } finally {
             setRefreshing(false);
           }

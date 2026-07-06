@@ -5,6 +5,7 @@ import Image from "next/image";
 import { X, ShoppingBag, Loader2, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSingleProduct } from "@/hooks/useSingleProduct";
+import { devLogger } from "@/lib/logger";
 
 interface VariantPickerModalProps {
   isOpen: boolean;
@@ -123,7 +124,7 @@ export default function VariantPickerModal({
 
     // 1. Fire the cart call immediately — no await, same optimistic pattern as product card
     onAddToCart(selectedVariant.id, selectedVariant.price || "0", selectedVariant.attributes).catch((e) => {
-      console.error("Failed to add variant to cart:", e);
+      devLogger.error("Failed to add variant to cart:", e);
     });
 
     // 2. Transition UI to success after short delay regardless of API response

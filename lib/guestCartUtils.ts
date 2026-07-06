@@ -1,5 +1,6 @@
 // Guest cart utilities for localStorage management
 import { CartItem, CartProduct, ShippingOption } from '@/hooks/useEnhancedCart';
+import { devLogger } from "@/lib/logger";
 
 const GUEST_CART_KEY = 'guest_cart_items';
 const GUEST_CART_METADATA_KEY = 'guest_cart_metadata';
@@ -68,7 +69,7 @@ export const getCheckoutOptions = async (): Promise<{
 
     return options;
   } catch (error) {
-    console.error('Error fetching checkout options:', error);
+    devLogger.error('Error fetching checkout options:', error);
     return null;
   }
 };
@@ -87,7 +88,7 @@ export const guestCartUtils = {
       const cart = localStorage.getItem(GUEST_CART_KEY);
       return cart ? JSON.parse(cart) : [];
     } catch (error) {
-      console.error('Error reading guest cart from localStorage:', error);
+      devLogger.error('Error reading guest cart from localStorage:', error);
       return [];
     }
   },
@@ -98,7 +99,7 @@ export const guestCartUtils = {
     try {
       localStorage.setItem(GUEST_CART_KEY, JSON.stringify(items));
     } catch (error) {
-      console.error('Error saving guest cart to localStorage:', error);
+      devLogger.error('Error saving guest cart to localStorage:', error);
     }
   },
 
@@ -215,7 +216,7 @@ export const guestCartUtils = {
       });
 
       if (!response.ok) {
-        console.error("Failed to calculate guest cart totals");
+        devLogger.error("Failed to calculate guest cart totals");
         return null;
       }
 
@@ -230,7 +231,7 @@ export const guestCartUtils = {
         gstPercentage: parseFloat(calculations.gstPercentage || 10),
       };
     } catch (error) {
-      console.error("Error calculating guest cart totals:", error);
+      devLogger.error("Error calculating guest cart totals:", error);
       return null;
     }
   },
@@ -261,6 +262,6 @@ export const syncGuestCartAfterLogin = async (token: string): Promise<void> => {
     // Clear local guest cart after successful sync
     guestCartUtils.clearGuestCart();
   } catch (error) {
-    console.error('Failed to sync guest cart after login:', error);
+    devLogger.error('Failed to sync guest cart after login:', error);
   }
 };

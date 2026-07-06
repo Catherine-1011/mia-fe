@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { notFound } from "next/navigation";
+import { devLogger } from "@/lib/logger";
 
 // Skeleton Components
 const SkeletonBox = ({ className }: { className: string }) => (
@@ -203,7 +204,7 @@ const transformApiDataToBlogPost = (apiPost: ApiBlogPost): BlogPost => {
       }
     });
   } else {
-    console.warn('⚠️ No content found or content is empty:', apiPost.content);
+    devLogger.warn('No content found or content is empty:', apiPost.content);
     // Add a fallback paragraph
     contentBlocks.push({
       type: "paragraph",
@@ -238,7 +239,7 @@ const extractBlogArray = (data: any): ApiBlogPost[] => {
   } else if (data && Array.isArray(data.blogs)) {
     return data.blogs;
   } else {
-    console.error('Unexpected API response format:', data);
+    devLogger.error('Unexpected API response format:', data);
     throw new Error('Invalid data format - expected array of blogs');
   }
 };
@@ -348,7 +349,7 @@ export default function BlogPostPage() {
         }
 
       } catch (err) {
-        console.error('Error fetching blog post:', err);
+        devLogger.error('Error fetching blog post:', err);
         setError(err instanceof Error ? err.message : 'Something went wrong');
       } finally {
         setLoading(false);

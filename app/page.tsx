@@ -1,6 +1,7 @@
 "use client";
 import React, { useRef, useState, useEffect } from "react";
 import Image from "next/image";
+import { devLogger } from "@/lib/logger";
 import { useProducts } from "@/hooks/useProducts";
 import OptimisticProductCard from "@/components/cards/OptimisticProductCard";
 import Link from "next/link";
@@ -106,7 +107,7 @@ const Page = () => {
 
         setBlogPosts(transformedPosts);
       } catch (error) {
-        console.error("Error fetching blogs:", error);
+        devLogger.error("Error fetching blogs:", error);
         setBlogsError(
           error instanceof Error ? error.message : "Failed to fetch blogs",
         );

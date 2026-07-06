@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode, useRef, useCallback } from "react";
 import { guestCartUtils } from "@/lib/guestCartUtils";
+import { devLogger } from "@/lib/logger";
 
 /* =======================
    TYPES
@@ -80,7 +81,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setCartItems(items);
       localStorage.setItem("cart", JSON.stringify(items));
     } catch (err) {
-      console.error("Fetch cart failed", err);
+      devLogger.error("Fetch cart failed", err);
     }
   };
 
@@ -144,10 +145,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
             }),
           });
           if (!response.ok) {
-            console.error("Failed to add item to cart:", response.statusText);
+            devLogger.error("Failed to add item to cart:", response.statusText);
           }
         } catch (error) {
-          console.error("Error adding to cart:", error);
+          devLogger.error("Error adding to cart:", error);
         }
       }, 2000); // 2 seconds debounce
     }
@@ -182,7 +183,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
               headers: { Authorization: `Bearer ${token}` },
             });
             if (!response.ok) {
-              console.error("Failed to remove item from cart:", response.statusText);
+              devLogger.error("Failed to remove item from cart:", response.statusText);
             }
           } else {
             const response = await fetch(`${baseUrl}/api/cart/update`, {
@@ -197,11 +198,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
               }),
             });
             if (!response.ok) {
-              console.error("Failed to update cart:", response.statusText);
+              devLogger.error("Failed to update cart:", response.statusText);
             }
           }
         } catch (error) {
-          console.error("Error updating cart:", error);
+          devLogger.error("Error updating cart:", error);
         }
       }, 2000); // 2 seconds debounce
     }
@@ -220,10 +221,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
         });
 
         if (!response.ok) {
-          console.error("Failed to remove item from cart:", response.statusText);
+          devLogger.error("Failed to remove item from cart:", response.statusText);
         }
       } catch (error) {
-        console.error("Error removing from cart:", error);
+        devLogger.error("Error removing from cart:", error);
       }
     }
   };
@@ -276,7 +277,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem("cart");
       setCartItems(items);
     } catch (err) {
-      console.error("notifyLogin cart fetch failed", err);
+      devLogger.error("notifyLogin cart fetch failed", err);
     }
   }, []);
 

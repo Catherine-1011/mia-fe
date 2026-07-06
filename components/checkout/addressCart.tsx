@@ -10,6 +10,7 @@ import ReactCountryFlag from "react-country-flag";
 import { getCountries, getCountryCallingCode } from "react-phone-number-input/input";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 import type { CountryCode } from "libphonenumber-js";
+import { devLogger } from "@/lib/logger";
 
 // Address interface matching API structure
 interface SavedAddress {
@@ -304,7 +305,7 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
       cachedCountries = data.data || [];
       setCountries(cachedCountries);
     } catch (error) {
-      console.error("[AddressCart] /location/countries failed:", error);
+      devLogger.error("[AddressCart] /location/countries failed:", error);
       toast.error("Failed to load countries. Please refresh the page.");
     }
   };
@@ -346,7 +347,7 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
         const data = await apiClient.get(`/location/countries/${iso2}/states`) as { data: State[] };
         setStates(data.data || []);
       } catch (error) {
-        console.error(`[AddressCart] /location/countries/${iso2}/states failed:`, error);
+        devLogger.error(`[AddressCart] /location/countries/${iso2}/states failed:`, error);
         toast.error("Failed to load states/provinces. Please try again.");
       }
     }
@@ -373,7 +374,7 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
       const data = await apiClient.get(`/location/countries/${selectedCountryCode}/states/${iso2}/cities`) as { data: City[] };
       setCities(data.data || []);
     } catch (error) {
-      console.error(`[AddressCart] /location/countries/${selectedCountryCode}/states/${iso2}/cities failed:`, error);
+      devLogger.error(`[AddressCart] /location/countries/${selectedCountryCode}/states/${iso2}/cities failed:`, error);
       toast.error("Failed to load cities. Please try again.");
     }
   };
@@ -525,7 +526,7 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
             const data = await apiClient.get(`/location/countries/${fallback.iso2}/states`) as { data: State[] };
             setStates(data.data || []);
           } catch (error) {
-            console.error(`[AddressCart] initial load /location/countries/${fallback.iso2}/states failed:`, error);
+            devLogger.error(`[AddressCart] initial load /location/countries/${fallback.iso2}/states failed:`, error);
           }
         };
         loadStates();
@@ -542,7 +543,7 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
           const data = await apiClient.get(`/location/countries/${selectedCountryCode}/states`) as { data: State[] };
           setStates(data.data || []);
         } catch (error) {
-          console.error(`[AddressCart] restore /location/countries/${selectedCountryCode}/states failed:`, error);
+          devLogger.error(`[AddressCart] restore /location/countries/${selectedCountryCode}/states failed:`, error);
         }
       };
       loadStates();
@@ -557,7 +558,7 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
           const data = await apiClient.get(`/location/countries/${selectedCountryCode}/states/${selectedStateCode}/cities`) as { data: City[] };
           setCities(data.data || []);
         } catch (error) {
-          console.error(`[AddressCart] restore /location/countries/${selectedCountryCode}/states/${selectedStateCode}/cities failed:`, error);
+          devLogger.error(`[AddressCart] restore /location/countries/${selectedCountryCode}/states/${selectedStateCode}/cities failed:`, error);
         }
       };
       loadCities();
@@ -609,7 +610,7 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
       setSavedAddresses(addressData);
     } catch (error) {
 
-      console.error('Error details:', {
+      devLogger.error('Error details:', {
         message: (error as any)?.message,
         status: (error as any)?.status,
         response: (error as any)?.response
@@ -724,7 +725,7 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
         }
       });
     } catch (error: any) {
-      console.error('Error saving address:', error);
+      devLogger.error('Error saving address:', error);
       
       // Check if it's a duplicate error from the backend
       const errorMessage = error?.response?.data?.message || error?.message || '';
@@ -805,11 +806,11 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
             const citiesResponse = await apiClient.get(`/location/countries/${matchingCountry.iso2}/states/${matchingState.iso2}/cities`) as { data: City[] };
             setCities(citiesResponse.data || []);
           } catch (error) {
-            console.error(`[AddressCart] saved address /location/countries/${matchingCountry.iso2}/states/${matchingState.iso2}/cities failed:`, error);
+            devLogger.error(`[AddressCart] saved address /location/countries/${matchingCountry.iso2}/states/${matchingState.iso2}/cities failed:`, error);
           }
         }
       } catch (error) {
-        console.error(`[AddressCart] saved address /location/countries/${matchingCountry.iso2}/states failed:`, error);
+        devLogger.error(`[AddressCart] saved address /location/countries/${matchingCountry.iso2}/states failed:`, error);
       }
     }
     
@@ -968,7 +969,7 @@ export default function AddressCart({ onAddressChange, onValidationChange, prese
           setFormData(prev => ({ ...prev, city: matchingCity?.name || place }));
         }
       } catch (error) {
-        console.error(`[AddressCart] autocomplete /location/countries/${selectedCountryCodeRef.current}/states/${stateObj?.iso2}/cities failed:`, error);
+        devLogger.error(`[AddressCart] autocomplete /location/countries/${selectedCountryCodeRef.current}/states/${stateObj?.iso2}/cities failed:`, error);
       }
     }, 200);
   };

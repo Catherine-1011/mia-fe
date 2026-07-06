@@ -1,5 +1,6 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react'
 import { X } from 'lucide-react'
+import { devLogger } from "@/lib/logger";
 
 interface SponsoredSection {
   id: string;
@@ -67,7 +68,7 @@ const Sponsored = () => {
           throw new Error('Invalid data format');
         }
       } catch (err) {
-        console.error('Error fetching sponsored sections:', err);
+        devLogger.error('Error fetching sponsored sections:', err);
         setError(err instanceof Error ? err.message : 'Something went wrong');
       } finally {
         setLoading(false);

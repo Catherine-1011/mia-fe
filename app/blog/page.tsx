@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { X } from "lucide-react";
+import { devLogger } from "@/lib/logger";
 
 // Skeleton Components
 const SkeletonBox = ({ className }: { className: string }) => (
@@ -424,7 +425,7 @@ export default function BlogPage() {
         } else if (data && Array.isArray(data.blogs)) {
           blogArray = data.blogs;
         } else {
-          console.error("Unexpected API response format:", data);
+          devLogger.error("Unexpected API response format:", data);
           throw new Error("Invalid data format - expected array of blogs");
         }
 
@@ -435,7 +436,7 @@ export default function BlogPage() {
           );
         setBlogPosts(transformedPosts);
       } catch (err) {
-        console.error("Error fetching blogs:", err);
+        devLogger.error("Error fetching blogs:", err);
         setError(err instanceof Error ? err.message : "Something went wrong");
       } finally {
         setLoading(false);

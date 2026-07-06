@@ -20,6 +20,7 @@ import { Loader2, Tag, X, ChevronDown } from "lucide-react";
 import { AppliedSellerCoupon } from "@/lib/api";
 import { useCartStock } from "@/hooks/useCartStock";
 import { getCountries } from "react-phone-number-input/input";
+import { devLogger } from "@/lib/logger";
 
 // Module-level country name list (built once, reused)
 const _rn = typeof Intl !== "undefined" && Intl.DisplayNames
@@ -172,7 +173,7 @@ export default function CheckOutPage() {
         setShippingState(guestData.shippingState || "");
         setShippingZipCode(guestData.shippingZipCode || "");
       } catch (error) {
-        console.error("Failed to load guest data:", error);
+        devLogger.error("Failed to load guest data:", error);
       }
     }
     if (savedPaymentMethod) {
@@ -534,7 +535,7 @@ export default function CheckOutPage() {
         toast.error(errorMessage);
       }
     } catch (error) {
-      console.error("Error placing order:", error);
+      devLogger.error("Error placing order:", error);
       toast.error("Something went wrong. Please try again.");
     } finally {
       setIsPlacingOrder(false);

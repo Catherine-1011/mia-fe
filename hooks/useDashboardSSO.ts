@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { devLogger } from "@/lib/logger";
 
 const API_BASE_URL = "https://backend.madeinarnhemland.com.au/api";
 const DASHBOARD_BASE_URL = "http://dashboard.madeinarnhemland.com.au";
@@ -49,7 +50,7 @@ export function useDashboardSSO() {
 
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
-        console.error("[SSO] FAILED at create-ticket:", res.status, errData);
+        devLogger.error("[SSO] FAILED at create-ticket:", res.status, errData);
         throw new Error(errData.message || `Server error: ${res.status}`);
       }
 
@@ -70,8 +71,8 @@ export function useDashboardSSO() {
 
       window.location.href = callbackUrl.toString();
     } catch (err) {
-      console.error("[SSO] FALLBACK triggered because of error:", err);
-      console.warn("[SSO] Sending user directly to dashboard (no SSO) — they will be asked to log in there.");
+      devLogger.error("[SSO] FALLBACK triggered because of error:", err);
+      devLogger.warn("[SSO] Sending user directly to dashboard (no SSO) — they will be asked to log in there.");
       window.location.href = `${DASHBOARD_BASE_URL}${redirectTo}`;
     } finally {
       setIsRedirecting(false);
