@@ -2106,6 +2106,9 @@ export default function ArtistOnboardingForm() {
                     <strong>{formData.email}</strong>. Enter it below to
                     complete your application.
                   </p>
+                  <p className="text-xs text-[#5A1E12]/60 mt-1.5">
+                    This code is valid for <strong>10 minutes</strong>.
+                  </p>
                 </div>
                 <div>
                   <div className="flex justify-between items-center mb-1.5">
