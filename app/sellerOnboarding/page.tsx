@@ -338,6 +338,8 @@ export default function ArtistOnboardingForm() {
   const [abnValidated, setAbnValidated] = useState(false);
   const [abnValidating, setAbnValidating] = useState(false);
   const [abnInfo, setAbnInfo] = useState<{ entityName: string; businessName: string; gst: string } | null>(null);
+  const [countdown, setCountdown] = useState(0);
+  const [isResendEnabled, setIsResendEnabled] = useState(false);
   const totalSteps = 6;
 
   const [formData, setFormData] = useState<FormData>({
@@ -506,6 +508,21 @@ export default function ArtistOnboardingForm() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentStep, token]);
+
+  useEffect(() => {
+    if (currentStep !== 5) return;
+    setCountdown(60);
+    setIsResendEnabled(false);
+  }, [currentStep]);
+
+  useEffect(() => {
+    if (currentStep !== 5) return;
+    if (countdown > 0) {
+      const timer = setTimeout(() => setCountdown((prev) => prev - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+    setIsResendEnabled(true);
+  }, [countdown, currentStep]);
 
   // ─── Inputs ───────────────────────────────────────────────────────────────
   const handleInputChange = (
@@ -1145,7 +1162,7 @@ export default function ArtistOnboardingForm() {
                       }).finally(() => setLoading(false));
                     }}
                     disabled={loading}
-                    className="w-full py-2 text-sm text-[#5A1E12] hover:underline disabled:opacity-50"
+                    className="w-full py-2 pl-4 text-sm text-[#5A1E12] hover:underline disabled:opacity-50"
                   >
                     Resend code
                   </button>
@@ -1456,24 +1473,33 @@ export default function ArtistOnboardingForm() {
   }
 
   const handleResendOTP = async () => {
-    if (!formData.sellerId) {
-      setError("submit", "Seller ID is missing");
+    const email = formData.email?.trim();
+
+    if (!email) {
+      setError("submit", "Email is missing");
       return;
     }
+
+    if (!isResendEnabled) return;
+
     setLoading(true);
+    setErrors((prev) => ({ ...prev, submit: "", otp: "" }));
     try {
       const res = await fetch(`${baseURL}/api/sellers/resend-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sellerId: formData.sellerId }),
+        body: JSON.stringify({ email }),
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
         setError("submit", d.message || "Failed to resend OTP");
         return;
       }
+      setFormData((prev) => ({ ...prev, otp: "" }));
       setErrors({});
       setSuccessMessage("One-time code resent to your email");
+      setCountdown(60);
+      setIsResendEnabled(false);
       setTimeout(() => setSuccessMessage(""), 3000);
     } catch {
       setError("submit", "An error occurred.");
@@ -2087,11 +2113,17 @@ export default function ArtistOnboardingForm() {
                     <button
                       type="button"
                       onClick={handleResendOTP}
-                      disabled={loading}
-                      className="text-sm font-semibold text-[#5A1E12] hover:text-[#5A1E12]/70 underline disabled:opacity-50"
+                      disabled={loading || !isResendEnabled}
+                      aria-disabled={loading || !isResendEnabled}
+                      className="text-sm font-semibold text-[#5A1E12] underline disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 enabled:hover:text-[#5A1E12]/70"
                     >
                       {loading ? "Sending…" : "Resend code"}
                     </button>
+                    {countdown > 0 && (
+                      <p className="text-xs text-[#5A1E12]/70">
+                        Resend code in {countdown}s
+                      </p>
+                    )}
                   </div>
                   <input
                     type="text"
