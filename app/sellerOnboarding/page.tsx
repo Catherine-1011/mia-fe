@@ -324,6 +324,9 @@ function PasswordField({
   );
 }
 
+const OTP_RECOVERY_MESSAGE =
+  "Your verification session has expired or could not be completed. Please go back, review your details, and submit again to receive a new code.";
+
 export default function ArtistOnboardingForm() {
   const [mode, setMode] = useState<Mode>("onboarding");
   const [currentStep, setCurrentStep] = useState(1);
@@ -382,6 +385,13 @@ export default function ArtistOnboardingForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [successMessage, setSuccessMessage] = useState("");
   const [logoError, setLogoError] = useState(false);
+
+  const goBackFromOtpStep = () => {
+    setFormData((prev) => ({ ...prev, otp: "" }));
+    setErrors({});
+    setSuccessMessage("");
+    setCurrentStep(4);
+  };
 
   // ─── Stripe Connect state ─────────────────────────────────────────────────
   const [stripeStatus, setStripeStatus] = useState<{
@@ -957,8 +967,8 @@ export default function ArtistOnboardingForm() {
         body: JSON.stringify({ email: formData.email, otp: formData.otp }),
       });
       if (!res.ok) {
-        const d = await res.json().catch(() => ({}));
-        setError("otp", d.message || "Invalid or expired one-time code");
+        await res.json().catch(() => ({}));
+        setError("otp", OTP_RECOVERY_MESSAGE);
         return;
       }
       const data = await res.json();
@@ -1014,6 +1024,10 @@ export default function ArtistOnboardingForm() {
   };
 
   const handlePrevious = () => {
+    if (currentStep === 5) {
+      goBackFromOtpStep();
+      return;
+    }
     setErrors({});
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
@@ -1492,7 +1506,12 @@ export default function ArtistOnboardingForm() {
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
-        setError("submit", d.message || "Failed to resend OTP");
+        setError(
+          "submit",
+          res.status === 404 || /pending registration/i.test(d.message || "")
+            ? OTP_RECOVERY_MESSAGE
+            : d.message || "Failed to resend OTP",
+        );
         return;
       }
       setFormData((prev) => ({ ...prev, otp: "" }));
@@ -2139,6 +2158,15 @@ export default function ArtistOnboardingForm() {
                   {errors.otp && (
                     <p className="mt-1 text-xs text-red-600">{errors.otp}</p>
                   )}
+                  {errors.otp === OTP_RECOVERY_MESSAGE && (
+                    <button
+                      type="button"
+                      onClick={goBackFromOtpStep}
+                      className="mt-2 text-sm font-semibold text-[#5A1E12] underline hover:text-[#5A1E12]/70"
+                    >
+                      Go back and resend code
+                    </button>
+                  )}
                 </div>
                 {successMessage && (
                   <div className="bg-green-50 border border-green-200 rounded-xl p-3">
@@ -2148,6 +2176,15 @@ export default function ArtistOnboardingForm() {
                 {errors.submit && (
                   <div className="bg-red-50 border border-red-200 rounded-xl p-3">
                     <p className="text-sm text-red-800">{errors.submit}</p>
+                    {errors.submit === OTP_RECOVERY_MESSAGE && (
+                      <button
+                        type="button"
+                        onClick={goBackFromOtpStep}
+                        className="mt-2 text-sm font-semibold text-[#5A1E12] underline hover:text-[#5A1E12]/70"
+                      >
+                        Go back and resend code
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
@@ -2431,10 +2468,8 @@ export default function ArtistOnboardingForm() {
             <div className="flex justify-between mt-8 pt-6 border-t border-[#5A1E12]/15">
               <button
                 onClick={handlePrevious}
-                disabled={
-                  currentStep === 1 || currentStep === 5 || currentStep === 6
-                }
-                className={`px-4 py-2.5 text-sm sm:px-6 sm:py-3 sm:text-base rounded-xl font-semibold transition-all shadow-sm border ${currentStep === 1 || currentStep === 5 || currentStep === 6 ? "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed" : "border-[#5A1E12]/30 bg-[#EAD7B7] text-[#5A1E12] hover:bg-[#5A1E12]/10"}`}
+                disabled={currentStep === 1 || currentStep === 6}
+                className={`px-4 py-2.5 text-sm sm:px-6 sm:py-3 sm:text-base rounded-xl font-semibold transition-all shadow-sm border ${currentStep === 1 || currentStep === 6 ? "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed" : "border-[#5A1E12]/30 bg-[#EAD7B7] text-[#5A1E12] hover:bg-[#5A1E12]/10"}`}
               >
                 Previous
               </button>
