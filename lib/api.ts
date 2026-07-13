@@ -143,7 +143,7 @@ export const authApi = {
 
 export const couponsApi = {
   getCoupons: (): Promise<Coupon[]> => {
-    return apiClient.get("/admin/coupons", false).then((data: any) => {
+    return apiClient.get("/admin/coupons/active", false).then((data: any) => {
       // Handle different response formats
       return Array.isArray(data) ? data : data.coupons || [];
     });
