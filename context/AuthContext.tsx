@@ -28,31 +28,10 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const queryClient = useQueryClient();
-  // Initialize token immediately from localStorage to avoid timing issues
-  const getStoredToken = () => {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("alpa_token");
-    }
-    return null;
-  };
-
-  const getStoredUser = () => {
-    if (typeof window !== "undefined") {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        try {
-          return JSON.parse(storedUser);
-        } catch (error) {
-          devLogger.error("Error parsing stored user:", error);
-          localStorage.removeItem("user");
-        }
-      }
-    }
-    return null;
-  };
-
-  const [user, setUser] = useState<User | null>(getStoredUser);
-  const [token, setToken] = useState<string | null>(getStoredToken);
+  // Keep the server and initial client render identical. Restore browser
+  // storage after hydration to avoid React hydration error #418.
+  const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   // Initialize from localStorage on mount (backup for SSR)
@@ -60,7 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const storedUser = localStorage.getItem("user");
     const storedToken = localStorage.getItem("alpa_token");
     
-    if (storedUser && !user) {
+    if (storedUser) {
       try {
         setUser(JSON.parse(storedUser));
       } catch (error) {
@@ -69,7 +48,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
     
-    if (storedToken && !token) {
+    if (storedToken) {
       setToken(storedToken);
     }
   }, []);

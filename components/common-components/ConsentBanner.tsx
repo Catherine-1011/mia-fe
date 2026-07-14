@@ -3,10 +3,9 @@
 //
 // Behaviour:
 //   - First visit (no 'ga_consent' value in localStorage): banner shows.
-//   - "Yes"  -> gtag consent update to granted + localStorage 'granted'.
-//   - "No"   -> localStorage 'denied' (gtag already defaults to denied;
-//               applyConsent still sends an explicit 'denied' update, which
-//               matters when a user REVOKES a previous 'granted' choice).
+//   - "Yes"  -> stores 'granted' and loads analytics.
+//   - "No"   -> stores 'denied'; analytics scripts stay unloaded. Revoking a
+//               previous grant also clears cookies and unloads active trackers.
 //   - No auto-close, no "X" button — the user must make an explicit choice.
 //   - Listens for the OPEN_CONSENT_BANNER_EVENT custom event so the footer
 //     "Privacy Preferences" link can re-open it at any time.
