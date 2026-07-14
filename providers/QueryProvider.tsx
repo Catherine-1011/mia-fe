@@ -2,7 +2,10 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
+import { couponQueryKeys, productQueryKeys, singleProductQueryKeys } from "@/lib/queryKeys";
+import { clearCheckoutOptionsCache } from "@/lib/guestCartUtils";
+import { CacheInvalidationPayload, getSocket } from "@/lib/socket";
 
 export default function QueryProvider({ children }: { children: ReactNode }) {
   const [queryClient] = useState(
@@ -36,6 +39,45 @@ export default function QueryProvider({ children }: { children: ReactNode }) {
         },
       })
   );
+
+  useEffect(() => {
+    const socket = getSocket();
+    let hasConnected = socket.connected;
+
+    const handleCacheInvalidation = ({ scope }: CacheInvalidationPayload) => {
+      if (scope === "products") {
+        void queryClient.invalidateQueries({ queryKey: productQueryKeys.products });
+        void queryClient.invalidateQueries({ queryKey: singleProductQueryKeys.all });
+      } else if (scope === "coupons") {
+        void queryClient.invalidateQueries({ queryKey: couponQueryKeys.coupons });
+      } else if (scope === "checkout") {
+        clearCheckoutOptionsCache();
+      }
+    };
+
+    const handleReconnect = () => {
+      if (!hasConnected) {
+        hasConnected = true;
+        return;
+      }
+
+      // Socket events are transient. Refresh only public cached data after a
+      // real reconnect so changes made while offline cannot remain hidden.
+      void queryClient.invalidateQueries({ queryKey: productQueryKeys.products });
+      void queryClient.invalidateQueries({ queryKey: singleProductQueryKeys.all });
+      void queryClient.invalidateQueries({ queryKey: couponQueryKeys.coupons });
+      clearCheckoutOptionsCache();
+    };
+
+    socket.on("cache:invalidate", handleCacheInvalidation);
+    socket.on("connect", handleReconnect);
+    if (!socket.connected) socket.connect();
+
+    return () => {
+      socket.off("cache:invalidate", handleCacheInvalidation);
+      socket.off("connect", handleReconnect);
+    };
+  }, [queryClient]);
 
   return (
     <QueryClientProvider client={queryClient}>

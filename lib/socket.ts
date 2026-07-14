@@ -14,6 +14,7 @@ interface ServerToClientEvents {
     isAvailable: boolean;
     timestamp?: string;
   }) => void;
+  "cache:invalidate": (data: CacheInvalidationPayload) => void;
 }
 
 // ClientToServerEvents shape
@@ -85,5 +86,10 @@ export type StockUpdatePayload = {
   productId: string;
   stock: number;
   isAvailable: boolean;
+  timestamp?: string;
+};
+
+export type CacheInvalidationPayload = {
+  scope: "products" | "blogs" | "coupons" | "checkout";
   timestamp?: string;
 };

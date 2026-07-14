@@ -39,7 +39,7 @@ export interface SeoBlogPost {
 export async function getAllProductsForSeo(): Promise<SeoProduct[]> {
   try {
     const res = await fetch(`${API_BASE_URL}/products/all`, {
-      next: { revalidate: 3600 },
+      next: { revalidate: 3600, tags: ["products"] },
     });
     if (!res.ok) return [];
     const data = await res.json();
@@ -73,7 +73,7 @@ export async function getProductBySlug(
     if (!match) return null;
 
     const res = await fetch(`${API_BASE_URL}/products/${match.id}`, {
-      next: { revalidate: 3600 },
+      next: { revalidate: 3600, tags: ["products"] },
     });
     if (!res.ok) return match;
     const data = await res.json();
@@ -91,7 +91,7 @@ export async function getProductBySlug(
 export async function getAllBlogPostsForSeo(): Promise<SeoBlogPost[]> {
   try {
     const res = await fetch(`${API_BASE_URL}/blogs`, {
-      next: { revalidate: 3600 },
+      next: { revalidate: 3600, tags: ["blogs"] },
     });
     if (!res.ok) return [];
     const data = await res.json();
@@ -113,7 +113,7 @@ export async function getBlogPostBySlug(
     if (!match) return null;
 
     const res = await fetch(`${API_BASE_URL}/blogs/${match.id}`, {
-      next: { revalidate: 3600 },
+      next: { revalidate: 3600, tags: ["blogs"] },
     });
     if (!res.ok) return match;
     const data = await res.json();

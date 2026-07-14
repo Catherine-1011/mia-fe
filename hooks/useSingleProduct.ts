@@ -3,6 +3,9 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
+import { singleProductQueryKeys } from "@/lib/queryKeys";
+
+export { singleProductQueryKeys } from "@/lib/queryKeys";
 
 export interface VariantAttributeValue {
   value: string;
@@ -69,11 +72,6 @@ interface ProductResponse {
   success: boolean;
   product: SingleProduct;
 }
-
-export const singleProductQueryKeys = {
-  all: ["product"] as const,
-  detail: (id: string) => [...singleProductQueryKeys.all, id] as const,
-};
 
 export function useSingleProduct(productId: string | undefined) {
   return useQuery({

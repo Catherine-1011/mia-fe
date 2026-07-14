@@ -1,11 +1,12 @@
 // Guest cart utilities for localStorage management
-import { CartItem, CartProduct, ShippingOption } from '@/hooks/useEnhancedCart';
+import type { CartProduct, ShippingOption } from '@/hooks/useEnhancedCart';
 import { devLogger } from "@/lib/logger";
 
 const GUEST_CART_KEY = 'guest_cart_items';
 const GUEST_CART_METADATA_KEY = 'guest_cart_metadata';
 const SHIPPING_METHODS_CACHE_KEY = 'shipping_methods_cache';
 const CHECKOUT_OPTIONS_CACHE_KEY = 'checkout_options_cache';
+const CHECKOUT_OPTIONS_CACHE_TTL_MS = 15 * 60 * 1000;
 
 export interface GuestCartItem {
   productId: string;
@@ -26,20 +27,65 @@ export interface GSTOption {
   isDefault?: boolean;
 }
 
-// Fetch checkout options (shipping + GST) from backend - single unified call
-export const getCheckoutOptions = async (): Promise<{
+interface CheckoutOptions {
   shipping: ShippingOption[];
   gstOptions: GSTOption[];
   defaultGST: GSTOption | null;
-} | null> => {
+}
+
+interface CheckoutOptionsCacheEntry {
+  options: CheckoutOptions;
+  timestamp: number;
+}
+
+const isCheckoutOptionsCacheEntry = (value: unknown): value is CheckoutOptionsCacheEntry => {
+  if (!value || typeof value !== 'object') return false;
+
+  const entry = value as Partial<CheckoutOptionsCacheEntry>;
+  const options = entry.options as Partial<CheckoutOptions> | undefined;
+
+  return (
+    typeof entry.timestamp === 'number' &&
+    Number.isFinite(entry.timestamp) &&
+    !!options &&
+    Array.isArray(options.shipping) &&
+    Array.isArray(options.gstOptions) &&
+    (options.defaultGST === null || typeof options.defaultGST === 'object')
+  );
+};
+
+export const clearCheckoutOptionsCache = (): void => {
+  if (typeof window === 'undefined') return;
   try {
-    // Check if we have cached checkout options (valid for 1 hour)
+    localStorage.removeItem(CHECKOUT_OPTIONS_CACHE_KEY);
+  } catch (error) {
+    devLogger.warn('Unable to clear checkout options cache:', error);
+  }
+};
+
+// Fetch checkout options (shipping + GST) from backend - single unified call
+export const getCheckoutOptions = async (): Promise<CheckoutOptions | null> => {
+  try {
+    // Checkout configuration changes more often than cart contents, so use a
+    // short-lived cache and discard malformed/expired entries immediately.
     const cached = localStorage.getItem(CHECKOUT_OPTIONS_CACHE_KEY);
     if (cached) {
-      const { options, timestamp } = JSON.parse(cached);
-      if (Date.now() - timestamp < 3600000) { // 1 hour cache
-        return options;
+      try {
+        const entry: unknown = JSON.parse(cached);
+        const cacheAge = isCheckoutOptionsCacheEntry(entry)
+          ? Date.now() - entry.timestamp
+          : -1;
+        if (
+          isCheckoutOptionsCacheEntry(entry) &&
+          cacheAge >= 0 &&
+          cacheAge < CHECKOUT_OPTIONS_CACHE_TTL_MS
+        ) {
+          return entry.options;
+        }
+      } catch {
+        // The entry is removed below and replaced after a successful request.
       }
+      clearCheckoutOptionsCache();
     }
 
     // Fetch from backend - GET /api/cart/checkout-options

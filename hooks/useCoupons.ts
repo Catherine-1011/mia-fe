@@ -3,10 +3,9 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { couponsApi } from "@/lib/api";
+import { couponQueryKeys } from "@/lib/queryKeys";
 
-export const couponQueryKeys = {
-  coupons: ["coupons"] as const,
-};
+export { couponQueryKeys } from "@/lib/queryKeys";
 
 export function useCoupons() {
   return useQuery({

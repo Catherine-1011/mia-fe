@@ -4,6 +4,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api";
 import { devLogger } from "@/lib/logger";
+import { productQueryKeys } from "@/lib/queryKeys";
+
+export { productQueryKeys } from "@/lib/queryKeys";
 
 export interface Product {
   id: string;
@@ -38,11 +41,6 @@ export interface Product {
   productType?: string;
   type?: string;
 }
-
-export const productQueryKeys = {
-  products: ["products"] as const,
-  allProducts: ["products", "all"] as const,
-};
 
 export function useProducts() {
   return useQuery({

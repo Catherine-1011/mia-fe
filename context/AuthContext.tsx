@@ -2,6 +2,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { devLogger } from "@/lib/logger";
 
 type User = {
@@ -26,6 +27,7 @@ type AuthContextType = {
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const queryClient = useQueryClient();
   // Initialize token immediately from localStorage to avoid timing issues
   const getStoredToken = () => {
     if (typeof window !== "undefined") {
@@ -183,7 +185,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // 3. Notify CartContext to clear guest state (same-tab)
     window.dispatchEvent(new CustomEvent("alpa-logout"));
 
-    // 4. Redirect to Dashboard's /logout-callback, which will clear its own
+    // 4. Remove all in-memory query data before leaving the current account.
+    // This is intentionally logout-only; normal mutations use targeted updates.
+    queryClient.clear();
+
+    // 5. Redirect to Dashboard's /logout-callback, which will clear its own
     //    session and then redirect the user back to the main site.
     if (typeof window !== "undefined") {
       window.location.href =
