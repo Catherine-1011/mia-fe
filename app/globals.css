@@ -539,34 +539,6 @@ html {
     gap: 0.75rem !important;
   }
 
-  .macbook-nav-shell {
-    top: 16px !important;
-    padding-left: 32px !important;
-    padding-right: 32px !important;
-  }
-
-  .macbook-nav-inner {
-    padding: 6px 28px !important;
-  }
-
-  .macbook-nav-logo {
-    width: clamp(3rem, 4vw, 3.6rem) !important;
-  }
-
-  .macbook-nav-links {
-    gap: clamp(1rem, 1.6vw, 1.35rem) !important;
-  }
-
-  .macbook-nav-link {
-    font-size: clamp(0.875rem, 1vw, 0.95rem) !important;
-    padding-left: 0.35rem !important;
-    padding-right: 0.35rem !important;
-  }
-
-  .macbook-nav-actions {
-    gap: 0.25rem !important;
-  }
-
   .macbook-auth-page {
     min-height: 100dvh !important;
     overflow-y: auto !important;
@@ -683,47 +655,6 @@ html {
     padding-top: 0.6rem !important;
     padding-bottom: 0.6rem !important;
     font-size: 0.8rem !important;
-  }
-
-  /* Compact navbar */
-  .macbook-nav-shell {
-    top: 12px !important;
-    padding-left: 36px !important;
-    padding-right: 36px !important;
-  }
-
-  .macbook-nav-inner {
-    padding-top: 4px !important;
-    padding-bottom: 4px !important;
-    padding-left: 24px !important;
-    padding-right: 24px !important;
-  }
-
-  .macbook-nav-logo {
-    width: 2.5rem !important;
-  }
-
-  .macbook-nav-links {
-    gap: 0.875rem !important;
-  }
-
-  .macbook-nav-link {
-    font-size: 0.8rem !important;
-    padding-top: 0.15rem !important;
-    padding-bottom: 0.15rem !important;
-  }
-
-  .macbook-nav-actions {
-    gap: 0.15rem !important;
-  }
-
-  .macbook-nav-actions button {
-    padding: 0.3rem !important;
-  }
-
-  .macbook-nav-actions svg {
-    width: 1.1rem !important;
-    height: 1.1rem !important;
   }
 
   /* Compact auth pages (login) */
