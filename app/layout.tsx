@@ -12,6 +12,8 @@ import { StickyLeftCouponDrawer } from "@/components/common-components/StickyLef
 import ToastProvider from "@/providers/ToastProvider";
 import ScrollToTop from "@/components/common-components/ScrollToTop";
 import { OrganizationSchema } from "@/components/seo/OrganizationSchema";
+import GoogleAnalytics from "@/components/common-components/GoogleAnalytics";
+import ConsentBanner from "@/components/common-components/ConsentBanner";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://madeinarnhemland.com.au"),
@@ -43,6 +45,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        {/* GA4 with Consent Mode v2 — consent defaults to denied until the
+            user accepts via the ConsentBanner rendered in <body>. */}
+        <GoogleAnalytics />
         <Script id="inspectlet" strategy="afterInteractive">
           {`
             window.__insp = window.__insp || [];
@@ -77,6 +82,7 @@ export default function RootLayout({
                 {children}
                 <FooterWrapper />
                 <ScrollToTop />
+                <ConsentBanner />
               </AuthProvider>
             </EnhancedCartProvider>
           </CartProvider>

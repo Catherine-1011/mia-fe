@@ -388,6 +388,7 @@ import { X, Loader2, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { openConsentBanner } from "@/lib/consent";
 
 const API = "https://backend.madeinarnhemland.com.au/api";
 
@@ -614,6 +615,15 @@ export default function
             <Link href="/cookie-policy" className={linkClass("/cookie-policy")}>
               Cookie Policy
             </Link>
+            {/* Re-opens the GA consent banner so users can change their
+                earlier analytics consent choice at any time. */}
+            <button
+              type="button"
+              onClick={openConsentBanner}
+              className="mb-2 text-left text-white/80 hover:text-[#A48068] transition-colors"
+            >
+              Privacy Preferences
+            </button>
           </div>
         </div>
 
