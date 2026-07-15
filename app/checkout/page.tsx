@@ -37,7 +37,7 @@ const SUMMARY_COUNTRIES: string[] = (() => {
 })();
 
 const stripePromise = loadStripe(
-  "pk_test_51SzBiiFXXR0MHwRIutvfNBi6ADMB8qZ5UNXswOwLzlIOgLfy1qVuTciKWGaBtWyJrDBkkZVVclg477Wv8KuEGdp800PKT4ny3K"
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
 
 export default function CheckOutPage() {
