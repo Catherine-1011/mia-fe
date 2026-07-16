@@ -1390,7 +1390,4 @@ export default function GuestCheckoutForm() {
     </div>
   );
 }
-function setCouponCode(arg0: string) {
-  throw new Error("Function not implemented.");
-}
 
