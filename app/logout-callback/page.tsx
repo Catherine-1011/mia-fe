@@ -85,7 +85,8 @@ function LogoutCallbackContent() {
   }
 
   if (window.parent !== window) {
-    window.parent.postMessage("alpa-logout-done", "http://dashboard.madeinarnhemland.com.au");
+    const dashboardOrigin = new URL("https://dashboard.madeinarnhemland.com.au").origin;
+    window.parent.postMessage("alpa-logout-done", dashboardOrigin);
     return;
   }
 

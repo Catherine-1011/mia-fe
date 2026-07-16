@@ -172,7 +172,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     //    session and then redirect the user back to the main site.
     if (typeof window !== "undefined") {
       window.location.href =
-        "http://dashboard.madeinarnhemland.com.au/logout-callback?redirect=" +
+        "https://dashboard.madeinarnhemland.com.au/logout-callback?redirect=" +
         encodeURIComponent("https://madeinarnhemland.com.au");
     }
   };

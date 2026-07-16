@@ -5,7 +5,7 @@ import { useState, useCallback } from "react";
 import { devLogger } from "@/lib/logger";
 
 const API_BASE_URL = "https://backend.madeinarnhemland.com.au/api";
-const DASHBOARD_BASE_URL = "http://dashboard.madeinarnhemland.com.au";
+const DASHBOARD_BASE_URL = "https://dashboard.madeinarnhemland.com.au";
 
 /**
  * SSO handshake hook — creates a one-time ticket on the backend and

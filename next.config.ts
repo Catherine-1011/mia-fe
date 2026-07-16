@@ -31,11 +31,11 @@ const nextConfig: NextConfig = {
           {
             key: "Content-Security-Policy",
             value:
-              "frame-ancestors 'self' http://dashboard.madeinarnhemland.com.au",
+              "frame-ancestors 'self' https://dashboard.madeinarnhemland.com.au",
           },
           {
             key: "X-Frame-Options",
-            value: "ALLOW-FROM http://dashboard.madeinarnhemland.com.au",
+            value: "ALLOW-FROM https://dashboard.madeinarnhemland.com.au",
           },
         ],
       },
