@@ -741,7 +741,9 @@ export default function GuestCheckoutForm() {
           country,
           zipCode: zipCode.trim(),
         },
-        shippingMethodId: selectedShipping!.id,
+        ...(isInternationalOrder
+          ? { internationalCountry: cartSelectedCountry }
+          : { shippingMethodId: selectedShipping?.id }),
         country,
         city:         city.trim(),
         state:        state.trim(),
