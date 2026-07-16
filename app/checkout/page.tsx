@@ -36,9 +36,9 @@ const SUMMARY_COUNTRIES: string[] = (() => {
   return ["Australia", ...names];
 })();
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-);
+const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+  ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
+  : null;
 
 export default function CheckOutPage() {
   const router = useRouter();

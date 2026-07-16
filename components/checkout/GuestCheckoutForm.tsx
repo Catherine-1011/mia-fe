@@ -148,9 +148,9 @@ function validatePhone(digits: string, country: Country): string | null {
 
 // Countries that don't use postal codes (postcode field will be optional for these)
 
-const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
-);
+const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+  ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
+  : null;
 
 interface OrderSummary {
   subtotal: string;
