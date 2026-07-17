@@ -58,7 +58,7 @@ export default function Page() {
           </ul>
         </aside>
 
-        {/* MAIN CONTENT  OF*/}
+        {/* MAIN CONTENT*/}
         <main className="flex-1 max-w-screen-2xl mx-auto">
 
           <h1 className="text-3xl font-bold mb-4">Welcome to our Privacy Policy</h1>
