@@ -36,9 +36,9 @@ const SUMMARY_COUNTRIES: string[] = (() => {
   return ["Australia", ...names];
 })();
 
-const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-  ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
-  : null;
+// stripePromise is created dynamically after the PaymentIntent is created so it
+// can be scoped to the seller's connected account (Direct Charges) or to the
+// platform account (multi-seller). It is NOT created at module level.
 
 export default function CheckOutPage() {
   const router = useRouter();
@@ -72,6 +72,8 @@ export default function CheckOutPage() {
   const [stripeAmount, setStripeAmount] = useState(0);
   const [stripeCurrency, setStripeCurrency] = useState("aud");
   const [isCreatingIntent, setIsCreatingIntent] = useState(false);
+  // Stripe.js promise scoped per-intent (null until create-intent returns)
+  const [stripePromise, setStripePromise] = useState<ReturnType<typeof loadStripe> | null>(null);
 
   const { cartData, selectedShipping, calculateTotals, updateQuantity, triggerUpdate, clearCart: clearSharedCart } =
     useSharedEnhancedCart();
@@ -357,6 +359,16 @@ export default function CheckOutPage() {
       setPaymentIntentId(data.paymentIntentId);
       setStripeAmount(data.amount);
       setStripeCurrency(data.currency || "aud");
+      // Create Stripe.js instance scoped to the seller's connected account for
+      // Direct Charges, or to the platform account for multi-seller orders.
+      setStripePromise(
+        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+          ? loadStripe(
+              process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+              data.stripeAccountId ? { stripeAccount: data.stripeAccountId } : undefined,
+            )
+          : null
+      );
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to initiate payment.");
     } finally {

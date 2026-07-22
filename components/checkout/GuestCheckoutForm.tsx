@@ -148,9 +148,9 @@ function validatePhone(digits: string, country: Country): string | null {
 
 // Countries that don't use postal codes (postcode field will be optional for these)
 
-const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-  ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
-  : null;
+// stripePromise is created dynamically after the PaymentIntent is created so it
+// can be scoped to the seller's connected account (Direct Charges) or to the
+// platform account (multi-seller). It is NOT created at module level.
 
 interface OrderSummary {
   subtotal: string;
@@ -409,6 +409,8 @@ export default function GuestCheckoutForm() {
   const [confirmedOrderId,      setConfirmedOrderId]      = useState("");
   const [confirmedOrderSummary, setConfirmedOrderSummary] = useState<OrderSummary | null>(null);
   const [isCreatingIntent,      setIsCreatingIntent]      = useState(false);
+  // Stripe.js promise scoped per-intent (null until create-intent returns)
+  const [stripePromise, setStripePromise] = useState<ReturnType<typeof loadStripe> | null>(null);
 
   // ── Field errors ──────────────────────────────────────────────────────────
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -779,6 +781,16 @@ export default function GuestCheckoutForm() {
       setStripeCurrency(data.currency || "aud");
       setConfirmedOrderId(data.orderId);
       setConfirmedOrderSummary(data.orderSummary);
+      // Create Stripe.js instance scoped to the seller's connected account for
+      // Direct Charges, or to the platform account for multi-seller orders.
+      setStripePromise(
+        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+          ? loadStripe(
+              process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+              data.stripeAccountId ? { stripeAccount: data.stripeAccountId } : undefined,
+            )
+          : null
+      );
       
       // Validation: Check if backend returned proper totals
       const backendTotal = parseFloat(data.orderSummary?.grandTotal || "0");
