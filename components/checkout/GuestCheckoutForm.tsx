@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -11,12 +11,13 @@ import ReactCountryFlag from "react-country-flag";
 import { useSharedEnhancedCart } from "@/hooks/useSharedEnhancedCart";
 import { sellerCouponsApi, AppliedSellerCoupon } from "@/lib/api";
 import { guestCartUtils } from "@/lib/guestCartUtils";
-import GuestStripePaymentForm from "@/components/checkout/GuestStripePaymentForm";
+import StripePaymentForm from "@/components/checkout/StripePaymentForm";
 import Link from "next/link";
 import { apiClient } from "@/lib/api";
 import { getCountries, getCountryCallingCode } from "react-phone-number-input/input";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 import type { CountryCode } from "libphonenumber-js";
+import { devLogger } from "@/lib/logger";
 
 interface MapboxFeature {
   id: string;
@@ -87,6 +88,7 @@ const COUNTRIES = auIndex !== -1
   : COUNTRIES_RAW;
 
 type Country = typeof COUNTRIES[number];
+type LocationListResponse<T> = { data?: T[] };
 
 function FlagImage({ code, name }: { code: string; name: string }) {
   return (
@@ -123,16 +125,16 @@ function validatePhone(digits: string, country: Country): string | null {
 
   try {
     // 1. Try with original string (preserves any leading + for international format e.g. +971501234567)
-    let parsed = parsePhoneNumberFromString(digits.trim(), country.code as any);
+    let parsed = parsePhoneNumberFromString(digits.trim(), country.code as CountryCode);
     if (parsed?.isValid()) return null;
 
     // 2. Try cleaned digits as national number
-    parsed = parsePhoneNumberFromString(cleaned, country.code as any);
+    parsed = parsePhoneNumberFromString(cleaned, country.code as CountryCode);
     if (parsed?.isValid()) return null;
 
     // 3. Try prepending '0' — catches users who omit the leading area-code zero
     if (!cleaned.startsWith('0')) {
-      parsed = parsePhoneNumberFromString('0' + cleaned, country.code as any);
+      parsed = parsePhoneNumberFromString('0' + cleaned, country.code as CountryCode);
       if (parsed?.isValid()) return null;
     }
 
@@ -162,6 +164,74 @@ interface OrderSummary {
   originalTotal?: string;
   couponCode?: string;
   discountAmount?: string;
+}
+
+type SellerPaymentStatus = "pending" | "active" | "processing" | "paid" | "failed";
+
+interface SellerPayment {
+  sellerId: string;
+  stripeAccountId: string;
+  clientSecret: string;
+  paymentIntentId: string;
+  amount: number;
+  currency: string;
+  status: SellerPaymentStatus;
+  sellerName?: string;
+  error?: string;
+}
+
+interface CheckoutPaymentResponse {
+  sellerId?: string;
+  stripeAccountId?: string;
+  clientSecret?: string;
+  paymentIntentId?: string;
+  amount?: number;
+  currency?: string;
+  sellerName?: string;
+  status?: SellerPaymentStatus;
+  error?: string;
+}
+
+interface CheckoutIntentResponse extends CheckoutPaymentResponse {
+  success?: boolean;
+  message?: string;
+  error?: string;
+  orderId?: string;
+  displayId?: string;
+  orderSummary?: OrderSummary;
+  payments?: CheckoutPaymentResponse[];
+}
+
+const GUEST_PAYMENTS_KEY = "guestSellerPayments";
+const GUEST_ACTIVE_PAYMENT_INDEX_KEY = "guestActivePaymentIndex";
+
+function normalizeCheckoutPayments(data: CheckoutIntentResponse): SellerPayment[] {
+  const payments = Array.isArray(data?.payments) && data.payments.length > 0
+    ? data.payments
+    : data?.clientSecret && data?.paymentIntentId && data?.stripeAccountId
+      ? [{
+          sellerId: data.sellerId || "seller",
+          stripeAccountId: data.stripeAccountId,
+          clientSecret: data.clientSecret,
+          paymentIntentId: data.paymentIntentId,
+          amount: data.amount,
+          currency: data.currency,
+        }]
+      : [];
+
+  return payments.map((payment, index: number): SellerPayment => ({
+    sellerId: String(payment.sellerId || `seller_${index + 1}`),
+    stripeAccountId: String(payment.stripeAccountId || ""),
+    clientSecret: String(payment.clientSecret || ""),
+    paymentIntentId: String(payment.paymentIntentId || ""),
+    amount: Number(payment.amount || data?.amount || 0),
+    currency: String(payment.currency || data?.currency || "aud"),
+    status: payment.status || (index === 0 ? "active" : "pending"),
+    sellerName: payment.sellerName,
+    error: payment.error,
+  })).filter((payment) =>
+    Boolean(payment.stripeAccountId && payment.clientSecret && payment.paymentIntentId)
+  );
 }
 
 export default function GuestCheckoutForm() {
@@ -368,12 +438,16 @@ export default function GuestCheckoutForm() {
       // Re-fetch states & cities so the dropdowns are usable again
       if (d.selectedCountryIso) {
         apiClient.get(`/location/countries/${d.selectedCountryIso}/states`)
-          .then((resp: any) => {
+          .then((value: unknown) => {
+            const resp = value as LocationListResponse<ApiState>;
             if (resp?.data) {
               setLocationStates(resp.data);
               if (d.selectedStateIso) {
                 apiClient.get(`/location/countries/${d.selectedCountryIso}/states/${d.selectedStateIso}/cities`)
-                  .then((r: any) => { if (r?.data) setLocationCities(r.data); })
+                  .then((cityValue: unknown) => {
+                    const r = cityValue as LocationListResponse<ApiCity>;
+                    if (r?.data) setLocationCities(r.data);
+                  })
                   .catch(() => {});
               }
             }
@@ -402,15 +476,59 @@ export default function GuestCheckoutForm() {
   const [currentStep, setCurrentStep] = useState<"form" | "payment">("form");
 
   // ── Stripe state ──────────────────────────────────────────────────────────
-  const [clientSecret,          setClientSecret]          = useState<string | null>(null);
-  const [paymentIntentId,       setPaymentIntentId]       = useState<string | null>(null);
-  const [stripeAmount,          setStripeAmount]          = useState(0);
-  const [stripeCurrency,        setStripeCurrency]        = useState("aud");
+  const [sellerPayments, setSellerPayments] = useState<SellerPayment[]>([]);
+  const [activePaymentIndex, setActivePaymentIndex] = useState(0);
+  const [paymentProgress, setPaymentProgress] = useState("");
   const [confirmedOrderId,      setConfirmedOrderId]      = useState("");
+  const [confirmedDisplayId,    setConfirmedDisplayId]    = useState("");
   const [confirmedOrderSummary, setConfirmedOrderSummary] = useState<OrderSummary | null>(null);
   const [isCreatingIntent,      setIsCreatingIntent]      = useState(false);
-  // Stripe.js promise scoped per-intent (null until create-intent returns)
-  const [stripePromise, setStripePromise] = useState<ReturnType<typeof loadStripe> | null>(null);
+  const activePayment = sellerPayments[activePaymentIndex] || null;
+  const stripePromise = useMemo(() => {
+    if (!activePayment?.stripeAccountId) return null;
+    if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+      devLogger.error(
+        "[guest-checkout] NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not set — PaymentElement cannot mount. " +
+        "Add it to mia-fe/.env.local (and to CI/deploy secrets) with a pk_test_/pk_live_ value."
+      );
+      return null;
+    }
+    devLogger.log("[guest-checkout] loadStripe for connected account", activePayment.stripeAccountId);
+    return loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY, {
+      stripeAccount: activePayment.stripeAccountId,
+    });
+  }, [activePayment?.stripeAccountId]);
+  const paidPaymentCount = sellerPayments.filter((payment) => payment.status === "paid").length;
+  const hasFailedPayments = sellerPayments.some((payment) => payment.status === "failed");
+
+  useEffect(() => {
+    try {
+      const storedPayments = sessionStorage.getItem(GUEST_PAYMENTS_KEY);
+      const storedIndex = sessionStorage.getItem(GUEST_ACTIVE_PAYMENT_INDEX_KEY);
+      const storedOrderId = sessionStorage.getItem("guestOrderId");
+      const storedDisplayId = sessionStorage.getItem("guestOrderDisplayId");
+      if (!storedPayments || !storedOrderId) return;
+      const parsedPayments = JSON.parse(storedPayments) as SellerPayment[];
+      if (!Array.isArray(parsedPayments) || parsedPayments.length === 0) return;
+      const index = Math.min(Number(storedIndex || 0), parsedPayments.length - 1);
+      setSellerPayments(parsedPayments);
+      setActivePaymentIndex(index);
+      setConfirmedOrderId(storedOrderId);
+      setConfirmedDisplayId(storedDisplayId || "");
+      setCurrentStep("payment");
+      const paidCount = parsedPayments.filter((payment) => payment.status === "paid").length;
+      setPaymentProgress(`${paidCount} of ${parsedPayments.length} seller payments completed.`);
+    } catch {
+      sessionStorage.removeItem(GUEST_PAYMENTS_KEY);
+      sessionStorage.removeItem(GUEST_ACTIVE_PAYMENT_INDEX_KEY);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (sellerPayments.length === 0) return;
+    sessionStorage.setItem(GUEST_PAYMENTS_KEY, JSON.stringify(sellerPayments));
+    sessionStorage.setItem(GUEST_ACTIVE_PAYMENT_INDEX_KEY, String(activePaymentIndex));
+  }, [sellerPayments, activePaymentIndex]);
 
   // ── Field errors ──────────────────────────────────────────────────────────
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -521,7 +639,10 @@ export default function GuestCheckoutForm() {
     // Default: load AU states
     if (!selectedStateIso) {
       apiClient.get(`/location/countries/AU/states`)
-        .then((d: any) => setLocationStates(d.data || []))
+        .then((value: unknown) => {
+          const d = value as LocationListResponse<ApiState>;
+          setLocationStates(d.data || []);
+        })
         .catch(() => {});
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -762,9 +883,8 @@ export default function GuestCheckoutForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
-      const data = await res.json();
-
-     
+      const data = await res.json() as CheckoutIntentResponse;
+      devLogger.log("[guest-checkout] create-intent response", data);
 
       if (!res.ok || !data.success) {
         const msg = data.message || data.error || "Failed to create payment. Please try again.";
@@ -775,22 +895,18 @@ export default function GuestCheckoutForm() {
         return;
       }
 
-      setClientSecret(data.clientSecret);
-      setPaymentIntentId(data.paymentIntentId);
-      setStripeAmount(data.amount);
-      setStripeCurrency(data.currency || "aud");
-      setConfirmedOrderId(data.orderId);
-      setConfirmedOrderSummary(data.orderSummary);
-      // Create Stripe.js instance scoped to the seller's connected account for
-      // Direct Charges, or to the platform account for multi-seller orders.
-      setStripePromise(
-        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-          ? loadStripe(
-              process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
-              data.stripeAccountId ? { stripeAccount: data.stripeAccountId } : undefined,
-            )
-          : null
-      );
+      const normalizedPayments = normalizeCheckoutPayments(data);
+      devLogger.log("[guest-checkout] normalized sellerPayments", normalizedPayments);
+      if (normalizedPayments.length === 0) {
+        toast.error("Payment setup failed. No seller payments were returned.");
+        return;
+      }
+      setSellerPayments(normalizedPayments);
+      setActivePaymentIndex(0);
+      setPaymentProgress(`0 of ${normalizedPayments.length} seller payments completed.`);
+      setConfirmedOrderId(data.orderId || "");
+      setConfirmedDisplayId(data.displayId || "");
+      setConfirmedOrderSummary(data.orderSummary || null);
       
       // Validation: Check if backend returned proper totals
       const backendTotal = parseFloat(data.orderSummary?.grandTotal || "0");
@@ -801,9 +917,11 @@ export default function GuestCheckoutForm() {
       
       setCurrentStep("payment");
 
-      sessionStorage.setItem("guestOrderId",    data.orderId);
+      sessionStorage.setItem("guestOrderId",    data.orderId || "");
       sessionStorage.setItem("guestOrderEmail", customerEmail.trim());
       if (data.displayId) sessionStorage.setItem("guestOrderDisplayId", data.displayId);
+      sessionStorage.setItem(GUEST_PAYMENTS_KEY, JSON.stringify(normalizedPayments));
+      sessionStorage.setItem(GUEST_ACTIVE_PAYMENT_INDEX_KEY, "0");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to initiate payment.");
     } finally {
@@ -813,6 +931,73 @@ export default function GuestCheckoutForm() {
 
   // ── Loading / empty states ────────────────────────────────────────────────
   // Redirect return: show a full-screen loader while we confirm with the backend
+  const acknowledgeGuestPayment = async (payment: SellerPayment) => {
+    try {
+      await fetch("https://backend.madeinarnhemland.com.au/api/payments/guest/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          paymentIntentId: payment.paymentIntentId,
+          customerEmail,
+        }),
+      });
+    } catch {
+      // Stripe webhooks remain the source of truth for final settlement.
+    }
+  };
+
+  const finishGuestPaidCheckout = async (payments: SellerPayment[]) => {
+    await Promise.all(payments.map((payment) => acknowledgeGuestPayment(payment)));
+    sessionStorage.removeItem(DRAFT_KEY);
+    sessionStorage.removeItem(GUEST_PAYMENTS_KEY);
+    sessionStorage.removeItem(GUEST_ACTIVE_PAYMENT_INDEX_KEY);
+    sessionStorage.setItem("guestOrderId", confirmedOrderId);
+    sessionStorage.setItem("guestOrderEmail", customerEmail.trim());
+    if (confirmedDisplayId) sessionStorage.setItem("guestOrderDisplayId", confirmedDisplayId);
+    router.push("/guest/order-success");
+    setTimeout(() => {
+      guestCartUtils.clearGuestCart();
+      localStorage.removeItem("cartProductCoupons");
+    }, 100);
+  };
+
+  const handleSellerPaymentSuccess = async () => {
+    const nextPayments = sellerPayments.map((payment, index) => {
+      if (index === activePaymentIndex) return { ...payment, status: "paid" as const, error: undefined };
+      if (index === activePaymentIndex + 1) return { ...payment, status: "active" as const, error: undefined };
+      return payment;
+    });
+    setSellerPayments(nextPayments);
+    const paidCount = nextPayments.filter((payment) => payment.status === "paid").length;
+    setPaymentProgress(`${paidCount} of ${nextPayments.length} seller payments completed.`);
+
+    if (nextPayments.every((payment) => payment.status === "paid")) {
+      await finishGuestPaidCheckout(nextPayments);
+      return;
+    }
+    setActivePaymentIndex((index) => Math.min(index + 1, nextPayments.length - 1));
+  };
+
+  const handleSellerPaymentFailure = (message: string) => {
+    const nextPayments = sellerPayments.map((payment, index) =>
+      index === activePaymentIndex
+        ? { ...payment, status: "failed" as const, error: message }
+        : payment
+    );
+    setSellerPayments(nextPayments);
+    const paidCount = nextPayments.filter((payment) => payment.status === "paid").length;
+    setPaymentProgress(`${paidCount} of ${nextPayments.length} seller payments completed. Please retry remaining payment.`);
+  };
+
+  const retrySellerPayment = (index: number) => {
+    setSellerPayments((payments) => payments.map((payment, paymentIndex) => {
+      if (paymentIndex === index) return { ...payment, status: "active" as const, error: undefined };
+      if (payment.status === "active") return { ...payment, status: "pending" as const };
+      return payment;
+    }));
+    setActivePaymentIndex(index);
+  };
+
   if (isProcessingRedirect) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4 text-[#5A1E12]/70">
@@ -845,7 +1030,7 @@ export default function GuestCheckoutForm() {
     );
   }
 
-  if (cartItems.length === 0) {
+  if (cartItems.length === 0 && sellerPayments.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4">
         <p className="text-[#5A1E12] text-lg font-medium">Your cart is empty.</p>
@@ -1260,7 +1445,7 @@ export default function GuestCheckoutForm() {
         )}
 
         {/* STEP 2: PAYMENT */}
-        {currentStep === "payment" && clientSecret && paymentIntentId && (
+        {currentStep === "payment" && activePayment && (
           <div className="bg-white rounded-2xl p-6 shadow-sm">
             {/* COMMENTED OUT: Backend returning $0.00 total issue 
             {confirmedOrderSummary && (
@@ -1283,29 +1468,61 @@ export default function GuestCheckoutForm() {
               </div>
             )}
             */}
-            <Elements stripe={stripePromise} options={{
-              clientSecret,
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-[#5A1E12]">Complete Payment</h2>
+              <p className="text-[#5A1E12]/60 text-sm mt-1">
+                {paymentProgress || `${paidPaymentCount} of ${sellerPayments.length} seller payments completed.`}
+              </p>
+              {hasFailedPayments && (
+                <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                  {paidPaymentCount} of {sellerPayments.length} seller payments completed. Please retry remaining payment.
+                </p>
+              )}
+              {sellerPayments.length > 1 && (
+                <div className="mt-4 space-y-2">
+                  {sellerPayments.map((payment, index) => (
+                    <div key={payment.paymentIntentId} className="flex items-center justify-between rounded-xl border border-[#5A1E12]/10 bg-white/70 px-4 py-3 text-sm">
+                      <div>
+                        <p className="font-semibold text-[#5A1E12]">
+                          {payment.sellerName || `Seller ${index + 1}`}
+                        </p>
+                        {payment.error && <p className="text-xs text-red-600">{payment.error}</p>}
+                      </div>
+                      {payment.status === "failed" ? (
+                        <button
+                          type="button"
+                          onClick={() => retrySellerPayment(index)}
+                          className="rounded-lg bg-[#5A1E12] px-3 py-1.5 text-xs font-semibold text-white"
+                        >
+                          Retry
+                        </button>
+                      ) : (
+                        <span className="capitalize text-[#5A1E12]/70">{payment.status}</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <Elements key={`${activePayment.stripeAccountId}:${activePayment.paymentIntentId}`} stripe={stripePromise} options={{
+              clientSecret: activePayment.clientSecret,
               appearance: {
                 theme: "stripe",
                 variables: { colorPrimary: "#5A1E12", colorBackground: "#ffffff", colorText: "#3b1a08", borderRadius: "12px", fontFamily: "inherit" },
               },
             }}>
-              <GuestStripePaymentForm
-                paymentIntentId={paymentIntentId}
-                customerEmail={customerEmail}
-                amount={stripeAmount}
-                currency={stripeCurrency}
-                orderId={confirmedOrderId}
-                onSuccess={() => {
-                  sessionStorage.removeItem(DRAFT_KEY);
-                  router.push("/guest/order-success");
-                  // Clear cart AFTER navigation starts so the order summary stays visible
-                  setTimeout(() => {
-                    guestCartUtils.clearGuestCart();
-                    localStorage.removeItem("cartProductCoupons");
-                  }, 100);
+              <StripePaymentForm
+                clientSecret={activePayment.clientSecret}
+                stripeAccountId={activePayment.stripeAccountId}
+                paymentIntentId={activePayment.paymentIntentId}
+                sellerName={activePayment.sellerName || `Seller ${activePaymentIndex + 1}`}
+                amount={activePayment.amount}
+                currency={activePayment.currency}
+                onSuccess={handleSellerPaymentSuccess}
+                onFailure={(msg) => {
+                  handleSellerPaymentFailure(msg);
+                  toast.error(msg);
                 }}
-                onError={(msg) => toast.error(msg)}
               />
             </Elements>
             <button onClick={() => setCurrentStep("form")}

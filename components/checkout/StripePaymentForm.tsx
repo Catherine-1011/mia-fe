@@ -1,34 +1,39 @@
 "use client";
 
 import { useState } from "react";
-import {
-  PaymentElement,
-  useStripe,
-  useElements,
-} from "@stripe/react-stripe-js";
-import { Loader2, ShieldCheck, AlertCircle } from "lucide-react";
+import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import { AlertCircle, Loader2, ShieldCheck } from "lucide-react";
 
 interface StripePaymentFormProps {
+  clientSecret: string;
+  stripeAccountId: string;
   paymentIntentId: string;
-  token: string;
-  amount: number;
-  currency: string;
-  onSuccess: (orderId: string, displayId?: string) => void;
-  onError: (msg: string) => void;
+  sellerName?: string;
+  amount?: number;
+  currency?: string;
+  onSuccess: () => void;
+  onFailure: (msg: string) => void;
 }
 
 export default function StripePaymentForm({
+  clientSecret,
+  stripeAccountId,
   paymentIntentId,
-  token,
-  amount,
-  currency,
+  sellerName,
+  amount = 0,
+  currency = "aud",
   onSuccess,
-  onError,
+  onFailure,
 }: StripePaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const formattedAmount = new Intl.NumberFormat("en-AU", {
+    style: "currency",
+    currency: (currency || "aud").toUpperCase(),
+  }).format(Number(amount || 0) / 100);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,68 +43,40 @@ export default function StripePaymentForm({
     setErrorMessage(null);
 
     try {
-      // Step 1 – confirm the payment with Stripe
-      const { error: stripeError } = await stripe.confirmPayment({
+      const { error } = await stripe.confirmPayment({
         elements,
         confirmParams: {
-          // required param but we handle redirect manually
-          return_url: window.location.origin + "/order-confirmation",
+          return_url: window.location.href.split("?")[0],
         },
         redirect: "if_required",
       });
 
-      if (stripeError) {
-        const msg = stripeError.message || "Payment failed. Please try again.";
+      if (error) {
+        const msg = error.message || "Payment failed. Please try again.";
         setErrorMessage(msg);
-        onError(msg);
+        onFailure(msg);
         return;
       }
 
-      // Step 2 – notify backend to confirm the order
-      const res = await fetch(
-        "https://backend.madeinarnhemland.com.au/api/payments/confirm",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ paymentIntentId }),
-        }
-      );
-
-      if (!res.ok) {
-        let msg = "Order confirmation failed. Please contact support.";
-        try {
-          const data = await res.json();
-          msg = data.message || data.error || msg;
-        } catch {}
-        setErrorMessage(msg);
-        onError(msg);
-        return;
-      }
-
-      const data = await res.json();
-      onSuccess(data.orderId, data.displayId);
+      onSuccess();
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Unexpected error. Please try again.";
       setErrorMessage(msg);
-      onError(msg);
+      onFailure(msg);
     } finally {
       setIsProcessing(false);
     }
   };
 
-  const formattedAmount = new Intl.NumberFormat("en-AU", {
-    style: "currency",
-    currency: currency.toUpperCase() || "AUD",
-  }).format(amount / 100);
-
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Stripe PaymentElement */}
       <div className="rounded-2xl border border-[#973c00]/15 bg-white/60 p-5">
+        <div className="mb-4 text-sm text-[#5A1E12]/70">
+          <div className="font-semibold text-[#5A1E12]">{sellerName || "Seller payment"}</div>
+          <div>{formattedAmount}</div>
+        </div>
         <PaymentElement
+          key={`${stripeAccountId}:${paymentIntentId}:${clientSecret}`}
           options={{
             layout: "tabs",
             fields: { billingDetails: { email: "auto" } },
@@ -107,14 +84,6 @@ export default function StripePaymentForm({
         />
       </div>
 
-      {/* Test mode hint */}
-      <p className="text-[11px] text-[#973c00]/50 text-center">
-        Test mode · use card{" "}
-        <span className="font-mono font-semibold tracking-wider">4242 4242 4242 4242</span>
-        , any future date, any CVC
-      </p>
-
-      {/* Error */}
       {errorMessage && (
         <div className="flex items-start gap-2.5 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
           <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
@@ -122,7 +91,6 @@ export default function StripePaymentForm({
         </div>
       )}
 
-      {/* Submit */}
       <button
         type="submit"
         disabled={!stripe || !elements || isProcessing}
@@ -131,7 +99,7 @@ export default function StripePaymentForm({
         {isProcessing ? (
           <>
             <Loader2 className="w-5 h-5 animate-spin" />
-            Processing Payment…
+            Processing Payment...
           </>
         ) : (
           <>

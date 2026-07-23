@@ -22,6 +22,72 @@ import { useCartStock } from "@/hooks/useCartStock";
 import { getCountries } from "react-phone-number-input/input";
 import { devLogger } from "@/lib/logger";
 
+type SellerPaymentStatus = "pending" | "active" | "processing" | "paid" | "failed";
+
+interface SellerPayment {
+  sellerId: string;
+  stripeAccountId: string;
+  clientSecret: string;
+  paymentIntentId: string;
+  amount: number;
+  currency: string;
+  status: SellerPaymentStatus;
+  sellerName?: string;
+  error?: string;
+}
+
+interface CheckoutPaymentResponse {
+  sellerId?: string;
+  stripeAccountId?: string;
+  clientSecret?: string;
+  paymentIntentId?: string;
+  amount?: number;
+  currency?: string;
+  sellerName?: string;
+  status?: SellerPaymentStatus;
+  error?: string;
+}
+
+interface CheckoutIntentResponse extends CheckoutPaymentResponse {
+  orderId?: string;
+  displayId?: string;
+  payments?: CheckoutPaymentResponse[];
+}
+
+type CartSellerSource = {
+  sellerId?: string;
+  sellerName?: string;
+  sellerUserName?: string;
+  seller?: { name?: string };
+};
+
+function normalizeCheckoutPayments(data: CheckoutIntentResponse): SellerPayment[] {
+  const payments = Array.isArray(data?.payments) && data.payments.length > 0
+    ? data.payments
+    : data?.clientSecret && data?.paymentIntentId && data?.stripeAccountId
+      ? [{
+          sellerId: data.sellerId || "seller",
+          stripeAccountId: data.stripeAccountId,
+          clientSecret: data.clientSecret,
+          paymentIntentId: data.paymentIntentId,
+          amount: data.amount,
+          currency: data.currency,
+        }]
+      : [];
+
+  return payments.map((payment, index: number): SellerPayment => ({
+    sellerId: String(payment.sellerId || `seller_${index + 1}`),
+    stripeAccountId: String(payment.stripeAccountId || ""),
+    clientSecret: String(payment.clientSecret || ""),
+    paymentIntentId: String(payment.paymentIntentId || ""),
+    amount: Number(payment.amount || data?.amount || 0),
+    currency: String(payment.currency || data?.currency || "aud"),
+    status: index === 0 ? "active" : "pending",
+  })).filter((payment) =>
+    Boolean(payment.stripeAccountId && payment.clientSecret && payment.paymentIntentId)
+  );
+}
+
 // Module-level country name list (built once, reused)
 const _rn = typeof Intl !== "undefined" && Intl.DisplayNames
   ? new Intl.DisplayNames(["en"], { type: "region" })
@@ -67,13 +133,12 @@ export default function CheckOutPage() {
   const [appliedCoupons, setAppliedCoupons] = useState<AppliedSellerCoupon[]>([]);
 
   // ── Stripe payment state ──────────────────────────────────────────────────
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
-  const [stripeAmount, setStripeAmount] = useState(0);
-  const [stripeCurrency, setStripeCurrency] = useState("aud");
+  const [sellerPayments, setSellerPayments] = useState<SellerPayment[]>([]);
+  const [activePaymentIndex, setActivePaymentIndex] = useState(0);
+  const [orderId, setOrderId] = useState("");
+  const [displayId, setDisplayId] = useState("");
+  const [paymentProgress, setPaymentProgress] = useState("");
   const [isCreatingIntent, setIsCreatingIntent] = useState(false);
-  // Stripe.js promise scoped per-intent (null until create-intent returns)
-  const [stripePromise, setStripePromise] = useState<ReturnType<typeof loadStripe> | null>(null);
 
   const { cartData, selectedShipping, calculateTotals, updateQuantity, triggerUpdate, clearCart: clearSharedCart } =
     useSharedEnhancedCart();
@@ -123,6 +188,34 @@ export default function CheckOutPage() {
   const cartItems = cartData?.cart || [];
   const { subtotal, shippingCost, gstAmount, grandTotal, gstPercentage } =
     calculateTotals;
+  const sellerNameById = useMemo(() => {
+    const names = new Map<string, string>();
+    for (const item of cartItems) {
+      const itemWithSeller = item as { sellerId?: string; product?: CartSellerSource };
+      const product = itemWithSeller.product || {};
+      const sellerId = product.sellerId || itemWithSeller.sellerId;
+      const sellerName = product.sellerName || product.sellerUserName || product.seller?.name;
+      if (sellerId && sellerName && !names.has(sellerId)) names.set(sellerId, sellerName);
+    }
+    return names;
+  }, [cartItems]);
+  const activePayment = sellerPayments[activePaymentIndex] || null;
+  const stripePromise = useMemo(() => {
+    if (!activePayment?.stripeAccountId) return null;
+    if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+      devLogger.error(
+        "[checkout] NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not set — PaymentElement cannot mount. " +
+        "Add it to mia-fe/.env.local (and to CI/deploy secrets) with a pk_test_/pk_live_ value."
+      );
+      return null;
+    }
+    devLogger.log("[checkout] loadStripe for connected account", activePayment.stripeAccountId);
+    return loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY, {
+      stripeAccount: activePayment.stripeAccountId,
+    });
+  }, [activePayment?.stripeAccountId]);
+  const paidPaymentCount = sellerPayments.filter((payment) => payment.status === "paid").length;
+  const hasFailedPayments = sellerPayments.some((payment) => payment.status === "failed");
 
   // Real-time stock watching — same pattern as cart/page and MiniCart.
   // When another customer buys a product while the user is on this page,
@@ -354,21 +447,22 @@ export default function CheckOutPage() {
         return;
       }
 
-      const data = await res.json();
-      setClientSecret(data.clientSecret);
-      setPaymentIntentId(data.paymentIntentId);
-      setStripeAmount(data.amount);
-      setStripeCurrency(data.currency || "aud");
-      // Create Stripe.js instance scoped to the seller's connected account for
-      // Direct Charges, or to the platform account for multi-seller orders.
-      setStripePromise(
-        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-          ? loadStripe(
-              process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
-              data.stripeAccountId ? { stripeAccount: data.stripeAccountId } : undefined,
-            )
-          : null
-      );
+      const data = await res.json() as CheckoutIntentResponse;
+      devLogger.log("[checkout] create-intent response", data);
+      const normalizedPayments = normalizeCheckoutPayments(data).map((payment) => ({
+        ...payment,
+        sellerName: sellerNameById.get(payment.sellerId) || payment.sellerName,
+      }));
+      devLogger.log("[checkout] normalized sellerPayments", normalizedPayments);
+      if (normalizedPayments.length === 0) {
+        toast.error("Payment setup failed. No seller payments were returned.");
+        return;
+      }
+      setSellerPayments(normalizedPayments);
+      setActivePaymentIndex(0);
+      setOrderId(data.orderId || "");
+      setDisplayId(data.displayId || "");
+      setPaymentProgress(`0 of ${normalizedPayments.length} seller payments completed.`);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Failed to initiate payment.");
     } finally {
@@ -555,6 +649,80 @@ export default function CheckOutPage() {
   };
 
   // ── GUEST ROUTING: show guest checkout for unauthenticated users ──────────
+  const acknowledgePayment = async (payment: SellerPayment) => {
+    const currentToken = token || (typeof window !== "undefined" ? localStorage.getItem("alpa_token") : "") || "";
+    if (!currentToken) return;
+    try {
+      await fetch("https://backend.madeinarnhemland.com.au/api/payments/confirm", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${currentToken}`,
+        },
+        body: JSON.stringify({ paymentIntentId: payment.paymentIntentId }),
+      });
+    } catch (err) {
+      devLogger.warn("Payment acknowledgement failed; webhook remains authoritative.", err);
+    }
+  };
+
+  const finishPaidCheckout = async (payments: SellerPayment[]) => {
+    await Promise.all(payments.map((payment) => acknowledgePayment(payment)));
+    localStorage.removeItem("cartProductCoupons");
+    localStorage.removeItem("checkoutStep");
+    localStorage.removeItem("alpa_cart_count");
+    localStorage.removeItem("showGuestForm");
+    localStorage.removeItem("guestCheckoutData");
+    localStorage.removeItem("promoCode");
+    localStorage.removeItem("paymentMethod");
+    localStorage.removeItem("addressCartData");
+    localStorage.removeItem("addressPlaceId");
+    localStorage.removeItem("addressValidated");
+    localStorage.removeItem("alpa_shipping_country");
+    localStorage.removeItem("alpa_intl_rate");
+    localStorage.setItem("alpa_clear_cart_on_arrival", "user");
+    const params = new URLSearchParams({ orderId });
+    if (displayId) params.set("displayId", displayId);
+    router.push(`/order-confirmation?${params.toString()}`);
+  };
+
+  const handleSellerPaymentSuccess = async () => {
+    const nextPayments = sellerPayments.map((payment, index) => {
+      if (index === activePaymentIndex) return { ...payment, status: "paid" as const, error: undefined };
+      if (index === activePaymentIndex + 1) return { ...payment, status: "active" as const, error: undefined };
+      return payment;
+    });
+    setSellerPayments(nextPayments);
+    const paidCount = nextPayments.filter((payment) => payment.status === "paid").length;
+    setPaymentProgress(`${paidCount} of ${nextPayments.length} seller payments completed.`);
+
+    if (nextPayments.every((payment) => payment.status === "paid")) {
+      await finishPaidCheckout(nextPayments);
+      return;
+    }
+    setActivePaymentIndex((index) => Math.min(index + 1, nextPayments.length - 1));
+  };
+
+  const handleSellerPaymentFailure = (message: string) => {
+    const nextPayments = sellerPayments.map((payment, index) =>
+      index === activePaymentIndex
+        ? { ...payment, status: "failed" as const, error: message }
+        : payment
+    );
+    setSellerPayments(nextPayments);
+    const paidCount = nextPayments.filter((payment) => payment.status === "paid").length;
+    setPaymentProgress(`${paidCount} of ${nextPayments.length} seller payments completed. Please retry remaining payment.`);
+  };
+
+  const retrySellerPayment = (index: number) => {
+    setSellerPayments((payments) => payments.map((payment, paymentIndex) => {
+      if (paymentIndex === index) return { ...payment, status: "active" as const, error: undefined };
+      if (payment.status === "active") return { ...payment, status: "pending" as const };
+      return payment;
+    }));
+    setActivePaymentIndex(index);
+  };
+
   const isLoggedIn = !loading && (!!token || !!user);
   const authChecked = !loading;
 
@@ -815,17 +983,50 @@ export default function CheckOutPage() {
                         exit={{ opacity: 0, x: -20 }}
                         transition={{ duration: 0.3 }}
                       >
-                        {clientSecret && paymentIntentId ? (
+                        {activePayment ? (
                           // ── Stripe payment UI ──────────────────────────
                           <div>
                             <div className="mb-6">
                               <h2 className="text-2xl font-bold text-[#5A1E12]">Complete Payment</h2>
-                              <p className="text-[#5A1E12]/60 text-sm mt-1">Enter your card details to securely complete your order</p>
+                              <p className="text-[#5A1E12]/60 text-sm mt-1">
+                                {paymentProgress || `${paidPaymentCount} of ${sellerPayments.length} seller payments completed.`}
+                              </p>
+                              {hasFailedPayments && (
+                                <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                                  {paidPaymentCount} of {sellerPayments.length} seller payments completed. Please retry remaining payment.
+                                </p>
+                              )}
+                              {sellerPayments.length > 1 && (
+                                <div className="mt-4 space-y-2">
+                                  {sellerPayments.map((payment, index) => (
+                                    <div key={payment.paymentIntentId} className="flex items-center justify-between rounded-xl border border-[#5A1E12]/10 bg-white/70 px-4 py-3 text-sm">
+                                      <div>
+                                        <p className="font-semibold text-[#5A1E12]">
+                                          {payment.sellerName || `Seller ${index + 1}`}
+                                        </p>
+                                        {payment.error && <p className="text-xs text-red-600">{payment.error}</p>}
+                                      </div>
+                                      {payment.status === "failed" ? (
+                                        <button
+                                          type="button"
+                                          onClick={() => retrySellerPayment(index)}
+                                          className="rounded-lg bg-[#5A1E12] px-3 py-1.5 text-xs font-semibold text-white"
+                                        >
+                                          Retry
+                                        </button>
+                                      ) : (
+                                        <span className="capitalize text-[#5A1E12]/70">{payment.status}</span>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
                             </div>
                             <Elements
+                              key={`${activePayment.stripeAccountId}:${activePayment.paymentIntentId}`}
                               stripe={stripePromise}
                               options={{
-                                clientSecret,
+                                clientSecret: activePayment.clientSecret,
                                 appearance: {
                                   theme: "stripe",
                                   variables: {
@@ -839,30 +1040,17 @@ export default function CheckOutPage() {
                               }}
                             >
                               <StripePaymentForm
-                                paymentIntentId={paymentIntentId}
-                                token={token || (typeof window !== "undefined" ? localStorage.getItem("alpa_token") : "") || ""}
-                                amount={stripeAmount}
-                                currency={stripeCurrency}
-                                onSuccess={(orderId, displayId) => {
-                                  localStorage.removeItem("cartProductCoupons");
-                                  localStorage.removeItem("checkoutStep");
-                                  localStorage.removeItem("alpa_cart_count");
-                                  localStorage.removeItem("showGuestForm");
-                                  localStorage.removeItem("guestCheckoutData");
-                                  localStorage.removeItem("promoCode");
-                                  localStorage.removeItem("paymentMethod");
-                                  localStorage.removeItem("addressCartData");
-                                  localStorage.removeItem("addressPlaceId");
-                                  localStorage.removeItem("addressValidated");
-                                  localStorage.removeItem("alpa_shipping_country");
-                                  localStorage.removeItem("alpa_intl_rate");
-                                  // Flag the order-confirmation page to clear the cart once it mounts.
-                                  localStorage.setItem("alpa_clear_cart_on_arrival", "user");
-                                  const params = new URLSearchParams({ orderId });
-                                  if (displayId) params.set("displayId", displayId);
-                                  router.push(`/order-confirmation?${params.toString()}`);
+                                clientSecret={activePayment.clientSecret}
+                                stripeAccountId={activePayment.stripeAccountId}
+                                paymentIntentId={activePayment.paymentIntentId}
+                                sellerName={activePayment.sellerName || `Seller ${activePaymentIndex + 1}`}
+                                amount={activePayment.amount}
+                                currency={activePayment.currency}
+                                onSuccess={handleSellerPaymentSuccess}
+                                onFailure={(msg) => {
+                                  handleSellerPaymentFailure(msg);
+                                  toast.error(msg);
                                 }}
-                                onError={(msg) => toast.error(msg)}
                               />
                             </Elements>
                           </div>
@@ -952,7 +1140,7 @@ export default function CheckOutPage() {
                       >
                         Continue
                       </button>
-                    ) : !clientSecret ? (
+                    ) : sellerPayments.length === 0 ? (
                       <button
                         onClick={handleCreateIntent}
                         disabled={isCreatingIntent || cartItems.length === 0 || !paymentMethod}
@@ -1052,8 +1240,8 @@ export default function CheckOutPage() {
                           src={
                             item.product.featuredImage || 
                             item.product.images?.[0] || 
-                            (item.product as any).galleryImages?.[0] || 
-                            (item.product as any).image || 
+                            (item.product as { galleryImages?: string[]; image?: string }).galleryImages?.[0] || 
+                            (item.product as { galleryImages?: string[]; image?: string }).image || 
                             "/images/placeholder.png"
                           }
                           alt={item.product.title}
