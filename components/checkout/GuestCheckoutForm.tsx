@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -12,12 +12,14 @@ import { useSharedEnhancedCart } from "@/hooks/useSharedEnhancedCart";
 import { sellerCouponsApi, AppliedSellerCoupon } from "@/lib/api";
 import { guestCartUtils } from "@/lib/guestCartUtils";
 import StripePaymentForm from "@/components/checkout/StripePaymentForm";
+import MultiSellerPaymentForm, { SellerBreakdownLine } from "@/components/checkout/MultiSellerPaymentForm";
 import Link from "next/link";
 import { apiClient } from "@/lib/api";
 import { getCountries, getCountryCallingCode } from "react-phone-number-input/input";
 import { parsePhoneNumberFromString } from "libphonenumber-js";
 import type { CountryCode } from "libphonenumber-js";
 import { devLogger } from "@/lib/logger";
+import { useProducts } from "@/hooks/useProducts";
 
 interface MapboxFeature {
   id: string;
@@ -202,6 +204,35 @@ interface CheckoutIntentResponse extends CheckoutPaymentResponse {
   payments?: CheckoutPaymentResponse[];
 }
 
+interface MultiSellerSetupResponse {
+  success?: boolean;
+  message?: string;
+  orderId?: string;
+  displayId?: string;
+  clientSecret?: string;
+  amount?: number;
+  currency?: string;
+  sellerBreakdown?: SellerBreakdownLine[];
+  orderSummary?: OrderSummary;
+}
+
+interface MultiSellerSetupState {
+  orderId: string;
+  displayId: string;
+  clientSecret: string;
+  amount: number;
+  currency: string;
+  sellerBreakdown: SellerBreakdownLine[];
+}
+
+type CartSellerSource = {
+  id?: string;
+  sellerId?: string;
+  sellerName?: string;
+  sellerUserName?: string;
+  seller?: { name?: string };
+};
+
 const GUEST_PAYMENTS_KEY = "guestSellerPayments";
 const GUEST_ACTIVE_PAYMENT_INDEX_KEY = "guestActivePaymentIndex";
 
@@ -308,7 +339,39 @@ export default function GuestCheckoutForm() {
     calculateTotals,
   } = useSharedEnhancedCart();
 
-  const cartItems = cartData?.cart || [];
+  const cartItems = useMemo(() => cartData?.cart || [], [cartData?.cart]);
+  const { data: allProducts = [] } = useProducts();
+  const sellerProductMap = useMemo(
+    () => Object.fromEntries(
+      allProducts.map((product) => [
+        product.id,
+        {
+          sellerId: product.sellerId,
+          sellerName: product.sellerName ?? product.sellerUserName,
+        },
+      ])
+    ),
+    [allProducts]
+  );
+  const resolveCartItemSeller = useCallback((item: unknown) => {
+    const itemWithSeller = item as {
+      productId?: string;
+      id?: string;
+      sellerId?: string;
+      product?: CartSellerSource;
+    };
+    const product = itemWithSeller.product || {};
+    const productId = itemWithSeller.productId || product.id || itemWithSeller.id;
+    const mappedSeller = productId ? sellerProductMap[productId] : undefined;
+    const sellerId = product.sellerId || itemWithSeller.sellerId || mappedSeller?.sellerId;
+    const sellerName =
+      product.sellerName ||
+      product.sellerUserName ||
+      product.seller?.name ||
+      mappedSeller?.sellerName;
+
+    return { sellerId, sellerName };
+  }, [sellerProductMap]);
   // Filter out COD options so guests only see real shipping methods
   const shippingMethods = (cartData?.availableShipping || []).filter(
     (s) => !/cod|cash[\s_-]*on[\s_-]*delivery/i.test(s.name)
@@ -483,6 +546,9 @@ export default function GuestCheckoutForm() {
   const [confirmedDisplayId,    setConfirmedDisplayId]    = useState("");
   const [confirmedOrderSummary, setConfirmedOrderSummary] = useState<OrderSummary | null>(null);
   const [isCreatingIntent,      setIsCreatingIntent]      = useState(false);
+  // Multi-seller single-checkout: card collected once on the platform account,
+  // then charged per seller server-side. Single-seller flow above is untouched.
+  const [multiSellerSetup, setMultiSellerSetup] = useState<MultiSellerSetupState | null>(null);
   const activePayment = sellerPayments[activePaymentIndex] || null;
   const stripePromise = useMemo(() => {
     if (!activePayment?.stripeAccountId) return null;
@@ -498,8 +564,24 @@ export default function GuestCheckoutForm() {
       stripeAccount: activePayment.stripeAccountId,
     });
   }, [activePayment?.stripeAccountId]);
+  // Multi-seller checkout collects the card on the PLATFORM account (no
+  // stripeAccount scoping) — a single Stripe.js instance shared across sellers.
+  const platformStripePromise = useMemo(() => {
+    if (!multiSellerSetup?.clientSecret) return null;
+    if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) return null;
+    return loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+  }, [multiSellerSetup?.clientSecret]);
   const paidPaymentCount = sellerPayments.filter((payment) => payment.status === "paid").length;
   const hasFailedPayments = sellerPayments.some((payment) => payment.status === "failed");
+  const distinctSellerIds = useMemo(() => {
+    const ids = new Set<string>();
+    for (const item of cartItems) {
+      const { sellerId } = resolveCartItemSeller(item);
+      if (sellerId) ids.add(sellerId);
+    }
+    return ids;
+  }, [cartItems, resolveCartItemSeller]);
+  const isMultiSellerCart = distinctSellerIds.size > 1;
 
   useEffect(() => {
     try {
@@ -877,12 +959,45 @@ export default function GuestCheckoutForm() {
         ...(appliedCoupons.length > 0 && { couponCode: appliedCoupons[0].code, couponCodes: appliedCoupons.map(c => c.code) }),
       };
 
-  
-      const res  = await fetch("https://backend.madeinarnhemland.com.au/api/payments/guest/create-intent", {
+
+      // Multi-seller carts collect the card once via a platform SetupIntent;
+      // single-seller carts keep using /guest/create-intent exactly as before.
+      const endpoint = isMultiSellerCart
+        ? "https://backend.madeinarnhemland.com.au/api/payments/multi-seller/guest/setup"
+        : "https://backend.madeinarnhemland.com.au/api/payments/guest/create-intent";
+
+      const res  = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
+
+      if (isMultiSellerCart) {
+        const data = await res.json() as MultiSellerSetupResponse;
+        devLogger.log("[guest-checkout] multi-seller/guest/setup response", data);
+        if (!res.ok || !data.success || !data.clientSecret || !data.orderId) {
+          const msg = data.message || "Failed to create payment. Please try again.";
+          toast.error(msg);
+          return;
+        }
+        setMultiSellerSetup({
+          orderId: data.orderId,
+          displayId: data.displayId || "",
+          clientSecret: data.clientSecret,
+          amount: data.amount || 0,
+          currency: data.currency || "aud",
+          sellerBreakdown: data.sellerBreakdown || [],
+        });
+        setConfirmedOrderId(data.orderId);
+        setConfirmedDisplayId(data.displayId || "");
+        setConfirmedOrderSummary(data.orderSummary || null);
+        setCurrentStep("payment");
+        sessionStorage.setItem("guestOrderId", data.orderId);
+        sessionStorage.setItem("guestOrderEmail", customerEmail.trim());
+        if (data.displayId) sessionStorage.setItem("guestOrderDisplayId", data.displayId);
+        return;
+      }
+
       const data = await res.json() as CheckoutIntentResponse;
       devLogger.log("[guest-checkout] create-intent response", data);
 
@@ -961,6 +1076,23 @@ export default function GuestCheckoutForm() {
     }, 100);
   };
 
+  // Multi-seller single-checkout completion. /multi-seller/guest/finalize
+  // already confirms each seller's PaymentIntent server-side (webhook remains
+  // authoritative for PAID, same as everywhere else) — no per-seller
+  // acknowledgement call is needed here.
+  const finishGuestMultiSellerCheckout = () => {
+    sessionStorage.removeItem(DRAFT_KEY);
+    sessionStorage.setItem("guestOrderId", multiSellerSetup?.orderId || confirmedOrderId);
+    sessionStorage.setItem("guestOrderEmail", customerEmail.trim());
+    const finalDisplayId = multiSellerSetup?.displayId || confirmedDisplayId;
+    if (finalDisplayId) sessionStorage.setItem("guestOrderDisplayId", finalDisplayId);
+    router.push("/guest/order-success");
+    setTimeout(() => {
+      guestCartUtils.clearGuestCart();
+      localStorage.removeItem("cartProductCoupons");
+    }, 100);
+  };
+
   const handleSellerPaymentSuccess = async () => {
     const nextPayments = sellerPayments.map((payment, index) => {
       if (index === activePaymentIndex) return { ...payment, status: "paid" as const, error: undefined };
@@ -1030,7 +1162,7 @@ export default function GuestCheckoutForm() {
     );
   }
 
-  if (cartItems.length === 0 && sellerPayments.length === 0) {
+  if (cartItems.length === 0 && sellerPayments.length === 0 && !multiSellerSetup) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4">
         <p className="text-[#5A1E12] text-lg font-medium">Your cart is empty.</p>
@@ -1444,10 +1576,49 @@ export default function GuestCheckoutForm() {
           </div>
         )}
 
+        {/* STEP 2: PAYMENT — multi-seller single checkout */}
+        {currentStep === "payment" && multiSellerSetup && (
+          <div className="bg-white rounded-2xl p-6 shadow-sm">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-[#5A1E12]">Complete Payment</h2>
+              <p className="text-[#5A1E12]/60 text-sm mt-1">
+                One payment covers {multiSellerSetup.sellerBreakdown.length} sellers — Stripe charges each seller directly.
+              </p>
+            </div>
+            {platformStripePromise && (
+              <Elements
+                key={multiSellerSetup.clientSecret}
+                stripe={platformStripePromise}
+                options={{
+                  clientSecret: multiSellerSetup.clientSecret,
+                  appearance: {
+                    theme: "stripe",
+                    variables: { colorPrimary: "#5A1E12", colorBackground: "#ffffff", colorText: "#3b1a08", borderRadius: "12px", fontFamily: "inherit" },
+                  },
+                }}
+              >
+                <MultiSellerPaymentForm
+                  orderId={multiSellerSetup.orderId}
+                  guestEmail={customerEmail.trim()}
+                  sellerBreakdown={multiSellerSetup.sellerBreakdown}
+                  totalAmountCents={multiSellerSetup.amount}
+                  currency={multiSellerSetup.currency}
+                  onSuccess={finishGuestMultiSellerCheckout}
+                  onFailure={(msg) => toast.error(msg)}
+                />
+              </Elements>
+            )}
+            <button onClick={() => setCurrentStep("form")}
+              className="mt-4 w-full py-2.5 text-sm text-[#5A1E12]/70 hover:text-[#5A1E12] transition-colors">
+              Back to Details
+            </button>
+          </div>
+        )}
+
         {/* STEP 2: PAYMENT */}
         {currentStep === "payment" && activePayment && (
           <div className="bg-white rounded-2xl p-6 shadow-sm">
-            {/* COMMENTED OUT: Backend returning $0.00 total issue 
+            {/* COMMENTED OUT: Backend returning $0.00 total issue
             {confirmedOrderSummary && (
               <div className="mb-6 p-4 bg-[#5A1E12]/5 rounded-xl border border-[#5A1E12]/15">
                 <p className="text-sm text-[#5A1E12]/70">Amount to pay</p>

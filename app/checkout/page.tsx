@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
@@ -15,10 +15,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import StripePaymentForm from "@/components/checkout/StripePaymentForm";
+import MultiSellerPaymentForm, { SellerBreakdownLine } from "@/components/checkout/MultiSellerPaymentForm";
 import GuestCheckoutForm from "@/components/checkout/GuestCheckoutForm";
 import { Loader2, Tag, X, ChevronDown } from "lucide-react";
 import { AppliedSellerCoupon } from "@/lib/api";
 import { useCartStock } from "@/hooks/useCartStock";
+import { useProducts } from "@/hooks/useProducts";
 import { getCountries } from "react-phone-number-input/input";
 import { devLogger } from "@/lib/logger";
 
@@ -54,7 +56,28 @@ interface CheckoutIntentResponse extends CheckoutPaymentResponse {
   payments?: CheckoutPaymentResponse[];
 }
 
+interface MultiSellerSetupResponse {
+  success?: boolean;
+  orderId?: string;
+  displayId?: string;
+  clientSecret?: string;
+  amount?: number;
+  currency?: string;
+  sellerBreakdown?: SellerBreakdownLine[];
+  message?: string;
+}
+
+interface MultiSellerSetupState {
+  orderId: string;
+  displayId: string;
+  clientSecret: string;
+  amount: number;
+  currency: string;
+  sellerBreakdown: SellerBreakdownLine[];
+}
+
 type CartSellerSource = {
+  id?: string;
   sellerId?: string;
   sellerName?: string;
   sellerUserName?: string;
@@ -139,11 +162,15 @@ export default function CheckOutPage() {
   const [displayId, setDisplayId] = useState("");
   const [paymentProgress, setPaymentProgress] = useState("");
   const [isCreatingIntent, setIsCreatingIntent] = useState(false);
+  // Multi-seller single-checkout: card collected once on the platform account,
+  // then charged per seller server-side. Single-seller checkout above is untouched.
+  const [multiSellerSetup, setMultiSellerSetup] = useState<MultiSellerSetupState | null>(null);
 
   const { cartData, selectedShipping, calculateTotals, updateQuantity, triggerUpdate, clearCart: clearSharedCart } =
     useSharedEnhancedCart();
   const { token, loading, user } = useAuth();
   const { clearCart } = useCart();
+  const { data: allProducts = [] } = useProducts();
 
   // Track the name entered in step 1 for personalised headings
   const [userName, setUserName] = useState("");
@@ -185,20 +212,57 @@ export default function CheckOutPage() {
   const isInternationalOrder = !!cartSelectedCountry && cartSelectedCountry !== "Australia";
 
   // Get cart items and totals from enhanced cart
-  const cartItems = cartData?.cart || [];
+  const cartItems = useMemo(() => cartData?.cart || [], [cartData?.cart]);
   const { subtotal, shippingCost, gstAmount, grandTotal, gstPercentage } =
     calculateTotals;
+  const sellerProductMap = useMemo(
+    () => Object.fromEntries(
+      allProducts.map((product) => [
+        product.id,
+        {
+          sellerId: product.sellerId,
+          sellerName: product.sellerName ?? product.sellerUserName,
+        },
+      ])
+    ),
+    [allProducts]
+  );
+  const resolveCartItemSeller = useCallback((item: unknown) => {
+    const itemWithSeller = item as {
+      productId?: string;
+      id?: string;
+      sellerId?: string;
+      product?: CartSellerSource;
+    };
+    const product = itemWithSeller.product || {};
+    const productId = itemWithSeller.productId || product.id || itemWithSeller.id;
+    const mappedSeller = productId ? sellerProductMap[productId] : undefined;
+    const sellerId = product.sellerId || itemWithSeller.sellerId || mappedSeller?.sellerId;
+    const sellerName =
+      product.sellerName ||
+      product.sellerUserName ||
+      product.seller?.name ||
+      mappedSeller?.sellerName;
+
+    return { sellerId, sellerName };
+  }, [sellerProductMap]);
   const sellerNameById = useMemo(() => {
     const names = new Map<string, string>();
     for (const item of cartItems) {
-      const itemWithSeller = item as { sellerId?: string; product?: CartSellerSource };
-      const product = itemWithSeller.product || {};
-      const sellerId = product.sellerId || itemWithSeller.sellerId;
-      const sellerName = product.sellerName || product.sellerUserName || product.seller?.name;
+      const { sellerId, sellerName } = resolveCartItemSeller(item);
       if (sellerId && sellerName && !names.has(sellerId)) names.set(sellerId, sellerName);
     }
     return names;
-  }, [cartItems]);
+  }, [cartItems, resolveCartItemSeller]);
+  const distinctSellerIds = useMemo(() => {
+    const ids = new Set<string>();
+    for (const item of cartItems) {
+      const { sellerId } = resolveCartItemSeller(item);
+      if (sellerId) ids.add(sellerId);
+    }
+    return ids;
+  }, [cartItems, resolveCartItemSeller]);
+  const isMultiSellerCart = distinctSellerIds.size > 1;
   const activePayment = sellerPayments[activePaymentIndex] || null;
   const stripePromise = useMemo(() => {
     if (!activePayment?.stripeAccountId) return null;
@@ -214,6 +278,13 @@ export default function CheckOutPage() {
       stripeAccount: activePayment.stripeAccountId,
     });
   }, [activePayment?.stripeAccountId]);
+  // Multi-seller checkout collects the card on the PLATFORM account (no
+  // stripeAccount scoping) — a single Stripe.js instance shared across sellers.
+  const platformStripePromise = useMemo(() => {
+    if (!multiSellerSetup?.clientSecret) return null;
+    if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) return null;
+    return loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+  }, [multiSellerSetup?.clientSecret]);
   const paidPaymentCount = sellerPayments.filter((payment) => payment.status === "paid").length;
   const hasFailedPayments = sellerPayments.some((payment) => payment.status === "failed");
 
@@ -417,25 +488,30 @@ export default function CheckOutPage() {
         }
       } catch {}
 
-      const res = await fetch(
-        "https://backend.madeinarnhemland.com.au/api/payments/create-intent",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${currentToken}`,
-          },
-          body: JSON.stringify({
-            shippingAddress: { addressLine: addrLine },
-            shippingMethodId: selectedShipping.id,
-            country: shippingCountry,
-            city: addrCity || "Sydney",
-            state: addrState || "NSW",
-            zipCode: addrZip,
-            mobileNumber: addrPhone,
-          }),
-        }
-      );
+      const requestBody = {
+        shippingAddress: { addressLine: addrLine },
+        shippingMethodId: selectedShipping.id,
+        country: shippingCountry,
+        city: addrCity || "Sydney",
+        state: addrState || "NSW",
+        zipCode: addrZip,
+        mobileNumber: addrPhone,
+      };
+
+      // Multi-seller carts collect the card once via a platform SetupIntent;
+      // single-seller carts keep using /create-intent exactly as before.
+      const endpoint = isMultiSellerCart
+        ? "https://backend.madeinarnhemland.com.au/api/payments/multi-seller/setup"
+        : "https://backend.madeinarnhemland.com.au/api/payments/create-intent";
+
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${currentToken}`,
+        },
+        body: JSON.stringify(requestBody),
+      });
 
       if (!res.ok) {
         let msg = "Failed to create payment. Please try again.";
@@ -444,6 +520,29 @@ export default function CheckOutPage() {
           msg = err.message || err.error || msg;
         } catch {}
         toast.error(msg);
+        return;
+      }
+
+      if (isMultiSellerCart) {
+        const data = await res.json() as MultiSellerSetupResponse;
+        devLogger.log("[checkout] multi-seller/setup response", data);
+        if (!data.clientSecret || !data.orderId) {
+          toast.error("Payment setup failed. Please try again.");
+          return;
+        }
+        setMultiSellerSetup({
+          orderId: data.orderId,
+          displayId: data.displayId || "",
+          clientSecret: data.clientSecret,
+          amount: data.amount || 0,
+          currency: data.currency || "aud",
+          sellerBreakdown: (data.sellerBreakdown || []).map((line) => ({
+            ...line,
+            sellerName: sellerNameById.get(line.sellerId) || line.sellerName,
+          })),
+        });
+        setOrderId(data.orderId);
+        setDisplayId(data.displayId || "");
         return;
       }
 
@@ -723,6 +822,30 @@ export default function CheckOutPage() {
     setActivePaymentIndex(index);
   };
 
+  // ── Multi-seller single-checkout completion ────────────────────────────────
+  // /multi-seller/finalize already confirms each seller's PaymentIntent
+  // server-side (webhook remains authoritative for PAID, same as everywhere
+  // else) — no per-seller acknowledgement call is needed here.
+  const finishMultiSellerCheckout = () => {
+    localStorage.removeItem("cartProductCoupons");
+    localStorage.removeItem("checkoutStep");
+    localStorage.removeItem("alpa_cart_count");
+    localStorage.removeItem("showGuestForm");
+    localStorage.removeItem("guestCheckoutData");
+    localStorage.removeItem("promoCode");
+    localStorage.removeItem("paymentMethod");
+    localStorage.removeItem("addressCartData");
+    localStorage.removeItem("addressPlaceId");
+    localStorage.removeItem("addressValidated");
+    localStorage.removeItem("alpa_shipping_country");
+    localStorage.removeItem("alpa_intl_rate");
+    localStorage.setItem("alpa_clear_cart_on_arrival", "user");
+    const params = new URLSearchParams({ orderId: multiSellerSetup?.orderId || orderId });
+    const finalDisplayId = multiSellerSetup?.displayId || displayId;
+    if (finalDisplayId) params.set("displayId", finalDisplayId);
+    router.push(`/order-confirmation?${params.toString()}`);
+  };
+
   const isLoggedIn = !loading && (!!token || !!user);
   const authChecked = !loading;
 
@@ -983,7 +1106,46 @@ export default function CheckOutPage() {
                         exit={{ opacity: 0, x: -20 }}
                         transition={{ duration: 0.3 }}
                       >
-                        {activePayment ? (
+                        {multiSellerSetup ? (
+                          // ── Multi-seller single checkout: one card, one Pay Now ──
+                          <div>
+                            <div className="mb-6">
+                              <h2 className="text-2xl font-bold text-[#5A1E12]">Complete Payment</h2>
+                              <p className="text-[#5A1E12]/60 text-sm mt-1">
+                                One payment covers {multiSellerSetup.sellerBreakdown.length} sellers — Stripe charges each seller directly.
+                              </p>
+                            </div>
+                            {platformStripePromise && (
+                              <Elements
+                                key={multiSellerSetup.clientSecret}
+                                stripe={platformStripePromise}
+                                options={{
+                                  clientSecret: multiSellerSetup.clientSecret,
+                                  appearance: {
+                                    theme: "stripe",
+                                    variables: {
+                                      colorPrimary: "#5A1E12",
+                                      colorBackground: "#ffffff",
+                                      colorText: "#3b1a08",
+                                      borderRadius: "12px",
+                                      fontFamily: "inherit",
+                                    },
+                                  },
+                                }}
+                              >
+                                <MultiSellerPaymentForm
+                                  orderId={multiSellerSetup.orderId}
+                                  authToken={token || (typeof window !== "undefined" ? localStorage.getItem("alpa_token") || "" : "")}
+                                  sellerBreakdown={multiSellerSetup.sellerBreakdown}
+                                  totalAmountCents={multiSellerSetup.amount}
+                                  currency={multiSellerSetup.currency}
+                                  onSuccess={finishMultiSellerCheckout}
+                                  onFailure={(msg) => toast.error(msg)}
+                                />
+                              </Elements>
+                            )}
+                          </div>
+                        ) : activePayment ? (
                           // ── Stripe payment UI ──────────────────────────
                           <div>
                             <div className="mb-6">
@@ -1140,7 +1302,7 @@ export default function CheckOutPage() {
                       >
                         Continue
                       </button>
-                    ) : sellerPayments.length === 0 ? (
+                    ) : sellerPayments.length === 0 && !multiSellerSetup ? (
                       <button
                         onClick={handleCreateIntent}
                         disabled={isCreatingIntent || cartItems.length === 0 || !paymentMethod}
