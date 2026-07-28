@@ -17,7 +17,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import StripePaymentForm from "@/components/checkout/StripePaymentForm";
 import MultiSellerPaymentForm, { SellerBreakdownLine } from "@/components/checkout/MultiSellerPaymentForm";
 import GuestCheckoutForm from "@/components/checkout/GuestCheckoutForm";
-import { Loader2, Tag, X, ChevronDown } from "lucide-react";
+import { Loader2, Tag, X, ChevronDown, AlertCircle } from "lucide-react";
 import { AppliedSellerCoupon } from "@/lib/api";
 import { useCartStock } from "@/hooks/useCartStock";
 import { useProducts } from "@/hooks/useProducts";
@@ -280,11 +280,36 @@ export default function CheckOutPage() {
   }, [activePayment?.stripeAccountId]);
   // Multi-seller checkout collects the card on the PLATFORM account (no
   // stripeAccount scoping) — a single Stripe.js instance shared across sellers.
+  const [platformStripeError, setPlatformStripeError] = useState(false);
   const platformStripePromise = useMemo(() => {
     if (!multiSellerSetup?.clientSecret) return null;
-    if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) return null;
+    if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+      devLogger.error(
+        "[checkout] NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not set — multi-seller PaymentElement cannot mount. " +
+        "Add it to mia-fe/.env.local (and to CI/deploy secrets) with a pk_test_/pk_live_ value."
+      );
+      return null;
+    }
+    devLogger.log("[checkout] loadStripe for multi-seller platform account");
     return loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
   }, [multiSellerSetup?.clientSecret]);
+
+  // Surface a visible error instead of silently leaving the payment section
+  // blank — covers both the "key missing" case above and Stripe.js failing
+  // to load/resolve at runtime (e.g. blocked script, network failure).
+  useEffect(() => {
+    if (!multiSellerSetup?.clientSecret) { setPlatformStripeError(false); return; }
+    if (!platformStripePromise) { setPlatformStripeError(true); return; }
+    setPlatformStripeError(false);
+    let cancelled = false;
+    platformStripePromise.then((stripeInstance) => {
+      if (!cancelled && !stripeInstance) {
+        devLogger.error("[checkout] Stripe.js failed to load for multi-seller checkout.");
+        setPlatformStripeError(true);
+      }
+    });
+    return () => { cancelled = true; };
+  }, [platformStripePromise, multiSellerSetup?.clientSecret]);
   const paidPaymentCount = sellerPayments.filter((payment) => payment.status === "paid").length;
   const hasFailedPayments = sellerPayments.some((payment) => payment.status === "failed");
 
@@ -1115,7 +1140,7 @@ export default function CheckOutPage() {
                                 One payment covers {multiSellerSetup.sellerBreakdown.length} sellers — Stripe charges each seller directly.
                               </p>
                             </div>
-                            {platformStripePromise && (
+                            {platformStripePromise && !platformStripeError ? (
                               <Elements
                                 key={multiSellerSetup.clientSecret}
                                 stripe={platformStripePromise}
@@ -1143,7 +1168,12 @@ export default function CheckOutPage() {
                                   onFailure={(msg) => toast.error(msg)}
                                 />
                               </Elements>
-                            )}
+                            ) : platformStripeError ? (
+                              <div className="flex items-start gap-2.5 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+                                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                                <span>Payment system could not be loaded. Please refresh and try again.</span>
+                              </div>
+                            ) : null}
                           </div>
                         ) : activePayment ? (
                           // ── Stripe payment UI ──────────────────────────

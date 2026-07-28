@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
-import { Loader2, Tag, X, CheckCircle, ChevronRight, ChevronDown } from "lucide-react";
+import { Loader2, Tag, X, CheckCircle, ChevronRight, ChevronDown, AlertCircle } from "lucide-react";
 import ReactCountryFlag from "react-country-flag";
 import { useSharedEnhancedCart } from "@/hooks/useSharedEnhancedCart";
 import { sellerCouponsApi, AppliedSellerCoupon } from "@/lib/api";
@@ -566,11 +566,36 @@ export default function GuestCheckoutForm() {
   }, [activePayment?.stripeAccountId]);
   // Multi-seller checkout collects the card on the PLATFORM account (no
   // stripeAccount scoping) — a single Stripe.js instance shared across sellers.
+  const [platformStripeError, setPlatformStripeError] = useState(false);
   const platformStripePromise = useMemo(() => {
     if (!multiSellerSetup?.clientSecret) return null;
-    if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) return null;
+    if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
+      devLogger.error(
+        "[guest-checkout] NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not set — multi-seller PaymentElement cannot mount. " +
+        "Add it to mia-fe/.env.local (and to CI/deploy secrets) with a pk_test_/pk_live_ value."
+      );
+      return null;
+    }
+    devLogger.log("[guest-checkout] loadStripe for multi-seller platform account");
     return loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
   }, [multiSellerSetup?.clientSecret]);
+
+  // Surface a visible error instead of silently leaving the payment section
+  // blank — covers both the "key missing" case above and Stripe.js failing
+  // to load/resolve at runtime (e.g. blocked script, network failure).
+  useEffect(() => {
+    if (!multiSellerSetup?.clientSecret) { setPlatformStripeError(false); return; }
+    if (!platformStripePromise) { setPlatformStripeError(true); return; }
+    setPlatformStripeError(false);
+    let cancelled = false;
+    platformStripePromise.then((stripeInstance) => {
+      if (!cancelled && !stripeInstance) {
+        devLogger.error("[guest-checkout] Stripe.js failed to load for multi-seller checkout.");
+        setPlatformStripeError(true);
+      }
+    });
+    return () => { cancelled = true; };
+  }, [platformStripePromise, multiSellerSetup?.clientSecret]);
   const paidPaymentCount = sellerPayments.filter((payment) => payment.status === "paid").length;
   const hasFailedPayments = sellerPayments.some((payment) => payment.status === "failed");
   const distinctSellerIds = useMemo(() => {
@@ -1585,7 +1610,7 @@ export default function GuestCheckoutForm() {
                 One payment covers {multiSellerSetup.sellerBreakdown.length} sellers — Stripe charges each seller directly.
               </p>
             </div>
-            {platformStripePromise && (
+            {platformStripePromise && !platformStripeError ? (
               <Elements
                 key={multiSellerSetup.clientSecret}
                 stripe={platformStripePromise}
@@ -1607,7 +1632,12 @@ export default function GuestCheckoutForm() {
                   onFailure={(msg) => toast.error(msg)}
                 />
               </Elements>
-            )}
+            ) : platformStripeError ? (
+              <div className="flex items-start gap-2.5 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span>Payment system could not be loaded. Please refresh and try again.</span>
+              </div>
+            ) : null}
             <button onClick={() => setCurrentStep("form")}
               className="mt-4 w-full py-2.5 text-sm text-[#5A1E12]/70 hover:text-[#5A1E12] transition-colors">
               Back to Details
