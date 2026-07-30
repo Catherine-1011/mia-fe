@@ -28,7 +28,7 @@ type SellerPaymentStatus = "pending" | "active" | "processing" | "paid" | "faile
 
 interface SellerPayment {
   sellerId: string;
-  stripeAccountId: string;
+  stripeAccountId: string | null;
   clientSecret: string;
   paymentIntentId: string;
   amount: number;
@@ -40,7 +40,7 @@ interface SellerPayment {
 
 interface CheckoutPaymentResponse {
   sellerId?: string;
-  stripeAccountId?: string;
+  stripeAccountId?: string | null;
   clientSecret?: string;
   paymentIntentId?: string;
   amount?: number;
@@ -87,10 +87,10 @@ type CartSellerSource = {
 function normalizeCheckoutPayments(data: CheckoutIntentResponse): SellerPayment[] {
   const payments = Array.isArray(data?.payments) && data.payments.length > 0
     ? data.payments
-    : data?.clientSecret && data?.paymentIntentId && data?.stripeAccountId
+    : data?.clientSecret && data?.paymentIntentId
       ? [{
           sellerId: data.sellerId || "seller",
-          stripeAccountId: data.stripeAccountId,
+          stripeAccountId: data.stripeAccountId ?? null,
           clientSecret: data.clientSecret,
           paymentIntentId: data.paymentIntentId,
           amount: data.amount,
@@ -100,14 +100,14 @@ function normalizeCheckoutPayments(data: CheckoutIntentResponse): SellerPayment[
 
   return payments.map((payment, index: number): SellerPayment => ({
     sellerId: String(payment.sellerId || `seller_${index + 1}`),
-    stripeAccountId: String(payment.stripeAccountId || ""),
+    stripeAccountId: payment.stripeAccountId ? String(payment.stripeAccountId) : null,
     clientSecret: String(payment.clientSecret || ""),
     paymentIntentId: String(payment.paymentIntentId || ""),
     amount: Number(payment.amount || data?.amount || 0),
     currency: String(payment.currency || data?.currency || "aud"),
     status: index === 0 ? "active" : "pending",
   })).filter((payment) =>
-    Boolean(payment.stripeAccountId && payment.clientSecret && payment.paymentIntentId)
+    Boolean(payment.clientSecret && payment.paymentIntentId)
   );
 }
 
@@ -265,7 +265,7 @@ export default function CheckOutPage() {
   const isMultiSellerCart = distinctSellerIds.size > 1;
   const activePayment = sellerPayments[activePaymentIndex] || null;
   const stripePromise = useMemo(() => {
-    if (!activePayment?.stripeAccountId) return null;
+    if (!activePayment?.clientSecret) return null;
     if (!process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) {
       devLogger.error(
         "[checkout] NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY is not set — PaymentElement cannot mount. " +
@@ -273,11 +273,15 @@ export default function CheckOutPage() {
       );
       return null;
     }
+    if (!activePayment.stripeAccountId) {
+      devLogger.log("[checkout] loadStripe for platform account");
+      return loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+    }
     devLogger.log("[checkout] loadStripe for connected account", activePayment.stripeAccountId);
     return loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY, {
       stripeAccount: activePayment.stripeAccountId,
     });
-  }, [activePayment?.stripeAccountId]);
+  }, [activePayment?.clientSecret, activePayment?.stripeAccountId]);
   // Multi-seller checkout collects the card on the PLATFORM account (no
   // stripeAccount scoping) — a single Stripe.js instance shared across sellers.
   const [platformStripeError, setPlatformStripeError] = useState(false);

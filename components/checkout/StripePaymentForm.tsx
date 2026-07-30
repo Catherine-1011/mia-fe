@@ -6,7 +6,7 @@ import { AlertCircle, Loader2, ShieldCheck } from "lucide-react";
 
 interface StripePaymentFormProps {
   clientSecret: string;
-  stripeAccountId: string;
+  stripeAccountId: string | null;
   paymentIntentId: string;
   sellerName?: string;
   amount?: number;
@@ -76,7 +76,7 @@ export default function StripePaymentForm({
           <div>{formattedAmount}</div>
         </div>
         <PaymentElement
-          key={`${stripeAccountId}:${paymentIntentId}:${clientSecret}`}
+          key={`${stripeAccountId || "platform"}:${paymentIntentId}:${clientSecret}`}
           options={{
             layout: "tabs",
             fields: { billingDetails: { email: "auto" } },

@@ -8,14 +8,16 @@ import { devLogger } from "@/lib/logger";
 
 export interface SellerBreakdownLine {
   sellerId: string;
-  stripeAccountId: string;
+  stripeAccountId?: string | null;
   grossAmountCents: number;
   sellerName?: string;
+  paymentFlow?: string;
+  paymentAccountType?: string;
 }
 
 interface SellerChargeResult {
   sellerId: string;
-  stripeAccountId: string;
+  stripeAccountId?: string | null;
   paymentIntentId?: string;
   status: string; // "succeeded" | "requires_action" | "failed" | ...
   clientSecret?: string;
@@ -70,7 +72,7 @@ export default function MultiSellerPaymentForm({
   // authenticated once on the platform. Complete it with a Stripe.js instance
   // scoped to that account — no re-entry of card details required.
   const completeRequiresAction = async (result: SellerChargeResult) => {
-    if (!result.clientSecret || !process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) return result;
+    if (!result.clientSecret || !result.stripeAccountId || !process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY) return result;
     const scopedStripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY, {
       stripeAccount: result.stripeAccountId,
     });
