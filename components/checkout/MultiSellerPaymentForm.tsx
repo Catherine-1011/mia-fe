@@ -26,6 +26,14 @@ interface SellerChargeResult {
   error?: string;
 }
 
+interface FinalizeResponse {
+  success?: boolean;
+  message?: string;
+  error?: string;
+  paymentStatus?: string;
+  payments?: SellerChargeResult[];
+}
+
 interface MultiSellerPaymentFormProps {
   orderId: string;
   // Exactly one identity must be provided: an authenticated user's JWT, or a
@@ -61,6 +69,44 @@ export default function MultiSellerPaymentForm({
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [results, setResults] = useState<SellerChargeResult[] | null>(null);
+
+  const normalizePaymentStatus = (status?: string) => {
+    const normalized = String(status || "").toLowerCase();
+    if (normalized === "paid") return "succeeded";
+    if (normalized === "failed") return "failed";
+    return normalized;
+  };
+
+  const sanitizePayments = (payments: SellerChargeResult[] = []): SellerChargeResult[] =>
+    payments.map((payment) => ({
+      ...payment,
+      status: normalizePaymentStatus(payment.status),
+      clientSecret: payment.status === "requires_action" ? payment.clientSecret : undefined,
+    }));
+
+  const callFinalize = async (): Promise<FinalizeResponse> => {
+    const isGuest = !authToken && !!guestEmail;
+    const endpoint = isGuest
+      ? `${API_BASE}/payments/multi-seller/guest/finalize`
+      : `${API_BASE}/payments/multi-seller/finalize`;
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (!isGuest) headers.Authorization = `Bearer ${authToken}`;
+
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(isGuest ? { orderId, customerEmail: guestEmail } : { orderId }),
+    });
+
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(data.message || data.error || "Payment failed. Please try again.");
+    }
+    if (data.success === false) {
+      throw new Error(data.message || data.error || "Payment failed. Please try again.");
+    }
+    return data;
+  };
 
   const formattedTotal = new Intl.NumberFormat("en-AU", {
     style: "currency",
@@ -105,39 +151,34 @@ export default function MultiSellerPaymentForm({
         return;
       }
 
-      const isGuest = !authToken && !!guestEmail;
-      const endpoint = isGuest
-        ? `${API_BASE}/payments/multi-seller/guest/finalize`
-        : `${API_BASE}/payments/multi-seller/finalize`;
-      const headers: Record<string, string> = { "Content-Type": "application/json" };
-      if (!isGuest) headers.Authorization = `Bearer ${authToken}`;
-
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers,
-        body: JSON.stringify(isGuest ? { orderId, customerEmail: guestEmail } : { orderId }),
+      const data = await callFinalize();
+      devLogger.log("[multi-seller checkout] finalize response", {
+        success: data.success,
+        paymentStatus: data.paymentStatus,
+        paymentCount: data.payments?.length || 0,
       });
-
-      if (!res.ok) {
-        let msg = "Payment failed. Please try again.";
-        try {
-          const err = await res.json();
-          msg = err.message || err.error || msg;
-        } catch {}
-        setErrorMessage(msg);
-        onFailure(msg);
-        return;
+      let payments = sanitizePayments(data.payments || []);
+      if (payments.length === 0) {
+        throw new Error("Payment failed. No seller payment records were returned.");
       }
-
-      const data = await res.json();
-      devLogger.log("[multi-seller checkout] finalize response", data);
-      let payments: SellerChargeResult[] = data.payments || [];
 
       const needsAction = payments.filter((p) => p.status === "requires_action");
       if (needsAction.length > 0) {
         const completed = await Promise.all(needsAction.map(completeRequiresAction));
         const byId = new Map(completed.map((c) => [c.sellerId, c]));
         payments = payments.map((p) => byId.get(p.sellerId) || p);
+        setResults(payments);
+
+        const postActionData = await callFinalize();
+        devLogger.log("[multi-seller checkout] post-action finalize response", {
+          success: postActionData.success,
+          paymentStatus: postActionData.paymentStatus,
+          paymentCount: postActionData.payments?.length || 0,
+        });
+        payments = sanitizePayments(postActionData.payments || []);
+        if (payments.length === 0) {
+          throw new Error("Payment failed. No seller payment records were returned.");
+        }
       }
 
       setResults(payments);
