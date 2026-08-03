@@ -23,6 +23,7 @@ import { useCartStock } from "@/hooks/useCartStock";
 import { useProducts } from "@/hooks/useProducts";
 import { getCountries } from "react-phone-number-input/input";
 import { devLogger } from "@/lib/logger";
+import { getCheckoutOwnerKey, postMultiSellerSetupWithRetry } from "@/lib/checkoutOwnership";
 
 type SellerPaymentStatus = "pending" | "active" | "processing" | "paid" | "failed";
 
@@ -81,6 +82,8 @@ type CartSellerSource = {
   sellerId?: string;
   sellerName?: string;
   sellerUserName?: string;
+  ownerType?: string;
+  platformAccountId?: string | null;
   seller?: { name?: string };
 };
 
@@ -162,6 +165,7 @@ export default function CheckOutPage() {
   const [displayId, setDisplayId] = useState("");
   const [paymentProgress, setPaymentProgress] = useState("");
   const [isCreatingIntent, setIsCreatingIntent] = useState(false);
+  const creatingIntentRef = useRef(false);
   // Multi-seller single-checkout: card collected once on the platform account,
   // then charged per seller server-side. Single-seller checkout above is untouched.
   const [multiSellerSetup, setMultiSellerSetup] = useState<MultiSellerSetupState | null>(null);
@@ -222,6 +226,8 @@ export default function CheckOutPage() {
         {
           sellerId: product.sellerId,
           sellerName: product.sellerName ?? product.sellerUserName,
+          ownerType: product.ownerType,
+          platformAccountId: product.platformAccountId,
         },
       ])
     ),
@@ -238,13 +244,15 @@ export default function CheckOutPage() {
     const productId = itemWithSeller.productId || product.id || itemWithSeller.id;
     const mappedSeller = productId ? sellerProductMap[productId] : undefined;
     const sellerId = product.sellerId || itemWithSeller.sellerId || mappedSeller?.sellerId;
+    const ownerType = product.ownerType || mappedSeller?.ownerType;
+    const platformAccountId = product.platformAccountId ?? mappedSeller?.platformAccountId;
     const sellerName =
       product.sellerName ||
       product.sellerUserName ||
       product.seller?.name ||
       mappedSeller?.sellerName;
 
-    return { sellerId, sellerName };
+    return { sellerId, sellerName, ownerType, platformAccountId };
   }, [sellerProductMap]);
   const sellerNameById = useMemo(() => {
     const names = new Map<string, string>();
@@ -254,15 +262,16 @@ export default function CheckOutPage() {
     }
     return names;
   }, [cartItems, resolveCartItemSeller]);
-  const distinctSellerIds = useMemo(() => {
-    const ids = new Set<string>();
+  const distinctOwnerKeys = useMemo(() => {
+    const keys = new Set<string>();
     for (const item of cartItems) {
-      const { sellerId } = resolveCartItemSeller(item);
-      if (sellerId) ids.add(sellerId);
+      const owner = resolveCartItemSeller(item);
+      const ownerKey = getCheckoutOwnerKey(owner);
+      if (ownerKey) keys.add(ownerKey);
     }
-    return ids;
+    return keys;
   }, [cartItems, resolveCartItemSeller]);
-  const isMultiSellerCart = distinctSellerIds.size > 1;
+  const isMultiSellerCart = distinctOwnerKeys.size > 1;
   const activePayment = sellerPayments[activePaymentIndex] || null;
   const stripePromise = useMemo(() => {
     if (!activePayment?.clientSecret) return null;
@@ -479,6 +488,7 @@ export default function CheckOutPage() {
 
   // ── Stripe: create payment intent ────────────────────────────────────────
   const handleCreateIntent = async () => {
+    if (creatingIntentRef.current) return;
     const currentToken = token || localStorage.getItem("alpa_token");
     if (!currentToken) {
       toast.error("Your session has expired. Please log in again.");
@@ -497,6 +507,7 @@ export default function CheckOutPage() {
       toast.error("Please select a shipping method.");
       return;
     }
+    creatingIntentRef.current = true;
     setIsCreatingIntent(true);
     try {
       // Read address details saved by AddressCart into localStorage
@@ -533,26 +544,37 @@ export default function CheckOutPage() {
         ? "https://backend.madeinarnhemland.com.au/api/payments/multi-seller/setup"
         : "https://backend.madeinarnhemland.com.au/api/payments/create-intent";
 
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${currentToken}`,
-        },
-        body: JSON.stringify(requestBody),
-      });
-
-      if (!res.ok) {
-        let msg = "Failed to create payment. Please try again.";
-        try {
-          const err = await res.json();
-          msg = err.message || err.error || msg;
-        } catch {}
-        toast.error(msg);
-        return;
-      }
+      let res = isMultiSellerCart
+        ? await postMultiSellerSetupWithRetry({
+            endpoint,
+            token: currentToken,
+            requestBody,
+          })
+        : await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${currentToken}`,
+          },
+          body: JSON.stringify(requestBody),
+        });
 
       if (isMultiSellerCart) {
+        if (res.status === 202) {
+          toast.error("Payment setup is still processing. Please try again.");
+          return;
+        }
+
+        if (!res.ok) {
+          let msg = "Failed to create payment. Please try again.";
+          try {
+            const err = await res.json();
+            msg = err.message || err.error || msg;
+          } catch {}
+          toast.error(msg);
+          return;
+        }
+
         const data = await res.json() as MultiSellerSetupResponse;
         devLogger.log("[checkout] multi-seller/setup response", data);
         if (!data.clientSecret || !data.orderId) {
@@ -572,6 +594,16 @@ export default function CheckOutPage() {
         });
         setOrderId(data.orderId);
         setDisplayId(data.displayId || "");
+        return;
+      }
+
+      if (!res.ok) {
+        let msg = "Failed to create payment. Please try again.";
+        try {
+          const err = await res.json();
+          msg = err.message || err.error || msg;
+        } catch {}
+        toast.error(msg);
         return;
       }
 
@@ -595,6 +627,7 @@ export default function CheckOutPage() {
       toast.error(err instanceof Error ? err.message : "Failed to initiate payment.");
     } finally {
       setIsCreatingIntent(false);
+      creatingIntentRef.current = false;
     }
   };
 

@@ -3,6 +3,7 @@
 // Use `autoConnect: false` so we connect only when a component actually needs it.
 
 import { io, Socket } from "socket.io-client";
+import { devLogger } from "@/lib/logger";
 
 const SOCKET_URL = "https://backend.madeinarnhemland.com.au";
 
@@ -75,6 +76,15 @@ function getSocket(): Socket<ServerToClientEvents, ClientToServerEvents> {
     _socket.on("disconnect", (reason) => {
       if (process.env.NODE_ENV === "development") {
       }
+    });
+
+    // Real-time stock updates are a nice-to-have — the REST bulk-stock
+    // snapshot (useCartStock's fetchBulkSnapshot) and the backend's own
+    // stock check at payment time remain authoritative. Never let a
+    // connection failure surface as a user-facing error or block checkout;
+    // socket.io keeps retrying (reconnection: true) on its own.
+    _socket.on("connect_error", (err) => {
+      devLogger.warn("[socket] connect_error (non-blocking, REST stock fallback remains active):", err.message);
     });
   }
 

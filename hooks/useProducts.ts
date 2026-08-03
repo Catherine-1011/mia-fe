@@ -26,6 +26,8 @@ export interface Product {
   artistName?: string;
   sellerName?: string;
   sellerId?: string;
+  ownerType?: string;
+  platformAccountId?: string | null;
   avgRating?: number;
   ratingCount?: number;
   rating?: number;
