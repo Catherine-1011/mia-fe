@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { AlertCircle, Loader2, ShieldCheck } from "lucide-react";
@@ -36,6 +36,7 @@ interface FinalizeResponse {
 
 interface MultiSellerPaymentFormProps {
   orderId: string;
+  setupIntentClientSecret: string;
   // Exactly one identity must be provided: an authenticated user's JWT, or a
   // guest's email (ownership is verified server-side against the order —
   // same trust model /guest/confirm already uses elsewhere in this app).
@@ -56,6 +57,7 @@ const API_BASE = "https://backend.madeinarnhemland.com.au/api";
 // Stripe's documented pattern at docs.stripe.com/connect/direct-charges-multiple-accounts.
 export default function MultiSellerPaymentForm({
   orderId,
+  setupIntentClientSecret,
   authToken,
   guestEmail,
   sellerBreakdown,
@@ -69,6 +71,7 @@ export default function MultiSellerPaymentForm({
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [results, setResults] = useState<SellerChargeResult[] | null>(null);
+  const submittingRef = useRef(false);
 
   const normalizePaymentStatus = (status?: string) => {
     const normalized = String(status || "").toLowerCase();
@@ -87,7 +90,7 @@ export default function MultiSellerPaymentForm({
     payments.map((payment) => ({
       ...payment,
       status: normalizePaymentStatus(payment.status),
-      clientSecret: payment.status === "requires_action" ? payment.clientSecret : undefined,
+      clientSecret: normalizePaymentStatus(payment.status) === "requires_action" ? payment.clientSecret : undefined,
     }));
 
   const callFinalize = async (): Promise<FinalizeResponse> => {
@@ -136,26 +139,62 @@ export default function MultiSellerPaymentForm({
     return { ...result, status: paymentIntent?.status || result.status };
   };
 
+  const ensureSetupIntentSucceeded = async (
+    currentStripe: NonNullable<typeof stripe>,
+    currentElements: NonNullable<typeof elements>,
+  ) => {
+    const latest = await currentStripe.retrieveSetupIntent(setupIntentClientSecret);
+    if (latest.error) {
+      throw new Error(latest.error.message || "Unable to verify card setup. Please try again.");
+    }
+
+    const status = latest.setupIntent?.status;
+    if (status === "succeeded") return;
+    if (status === "processing") {
+      throw new Error("Payment setup is still processing. Please wait a moment and try again.");
+    }
+    if (status === "canceled") {
+      throw new Error("Card setup was canceled. Please enter your payment details again.");
+    }
+    if (status !== "requires_payment_method" && status !== "requires_confirmation") {
+      const refreshed = await currentStripe.retrieveSetupIntent(setupIntentClientSecret);
+      if (refreshed.setupIntent?.status === "succeeded") return;
+      throw new Error(`Card setup is not ready. Stripe SetupIntent status: ${refreshed.setupIntent?.status || status || "unknown"}`);
+    }
+
+    const confirmResult = await currentStripe.confirmSetup({
+      elements: currentElements,
+      confirmParams: { return_url: window.location.href.split("?")[0] },
+      redirect: "if_required",
+    });
+    const setupError = confirmResult.error;
+    const confirmedSetupIntent = "setupIntent" in confirmResult ? confirmResult.setupIntent : undefined;
+
+    if (setupError) {
+      throw new Error(setupError.message || "Card setup failed. Please try again.");
+    }
+    if (confirmedSetupIntent?.status === "processing") {
+      throw new Error("Payment setup is still processing. Please wait a moment and try again.");
+    }
+    if (confirmedSetupIntent?.status === "canceled") {
+      throw new Error("Card setup was canceled. Please enter your payment details again.");
+    }
+    if (confirmedSetupIntent?.status && confirmedSetupIntent.status !== "succeeded") {
+      throw new Error(`Card setup is not ready. Stripe SetupIntent status: ${confirmedSetupIntent.status}`);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!stripe || !elements) return;
+    if (submittingRef.current) return;
+    submittingRef.current = true;
 
     setIsProcessing(true);
     setErrorMessage(null);
 
     try {
-      const { error: setupError } = await stripe.confirmSetup({
-        elements,
-        confirmParams: { return_url: window.location.href.split("?")[0] },
-        redirect: "if_required",
-      });
-
-      if (setupError) {
-        const msg = setupError.message || "Card setup failed. Please try again.";
-        setErrorMessage(msg);
-        onFailure(msg);
-        return;
-      }
+      await ensureSetupIntentSucceeded(stripe, elements);
 
       const data = await callFinalize();
       devLogger.log("[multi-seller checkout] finalize response", {
@@ -218,6 +257,7 @@ export default function MultiSellerPaymentForm({
       setErrorMessage(msg);
       onFailure(msg);
     } finally {
+      submittingRef.current = false;
       setIsProcessing(false);
     }
   };

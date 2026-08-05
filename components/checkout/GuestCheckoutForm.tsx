@@ -1635,6 +1635,7 @@ export default function GuestCheckoutForm() {
               >
                 <MultiSellerPaymentForm
                   orderId={multiSellerSetup.orderId}
+                  setupIntentClientSecret={multiSellerSetup.clientSecret}
                   guestEmail={customerEmail.trim()}
                   sellerBreakdown={multiSellerSetup.sellerBreakdown}
                   totalAmountCents={multiSellerSetup.amount}

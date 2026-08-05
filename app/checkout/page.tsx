@@ -1197,6 +1197,7 @@ export default function CheckOutPage() {
                               >
                                 <MultiSellerPaymentForm
                                   orderId={multiSellerSetup.orderId}
+                                  setupIntentClientSecret={multiSellerSetup.clientSecret}
                                   authToken={token || (typeof window !== "undefined" ? localStorage.getItem("alpa_token") || "" : "")}
                                   sellerBreakdown={multiSellerSetup.sellerBreakdown}
                                   totalAmountCents={multiSellerSetup.amount}
