@@ -77,6 +77,12 @@ export default function MultiSellerPaymentForm({
     return normalized;
   };
 
+  const isSucceededStatus = (status?: string) => normalizePaymentStatus(status) === "succeeded";
+  const isProcessingStatus = (status?: string) => ["processing", "requires_capture"].includes(normalizePaymentStatus(status));
+  const isActionRequiredStatus = (status?: string) => normalizePaymentStatus(status) === "requires_action";
+  const isFailedStatus = (status?: string) =>
+    ["failed", "requires_payment_method", "canceled", "cancelled"].includes(normalizePaymentStatus(status));
+
   const sanitizePayments = (payments: SellerChargeResult[] = []): SellerChargeResult[] =>
     payments.map((payment) => ({
       ...payment,
@@ -183,14 +189,30 @@ export default function MultiSellerPaymentForm({
 
       setResults(payments);
 
-      const anyFailed = payments.some((p) => p.status !== "succeeded");
-      if (anyFailed) {
-        const failedSellers = payments.filter((p) => p.status !== "succeeded").length;
+      const failedSellers = payments.filter((p) => isFailedStatus(p.status)).length;
+      if (failedSellers > 0) {
         onFailure(`${failedSellers} of ${payments.length} seller payment(s) could not be completed.`);
         return;
       }
 
-      onSuccess();
+      const actionRequired = payments.filter((p) => isActionRequiredStatus(p.status)).length;
+      if (actionRequired > 0) {
+        setErrorMessage(`${actionRequired} payment group(s) require additional card authentication.`);
+        return;
+      }
+
+      const processing = payments.filter((p) => isProcessingStatus(p.status)).length;
+      if (processing > 0) {
+        setErrorMessage(`${processing} payment group(s) are still processing. Your order will update shortly.`);
+        return;
+      }
+
+      if (payments.every((p) => isSucceededStatus(p.status))) {
+        onSuccess();
+        return;
+      }
+
+      setErrorMessage("Payment status is still being confirmed. Please wait a moment and try again.");
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Unexpected error. Please try again.";
       setErrorMessage(msg);

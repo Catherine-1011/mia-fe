@@ -20,6 +20,7 @@ import { parsePhoneNumberFromString } from "libphonenumber-js";
 import type { CountryCode } from "libphonenumber-js";
 import { devLogger } from "@/lib/logger";
 import { useProducts } from "@/hooks/useProducts";
+import { getCheckoutOwnerKey } from "@/lib/checkoutOwnership";
 
 interface MapboxFeature {
   id: string;
@@ -228,6 +229,8 @@ interface MultiSellerSetupState {
 type CartSellerSource = {
   id?: string;
   sellerId?: string;
+  ownerType?: string | null;
+  platformAccountId?: string | null;
   sellerName?: string;
   sellerUserName?: string;
   seller?: { name?: string };
@@ -348,6 +351,8 @@ export default function GuestCheckoutForm() {
         {
           sellerId: product.sellerId,
           sellerName: product.sellerName ?? product.sellerUserName,
+          ownerType: product.ownerType,
+          platformAccountId: product.platformAccountId,
         },
       ])
     ),
@@ -364,13 +369,15 @@ export default function GuestCheckoutForm() {
     const productId = itemWithSeller.productId || product.id || itemWithSeller.id;
     const mappedSeller = productId ? sellerProductMap[productId] : undefined;
     const sellerId = product.sellerId || itemWithSeller.sellerId || mappedSeller?.sellerId;
+    const ownerType = product.ownerType || mappedSeller?.ownerType;
+    const platformAccountId = product.platformAccountId ?? mappedSeller?.platformAccountId;
     const sellerName =
       product.sellerName ||
       product.sellerUserName ||
       product.seller?.name ||
       mappedSeller?.sellerName;
 
-    return { sellerId, sellerName };
+    return { sellerId, sellerName, ownerType, platformAccountId };
   }, [sellerProductMap]);
   // Filter out COD options so guests only see real shipping methods
   const shippingMethods = (cartData?.availableShipping || []).filter(
@@ -602,15 +609,15 @@ export default function GuestCheckoutForm() {
   }, [platformStripePromise, multiSellerSetup?.clientSecret]);
   const paidPaymentCount = sellerPayments.filter((payment) => payment.status === "paid").length;
   const hasFailedPayments = sellerPayments.some((payment) => payment.status === "failed");
-  const distinctSellerIds = useMemo(() => {
-    const ids = new Set<string>();
+  const distinctOwnerKeys = useMemo(() => {
+    const keys = new Set<string>();
     for (const item of cartItems) {
-      const { sellerId } = resolveCartItemSeller(item);
-      if (sellerId) ids.add(sellerId);
+      const ownerKey = getCheckoutOwnerKey(resolveCartItemSeller(item));
+      if (ownerKey) keys.add(ownerKey);
     }
-    return ids;
+    return keys;
   }, [cartItems, resolveCartItemSeller]);
-  const isMultiSellerCart = distinctSellerIds.size > 1;
+  const isMultiSellerCart = distinctOwnerKeys.size > 1;
 
   useEffect(() => {
     try {
