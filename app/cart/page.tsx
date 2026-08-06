@@ -125,9 +125,9 @@ export default function Page() {
 
   const [shippingCountry, setShippingCountry] = useState<string>(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("alpa_shipping_country") ?? "";
+      return localStorage.getItem("alpa_shipping_country") ?? "Australia";
     }
-    return "";
+    return "Australia";
   });
   const [countryList, setCountryList] = useState<string[]>([]);
   const [countryListLoading, setCountryListLoading] = useState(false);
