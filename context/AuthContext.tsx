@@ -4,6 +4,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { devLogger } from "@/lib/logger";
+import { getStoredAuthTokens, isJwtExpired } from "@/lib/authSession";
 
 type User = {
   id: string;
@@ -24,6 +25,11 @@ type AuthContextType = {
   token: string | null;
 };
 
+type StoredAuthToken = {
+  source: "alpa_token" | "sellerToken";
+  token: string;
+};
+
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -32,67 +38,84 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // storage after hydration to avoid React hydration error #418.
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // Initialize from localStorage on mount (backup for SSR)
+  // Initialize from verified browser tokens after hydration.
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const storedToken = localStorage.getItem("alpa_token");
-    
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        devLogger.error("Error parsing stored user:", error);
-        localStorage.removeItem("user");
-      }
-    }
-    
-    if (storedToken) {
-      setToken(storedToken);
+    const tokenCandidate = (getStoredAuthTokens(localStorage) as StoredAuthToken[])
+      .find(({ token }) => !isJwtExpired(token));
+
+    if (tokenCandidate) {
+      setToken(tokenCandidate.token);
+    } else {
+      setUser(null);
+      setLoading(false);
     }
   }, []);
 
   // Fetch user profile using token
   const fetchUser = async () => {
-    const currentToken = localStorage.getItem("alpa_token");
+    const candidates = (getStoredAuthTokens(localStorage) as StoredAuthToken[])
+      .filter(({ token }) => !isJwtExpired(token));
     
-    if (!currentToken) {
+    if (candidates.length === 0) {
       setUser(null);
+      setToken(null);
+      setLoading(false);
       return;
     }
 
     try {
       setLoading(true);
-      const res = await fetch(
-        "https://backend.madeinarnhemland.com.au/api/profile",
-        {
-          headers: { 
-            Authorization: `Bearer ${currentToken}`,
-            "Content-Type": "application/json"
-          },
-        }
-      );
+      let verifiedToken: StoredAuthToken | null = null;
+      let userData: User | null = null;
 
-      if (!res.ok) {
-        // If unauthorized, clear everything and redirect to home
+      for (const candidate of candidates) {
+        const res = await fetch(
+          "https://backend.madeinarnhemland.com.au/api/profile",
+          {
+            headers: {
+              Authorization: `Bearer ${candidate.token}`,
+              "Content-Type": "application/json"
+            },
+          }
+        );
+
+        if (res.ok) {
+          const data = await res.json();
+          userData = data.user || data;
+          verifiedToken = candidate;
+          break;
+        }
+
         if (res.status === 401) {
-          setUser(null);
-          setToken(null);
-          localStorage.removeItem("user");
-          localStorage.removeItem("alpa_token");
-          if (typeof window !== "undefined") {
+          if (candidate.source === "alpa_token") localStorage.removeItem("alpa_token");
+          if (candidate.source === "sellerToken") localStorage.removeItem("sellerToken");
+        } else {
+          devLogger.warn("Profile request failed during auth initialization:", res.status);
+        }
+      }
+
+      if (!verifiedToken || !userData) {
+        setUser(null);
+        setToken(null);
+        localStorage.removeItem("user");
+        if (typeof window !== "undefined") {
+          const stillHasToken = localStorage.getItem("alpa_token") || localStorage.getItem("sellerToken");
+          if (!stillHasToken) {
             window.location.href = "/";
           }
         }
         return;
       }
 
-      const data = await res.json();
-      const userData = data.user || data;
-      
       setUser(userData);
+      setToken(verifiedToken.token);
       localStorage.setItem("user", JSON.stringify(userData));
+      if (verifiedToken.source === "sellerToken") {
+        localStorage.setItem("alpa_token", verifiedToken.token);
+        window.dispatchEvent(new CustomEvent("alpa-login", { detail: { token: verifiedToken.token } }));
+      }
     } catch (error) {
       devLogger.error("Error fetching user:", error);
       setUser(null);
