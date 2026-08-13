@@ -9,7 +9,7 @@ const contentSecurityPolicy = [
   "img-src 'self' data: blob: https: http:",
   "media-src 'self' https://res.cloudinary.com",
   "font-src 'self' data: https://fonts.gstatic.com",
-  "connect-src 'self' https://backend.madeinarnhemland.com.au https://api.stripe.com https://checkout.stripe.com https://r.stripe.com https://m.stripe.com https://www.google-analytics.com https://region1.google-analytics.com https://stats.g.doubleclick.net https://cdn.inspectlet.com https://api.inspectlet.com https://hn.inspectlet.com https://api.mapbox.com https://api.zippopotam.us wss://backend.madeinarnhemland.com.au",
+  "connect-src 'self' https://backend.madeinarnhemland.com.au https://api.stripe.com https://checkout.stripe.com https://r.stripe.com https://m.stripe.com https://www.google-analytics.com https://region1.google-analytics.com https://stats.g.doubleclick.net https://cdn.inspectlet.com https://api.inspectlet.com https://hn.inspectlet.com wss://ws.inspectlet.com https://api.mapbox.com https://api.zippopotam.us wss://backend.madeinarnhemland.com.au",
   "frame-src 'self' https://js.stripe.com https://checkout.stripe.com https://hooks.stripe.com https://www.google.com https://www.youtube.com",
   "frame-ancestors 'self'",
   "object-src 'none'",
