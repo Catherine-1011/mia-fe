@@ -1,9 +1,9 @@
 import { timingSafeEqual } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import {
-  SITE_ACCESS_COOKIE,
   createSiteAccessToken,
   isSitePasswordProtectionEnabled,
+  siteAccessCookieOptions,
 } from "@/lib/siteGate";
 
 function matchesPassword(provided: string, expected: string): boolean {
@@ -53,14 +53,7 @@ export async function POST(request: NextRequest) {
   }
 
   const response = NextResponse.json({ success: true });
-  response.cookies.set({
-    name: SITE_ACCESS_COOKIE,
-    value: await createSiteAccessToken(expectedPassword),
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-  });
+  response.cookies.set(siteAccessCookieOptions(await createSiteAccessToken(expectedPassword)));
 
   return response;
 }

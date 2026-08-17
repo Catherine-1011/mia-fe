@@ -1,46 +1,66 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   SITE_ACCESS_COOKIE,
+  buildGateUrl,
+  clearSiteAccessCookieOptions,
+  isForcedGateReentry,
   isSitePasswordProtectionEnabled,
   isValidSiteAccessToken,
+  shouldForceSiteGateReentry,
+  shouldRequireSiteGate,
 } from "@/lib/siteGate";
 
-const PUBLIC_FILE = /\.(.*)$/;
+function redirectToGate(request: NextRequest, clearCookie = false) {
+  const response = NextResponse.redirect(buildGateUrl(request.url, clearCookie));
 
-function isGateExcludedPath(pathname: string) {
-  return (
-    pathname === "/gate" ||
-    pathname === "/api/verify-password" ||
-    pathname.startsWith("/api/") ||
-    pathname.startsWith("/_next/") ||
-    pathname === "/favicon.ico" ||
-    pathname === "/robots.txt" ||
-    pathname === "/sitemap.xml" ||
-    PUBLIC_FILE.test(pathname)
-  );
+  if (clearCookie) {
+    response.cookies.set(clearSiteAccessCookieOptions());
+  }
+
+  return response;
 }
 
 export async function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
-  const sitePassword = process.env.SITE_PASSWORD;
   const shouldProtectSite = isSitePasswordProtectionEnabled();
-  const hasValidAccess = shouldProtectSite
-    ? await isValidSiteAccessToken(
-        request.cookies.get(SITE_ACCESS_COOKIE)?.value,
-        sitePassword,
-      )
-    : true;
 
-  if (shouldProtectSite && pathname === "/gate") {
-    if (hasValidAccess) {
+  if (!shouldProtectSite) {
+    // Block direct access to /order-confirmation without a valid orderId
+    if (pathname === "/order-confirmation" && !searchParams.get("orderId")) {
       return NextResponse.redirect(new URL("/", request.url));
     }
 
     return NextResponse.next();
   }
 
-  if (shouldProtectSite && !isGateExcludedPath(pathname) && !hasValidAccess) {
-    return NextResponse.redirect(new URL("/gate", request.url));
+  const sitePassword = process.env.SITE_PASSWORD;
+  const hasValidAccess = await isValidSiteAccessToken(
+    request.cookies.get(SITE_ACCESS_COOKIE)?.value,
+    sitePassword,
+  );
+
+  if (pathname === "/gate") {
+    const isForcedReentry = isForcedGateReentry(searchParams);
+
+    if (hasValidAccess && !isForcedReentry) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+
+    const response = NextResponse.next();
+
+    if (hasValidAccess && isForcedReentry) {
+      response.cookies.set(clearSiteAccessCookieOptions());
+    }
+
+    return response;
+  }
+
+  if (shouldForceSiteGateReentry(pathname, request.headers, hasValidAccess)) {
+    return redirectToGate(request, true);
+  }
+
+  if (shouldRequireSiteGate(pathname, hasValidAccess)) {
+    return redirectToGate(request);
   }
 
   // Block direct access to /order-confirmation without a valid orderId
