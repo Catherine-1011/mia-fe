@@ -422,9 +422,9 @@ export default function GatePage() {
           Strong Culture. Strong People. Strong Community.
         </span>
 
-        <span>
+        {/* <span>
           &copy; 2024 Made in Arnhem Land. All rights reserved.
-        </span>
+        </span> */}
       </footer>
     </main>
   );
