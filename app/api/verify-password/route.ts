@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import {
   SITE_ACCESS_COOKIE,
   createSiteAccessToken,
+  isSitePasswordProtectionEnabled,
 } from "@/lib/siteGate";
 
 function matchesPassword(provided: string, expected: string): boolean {
@@ -16,6 +17,10 @@ function matchesPassword(provided: string, expected: string): boolean {
 }
 
 export async function POST(request: NextRequest) {
+  if (!isSitePasswordProtectionEnabled()) {
+    return NextResponse.json({ success: true });
+  }
+
   const expectedPassword = process.env.SITE_PASSWORD;
 
   if (!expectedPassword) {

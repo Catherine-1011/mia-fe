@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { SITE_ACCESS_COOKIE, isValidSiteAccessToken } from "@/lib/siteGate";
+import {
+  SITE_ACCESS_COOKIE,
+  isSitePasswordProtectionEnabled,
+  isValidSiteAccessToken,
+} from "@/lib/siteGate";
 
 const PUBLIC_FILE = /\.(.*)$/;
 
@@ -19,12 +23,15 @@ function isGateExcludedPath(pathname: string) {
 export async function middleware(request: NextRequest) {
   const { pathname, searchParams } = request.nextUrl;
   const sitePassword = process.env.SITE_PASSWORD;
-  const hasValidAccess = await isValidSiteAccessToken(
-    request.cookies.get(SITE_ACCESS_COOKIE)?.value,
-    sitePassword,
-  );
+  const shouldProtectSite = isSitePasswordProtectionEnabled();
+  const hasValidAccess = shouldProtectSite
+    ? await isValidSiteAccessToken(
+        request.cookies.get(SITE_ACCESS_COOKIE)?.value,
+        sitePassword,
+      )
+    : true;
 
-  if (pathname === "/gate") {
+  if (shouldProtectSite && pathname === "/gate") {
     if (hasValidAccess) {
       return NextResponse.redirect(new URL("/", request.url));
     }
@@ -32,7 +39,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (!isGateExcludedPath(pathname) && !hasValidAccess) {
+  if (shouldProtectSite && !isGateExcludedPath(pathname) && !hasValidAccess) {
     return NextResponse.redirect(new URL("/gate", request.url));
   }
 

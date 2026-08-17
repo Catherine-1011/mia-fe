@@ -1,5 +1,5 @@
-const ACCESS_TOKEN_TTL_SECONDS = 60 * 60;
 const SITE_ACCESS_COOKIE = "site-access";
+const SITE_ACCESS_TOKEN_PAYLOAD = "mia-site-access";
 
 const encoder = new TextEncoder();
 
@@ -20,11 +20,14 @@ async function signValue(value: string, secret: string): Promise<string> {
   return base64UrlEncode(signature);
 }
 
-export { ACCESS_TOKEN_TTL_SECONDS, SITE_ACCESS_COOKIE };
+export { SITE_ACCESS_COOKIE };
+
+export function isSitePasswordProtectionEnabled(): boolean {
+  return process.env.SITE_PASSWORD_PROTECTION === "true";
+}
 
 export async function createSiteAccessToken(secret: string): Promise<string> {
-  const expiresAt = Date.now() + ACCESS_TOKEN_TTL_SECONDS * 1000;
-  const payload = String(expiresAt);
+  const payload = SITE_ACCESS_TOKEN_PAYLOAD;
   const signature = await signValue(payload, secret);
   return `${payload}.${signature}`;
 }
@@ -35,12 +38,9 @@ export async function isValidSiteAccessToken(
 ): Promise<boolean> {
   if (!token || !secret) return false;
 
-  const [expiresAt, signature, extra] = token.split(".");
-  if (!expiresAt || !signature || extra) return false;
+  const [payload, signature, extra] = token.split(".");
+  if (payload !== SITE_ACCESS_TOKEN_PAYLOAD || !signature || extra) return false;
 
-  const expiryMs = Number(expiresAt);
-  if (!Number.isFinite(expiryMs) || expiryMs <= Date.now()) return false;
-
-  const expectedSignature = await signValue(expiresAt, secret);
+  const expectedSignature = await signValue(payload, secret);
   return signature === expectedSignature;
 }
