@@ -20,7 +20,8 @@ export default function NavbarWrapper() {
     pathname === "/logout-callback" ||
     pathname === "/signup-otp" ||
     pathname === "/guest/order-success" ||
-    pathname === "/guest/track-order";
+    pathname === "/guest/track-order" ||
+    pathname === "/gate";
 
 
   if (hideNavbar) return null;

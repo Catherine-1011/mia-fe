@@ -86,6 +86,10 @@ html {
   overflow-y: auto !important;
 }
 
+.auth-bg-image {
+  object-position: 74% center;
+}
+
 .macbook-auth-reset-section {
   min-height: 100dvh;
   align-items: flex-start !important;

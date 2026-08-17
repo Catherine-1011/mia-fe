@@ -20,7 +20,8 @@ export default function FooterWrapper() {
     pathname === "/signup-otp" ||
     pathname === "/guest/order-success" ||
     // pathname === "/guest/refund" ||
-    pathname === "/guest/track-order";
+    pathname === "/guest/track-order" ||
+    pathname === "/gate";
 
   if (hideFooter) return null;
 

@@ -244,7 +244,7 @@ export default function SellerLoginPage() {
         src="/images/top2.jpg"
         alt="Auth Visual"
         fill
-        className="hidden object-contain object-[130%_center] lg:block"
+        className="auth-bg-image hidden object-cover lg:block"
         priority
       />
 

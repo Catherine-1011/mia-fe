@@ -265,7 +265,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         src="/images/top2.jpg"
         alt="Security verification"
         fill
-        className="hidden object-contain object-[130%_center] lg:block"
+        className="auth-bg-image hidden object-cover lg:block"
         priority
       />
 
