@@ -408,7 +408,7 @@ export default function GatePage() {
             </a>
 
             <a
-              href="tel:+61889473485"
+              href="tel:+61889446444"
               className="
                 flex
                 items-center
@@ -423,7 +423,7 @@ export default function GatePage() {
                 strokeWidth={1.5}
               />
 
-              <span>08 8947 3485</span>
+              <span>+61 (08) 8944 6444</span>
             </a>
           </div>
         </div>
