@@ -45,7 +45,7 @@ export default function GatePage() {
   }
 
   return (
-    <main className="relative min-h-dvh overflow-hidden bg-[#f8efe2]">
+    <main className="relative h-dvh w-full overflow-hidden bg-[#f8efe2]">
       {/* Background */}
       <div className="fixed inset-0 z-0">
         <Image
@@ -64,55 +64,55 @@ export default function GatePage() {
         />
       </div>
 
-      {/* Main content */}
-      <section
-        className="
-          relative z-10
-          flex min-h-dvh
-          items-center
-          justify-center
-          px-4
-          pb-24
-          pt-6
-          sm:px-6
-          sm:pb-24
-          lg:ml-auto
-          lg:w-1/2
-          lg:justify-center
-          lg:px-10
-          lg:pb-20
-          lg:pt-8
-          xl:px-16
-          2xl:px-20
-        "
-      >
-        <div
+      {/* Content column: section (flex-1) + fixed-height footer together fill h-dvh exactly */}
+      <div className="relative z-10 flex h-dvh flex-col">
+        {/* Main content */}
+        <section
           className="
-            w-full
-            max-w-[430px]
-            rounded-[28px]
-            bg-[#fbf5eb]/95
-            px-5
-            py-7
-            text-center
-            shadow-[0_18px_60px_rgba(66,39,20,0.10)]
-            backdrop-blur-[3px]
-
-            sm:px-8
-            sm:py-8
-
-            lg:max-w-[410px]
-            lg:-translate-y-3
-            lg:rounded-none
-            lg:bg-transparent
-            lg:px-0
-            lg:py-0
-            lg:shadow-none
-            lg:backdrop-blur-none
-
-            xl:max-w-[430px]
+            flex min-h-0 flex-1
+            items-center
+            justify-center
+            overflow-hidden
+            px-4
+            py-4
+            sm:px-6
+            lg:ml-auto
+            lg:w-1/2
+            lg:justify-center
+            lg:px-10
+            xl:px-16
+            2xl:px-20
           "
         >
+          <div
+            className="
+              w-full
+              max-w-[430px]
+              rounded-[28px]
+              bg-[#fbf5eb]/95
+              px-5
+              py-6
+              text-center
+              shadow-[0_18px_60px_rgba(66,39,20,0.10)]
+              backdrop-blur-[3px]
+
+              sm:px-8
+              sm:py-7
+
+              lg:max-w-[410px]
+              lg:rounded-none
+              lg:bg-transparent
+              lg:px-0
+              lg:py-0
+              lg:shadow-none
+              lg:backdrop-blur-none
+
+              xl:max-w-[430px]
+
+              [@media(max-height:820px)]:py-4
+              [@media(max-height:700px)]:py-3
+            "
+          >
           {/* Logo */}
           <Image
             src="/images/navbarLogo.png"
@@ -129,6 +129,11 @@ export default function GatePage() {
               lg:mb-6
               lg:w-[132px]
               xl:w-[140px]
+
+              [@media(max-height:820px)]:mb-3
+              [@media(max-height:820px)]:w-[96px]
+              [@media(max-height:700px)]:mb-2
+              [@media(max-height:700px)]:w-[84px]
             "
           />
 
@@ -147,10 +152,23 @@ export default function GatePage() {
               border-[#d8c4aa]
               bg-[#fbf2e4]/70
               shadow-[0_4px_12px_rgba(74,48,29,0.07)]
+
+              [@media(max-height:820px)]:mb-3
+              [@media(max-height:820px)]:h-11
+              [@media(max-height:820px)]:w-11
+              [@media(max-height:700px)]:mb-2
+              [@media(max-height:700px)]:h-9
+              [@media(max-height:700px)]:w-9
             "
           >
             <Lock
-              className="h-[25px] w-[25px] text-[#2d160e]"
+              className="
+                h-[25px] w-[25px] text-[#2d160e]
+                [@media(max-height:820px)]:h-5
+                [@media(max-height:820px)]:w-5
+                [@media(max-height:700px)]:h-4
+                [@media(max-height:700px)]:w-4
+              "
               strokeWidth={1.45}
             />
           </div>
@@ -165,9 +183,12 @@ export default function GatePage() {
               text-[#17100b]
               sm:text-[32px]
               lg:text-[34px]
+
+              [@media(max-height:820px)]:text-[24px]
+              [@media(max-height:700px)]:text-[20px]
             "
           >
-            Protected Page
+            Made in Arnhem Land
           </h1>
 
           {/* Description */}
@@ -179,6 +200,10 @@ export default function GatePage() {
               text-[13px]
               leading-[1.65]
               text-[#766452]
+
+              [@media(max-height:820px)]:mt-2
+              [@media(max-height:820px)]:text-[12px]
+              [@media(max-height:700px)]:mt-1
             "
           >
             This page is password protected.
@@ -189,7 +214,12 @@ export default function GatePage() {
           {/* Form */}
           <form
             onSubmit={handleSubmit}
-            className="mt-7 space-y-3"
+            className="
+              mt-7 space-y-3
+              [@media(max-height:820px)]:mt-4
+              [@media(max-height:820px)]:space-y-2
+              [@media(max-height:700px)]:mt-3
+            "
           >
             <label className="relative block">
               <span className="sr-only">Enter password</span>
@@ -240,6 +270,9 @@ export default function GatePage() {
                   focus:border-[#b95623]
                   focus:ring-2
                   focus:ring-[#b95623]/15
+
+                  [@media(max-height:820px)]:h-11
+                  [@media(max-height:700px)]:h-10
                 "
               />
 
@@ -308,6 +341,9 @@ export default function GatePage() {
 
                 disabled:cursor-not-allowed
                 disabled:opacity-55
+
+                [@media(max-height:820px)]:h-11
+                [@media(max-height:700px)]:h-10
               "
             >
               {isSubmitting ? "Verifying..." : "Enter"}
@@ -324,6 +360,9 @@ export default function GatePage() {
               text-[11px]
               uppercase
               text-[#826f5e]
+
+              [@media(max-height:820px)]:my-3
+              [@media(max-height:700px)]:my-2
             "
           >
             <span className="h-px flex-1 bg-[#cfb696]" />
@@ -338,6 +377,8 @@ export default function GatePage() {
               text-[12px]
               leading-5
               text-[#665444]
+
+              [@media(max-height:820px)]:space-y-1.5
             "
           >
             <p className="mx-auto max-w-[350px]">
@@ -386,46 +427,45 @@ export default function GatePage() {
             </a>
           </div>
         </div>
-      </section>
+        </section>
 
-      {/* Footer */}
-      <footer
-        className="
-          absolute
-          bottom-0
-          left-0
-          right-0
-          z-20
-          flex
-          min-h-[58px]
-          flex-col
-          items-center
-          justify-center
-          gap-1
-          bg-[#28170e]
-          px-5
-          py-3
-          text-center
-          text-[10px]
-          text-[#f2dfbd]
+        {/* Footer */}
+        <footer
+          className="
+            relative
+            z-20
+            flex
+            h-12
+            shrink-0
+            flex-col
+            items-center
+            justify-center
+            gap-1
+            bg-[#28170e]
+            px-5
+            text-center
+            text-[10px]
+            text-[#f2dfbd]
 
-          sm:flex-row
-          sm:justify-between
-          sm:gap-4
-          sm:px-8
-          sm:text-[11px]
+            sm:h-14
+            sm:flex-row
+            sm:justify-between
+            sm:gap-4
+            sm:px-8
+            sm:text-[11px]
 
-          lg:px-10
-        "
-      >
-        <span className="font-serif italic">
-          Strong Culture. Strong People. Strong Community.
-        </span>
+            lg:px-10
+          "
+        >
+          <span className="font-serif italic">
+            Strong Culture. Strong People. Strong Community.
+          </span>
 
-        {/* <span>
-          &copy; 2024 Made in Arnhem Land. All rights reserved.
-        </span> */}
-      </footer>
+          {/* <span>
+            &copy; 2024 Made in Arnhem Land. All rights reserved.
+          </span> */}
+        </footer>
+      </div>
     </main>
   );
 }
